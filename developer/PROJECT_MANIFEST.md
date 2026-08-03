@@ -1,6 +1,9 @@
 # WASSLink Project Manifest
 
+**Versión:** 1.0.1
+
 > Documento fundacional del proyecto.
+
 > Este documento define la identidad, visión, misión, principios y decisiones arquitectónicas de WASSLink.
 > Ninguna decisión importante deberá contradecir este documento sin una revisión formal.
 
@@ -16,9 +19,9 @@
 | Slogan Oficial | Portable Media Center |
 | Estado | En desarrollo |
 | Versión del Manifest | 1.0.1 |
-| Versión del Proyecto | 0.1.0-alpha |
-| Repositorio Oficial | https://github.com/WilmerWass/WASSLink_MPDL |
-| Licencia | MIT (Pendiente de confirmar) |
+| Versión del Proyecto | 0.0.1-prealpha |
+| Repositorio Oficial   https://github.com/WilmerWass/WASSLink_MPDL |
+| Licencia | MIT License |
 | Product Owner | WilmerWass |
 | Arquitecto de Software (Asistencia IA) | ChatGPT GPT-5.5
 
@@ -29,6 +32,12 @@
 WASSLink es una plataforma multimedia modular, diseñada para centralizar la búsqueda, descarga, organización, reproducción y administración de contenido multimedia desde una única aplicación.
 
 El proyecto adopta la filosofía Portable First y está pensado para evolucionar hacia un ecosistema multiplataforma compuesto por Studio, CLI y futuras aplicaciones móviles.
+
+---
+
+## Objetivo Principal
+
+Crear la plataforma multimedia de escritorio más completa, modular y fácil de usar, permitiendo que el usuario encuentre, descargue, organice y disfrute su contenido multimedia desde un único lugar.
 
 ---
 
@@ -95,6 +104,8 @@ Todo ello bajo una arquitectura modular preparada para crecer durante muchos añ
 15. Todo cambio importante deberá estar documentado antes de implementarse.
 ---
 
+# Tecnologías Oficiales
+
 | Categoría | Tecnología |
 |-----------|------------|
 | Lenguaje | C# |
@@ -132,6 +143,8 @@ Los proyectos oficiales serán:
 
 La arquitectura completa se documenta en ARCHITECTURE.md.
 
+Cada proyecto deberá cumplir el principio de Responsabilidad Única (SRP).
+
 ---
 
 # Objetivos a Corto plazo
@@ -146,21 +159,21 @@ La arquitectura completa se documenta en ARCHITECTURE.md.
 
 # Objetivos a Mediano Plazo
 
-Sistema de Plugins.
-Reproductor Multimedia.
-Organización automática.
-Búsqueda integrada.
-Beta pública.
+- Sistema de Plugins.
+- Reproductor Multimedia.
+- Organización automática.
+- Búsqueda integrada.
+- Beta pública.
 
 ---
 
 # Objetivos a Largo Plazo
 
-Aplicación Android.
-Sincronización.
-IA para organización multimedia.
-Versión 1.0.
-Ecosistema multiplataforma.
+- Aplicación Android.
+- Sincronización.
+- IA para organización multimedia.
+- Versión 1.0.
+- Ecosistema multiplataforma.
 
 ---
 
@@ -185,7 +198,7 @@ Es una plataforma multimedia modular, abierta y extensible, diseñada para simpl
 
 # Historial de Revisiones
 
-| Versión | Fecha | Cambios |
+| Versión | Fecha | Autor | Cambios |
 |----------|--------|---------|
 | 1.0.0 | 2026-08-03 | Creación del Manifest |
 | 1.0.1 | 2026-08-03 | Actualización de principios y estructura |
