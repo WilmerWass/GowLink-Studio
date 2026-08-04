@@ -1,5 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\WASSLink.Configuration\WASSLink.Configuration.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Download\WASSLink.Download.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Library\WASSLink.Library.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Search\WASSLink.Search.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Player\WASSLink.Player.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Plugins\WASSLink.Plugins.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>

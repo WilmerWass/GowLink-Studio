@@ -21,5 +21,15 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\WASSLink.Configuration\WASSLink.Configuration.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Library\WASSLink.Library.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Player\WASSLink.Player.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Search\WASSLink.Search.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Download\WASSLink.Download.csproj" />
+    <ProjectReference Include="..\..\Core\WASSLink.Plugins\WASSLink.Plugins.csproj" />
   </ItemGroup>
 </Project>
