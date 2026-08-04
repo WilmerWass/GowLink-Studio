@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Apps/">
+    <Project Path="src/Apps/WASSLink.CLI/WASSLink.CLI.csproj" />
+    <Project Path="src/Apps/WASSLink.Desktop/WASSLink.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/WASSLink.Abstractions/WASSLink.Abstractions.csproj" />
+    <Project Path="src/Core/WASSLink.Configuration/WASSLink.Configuration.csproj" />
+    <Project Path="src/Core/WASSLink.Download/WASSLink.Download.csproj" />
+    <Project Path="src/Core/WASSLink.Library/WASSLink.Library.csproj" />
+    <Project Path="src/Core/WASSLink.Player/WASSLink.Player.csproj" />
+    <Project Path="src/Core/WASSLink.Plugins/WASSLink.Plugins.csproj" />
+    <Project Path="src/Core/WASSLink.Search/WASSLink.Search.csproj" />
+    <Project Path="src/Core/WASSLink.Shared/WASSLink.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WASSLink.Tests/WASSLink.Tests.csproj" />
+  </Folder>
+</Solution>
