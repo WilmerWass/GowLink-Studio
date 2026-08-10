@@ -1,103 +1,82 @@
-# WASSLink Architecture
+﻿# WASSLink Architecture
 
 > Documento oficial de arquitectura del proyecto.
-> Define la estructura, responsabilidades y dependencias entre módulos.
->
-> Toda nueva funcionalidad debe respetar las reglas definidas en este documento.
 
----
+## Arquitectura general
 
-# Arquitectura General
+WASSLink Studio utiliza una arquitectura modular basada en capas.
 
-WASSLink utiliza una arquitectura modular basada en capas.
-
-La solución está dividida en:
+La soluciÃ³n se divide en:
 
 - Apps
 - Core
 - Tests
 
-La arquitectura está diseñada para permitir crecimiento a largo plazo, mantener bajo acoplamiento y facilitar la incorporación de nuevas funcionalidades mediante módulos y plugins.
-
 ---
-
-# Capas del Sistema
 
 # Apps
 
-Contienen las aplicaciones finales utilizadas por los usuarios.
+Las Apps contienen los puntos de entrada de usuario.
 
-Proyectos:
+Proyectos actuales:
 
 - WASSLink.Desktop
 - WASSLink.CLI
-- WASSLink.Mobile (futuro)
 
-Responsabilidad:
+Proyecto futuro:
+
+- WASSLink.Mobile
+
+Las Apps son responsables de:
 
 - Interfaz de usuario.
 - Entrada del usuario.
-- Presentación de información.
-- Coordinación de servicios del Core.
+- PresentaciÃ³n.
+- ComposiciÃ³n de servicios.
 
-Las aplicaciones no contienen lógica de negocio.
+Las Apps no deben contener lÃ³gica de negocio central.
 
 ---
 
 # Core
 
-Contiene la lógica reutilizable del ecosistema WASSLink.
+El Core contiene la lÃ³gica reutilizable del ecosistema.
 
-El Core es independiente de las interfaces de usuario.
-
----
-
-# WASSLink.Abstractions
+## WASSLink.Abstractions
 
 Responsabilidad:
 
 - Interfaces.
 - Contratos.
 - Definiciones compartidas.
-- Modelos base de comunicación entre módulos.
 
 Dependencias:
 
 - Ninguna.
 
-Regla:
-
-Este proyecto debe permanecer independiente y estable.
-
 ---
 
-# WASSLink.Shared
+## WASSLink.Shared
 
 Responsabilidad:
 
 - Utilidades comunes.
 - Extensiones.
-- Componentes reutilizables.
-- Modelos compartidos.
+- Modelos base.
 
 Dependencias:
 
 - WASSLink.Abstractions
 
-Regla:
-
-Shared no debe convertirse en un contenedor de lógica de negocio.
-
 ---
 
-# WASSLink.Configuration
+## WASSLink.Configuration
 
 Responsabilidad:
 
-- Configuración global.
-- Preferencias del usuario.
-- Lectura y escritura de configuración.
-- Gestión de rutas del sistema.
+- ConfiguraciÃ³n.
+- Preferencias.
+- Carga y almacenamiento de configuraciÃ³n.
 
 Dependencias:
 
@@ -106,18 +85,13 @@ Dependencias:
 
 ---
 
-# WASSLink.Download
+## WASSLink.Download
 
 Responsabilidad:
 
-- Gestión de descargas.
-- Control de motores externos.
-- Procesamiento inicial de contenido descargado.
-
-Integraciones futuras:
-
-- yt-dlp
-- FFmpeg
+- GestiÃ³n de descargas.
+- AbstracciÃ³n de motores de descarga.
+- IntegraciÃ³n con proveedores y motores externos.
 
 Dependencias:
 
@@ -125,16 +99,24 @@ Dependencias:
 - WASSLink.Configuration
 - WASSLink.Shared
 
+Capacidades futuras contempladas:
+
+- HTTP/HTTPS.
+- Integraciones especializadas.
+- Torrents mediante una implementaciÃ³n independiente.
+
+La arquitectura no debe acoplar el mÃ³dulo directamente a un motor torrent especÃ­fico.
+
 ---
 
-# WASSLink.Library
+## WASSLink.Library
 
 Responsabilidad:
 
-- Administración de biblioteca multimedia.
-- Organización de archivos.
-- Gestión de metadatos.
-- Colecciones y categorías.
+- Biblioteca multimedia.
+- OrganizaciÃ³n.
+- Metadatos.
+- GestiÃ³n del contenido descargado.
 
 Dependencias:
 
@@ -144,18 +126,13 @@ Dependencias:
 
 ---
 
-# WASSLink.Player
+## WASSLink.Player
 
 Responsabilidad:
 
-- Reproducción multimedia.
+- ReproducciÃ³n multimedia.
 - Control del reproductor.
-- Gestión de sesiones de reproducción.
-
-Integraciones futuras:
-
-- LibVLC
-- MPV
+- IntegraciÃ³n con motores multimedia.
 
 Dependencias:
 
@@ -164,34 +141,29 @@ Dependencias:
 
 ---
 
-# WASSLink.Search
+## WASSLink.Search
 
 Responsabilidad:
 
-- Búsqueda de contenido.
-- Gestión de resultados.
-- Coordinación de proveedores de búsqueda.
+- BÃºsqueda.
+- Proveedores.
+- Resultados.
 
 Dependencias:
 
 - WASSLink.Abstractions
 - WASSLink.Shared
-
-Regla:
-
-Search no depende directamente de plugins.
-
-Los proveedores externos deben comunicarse mediante contratos definidos en Abstractions.
+- WASSLink.Plugins
 
 ---
 
-# WASSLink.Plugins
+## WASSLink.Plugins
 
 Responsabilidad:
 
 - Sistema de extensiones.
-- Contratos para plugins.
-- Gestión del ecosistema de plugins.
+- Contratos de plugins.
+- Registro y descubrimiento de extensiones.
 
 Dependencias:
 
@@ -200,7 +172,89 @@ Dependencias:
 
 ---
 
-# Sistema de Plugins
+# Tests
 
-Los plugins implementan contratos definidos por:
+Los proyectos de Tests validan el comportamiento del Core y sus integraciones.
 
+Las pruebas no deben introducir dependencias innecesarias hacia las Apps.
+
+---
+
+# Regla de dependencias
+
+Permitido:
+
+Apps â†’ Core
+
+Core â†’ Core inferior
+
+Tests â†’ proyectos que prueban
+
+No permitido:
+
+Core â†’ Apps
+
+Core â†’ UI
+
+Core â†’ implementaciones externas concretas cuando exista una abstracciÃ³n adecuada
+
+---
+
+# Flujo principal
+
+Usuario
+
+â†“
+
+App
+
+â†“
+
+Servicios Core
+
+â†“
+
+Proveedor / motor externo
+
+â†“
+
+Biblioteca
+
+â†“
+
+Player
+
+---
+
+# Plugins
+
+Los plugins implementan contratos definidos en WASSLink.Abstractions.
+
+Los mÃ³dulos internos no deben depender directamente de plugins concretos.
+
+Esto permite:
+
+- Extensibilidad.
+- Bajo acoplamiento.
+- SustituciÃ³n de proveedores.
+- IntegraciÃ³n futura de nuevos mecanismos de descarga.
+
+---
+
+# Principio fundamental
+
+El Core define **quÃ©** debe hacerse.
+
+Las implementaciones externas definen **cÃ³mo** se realiza.
+
+Esto permite evolucionar WASSLink Studio sin reconstruir la arquitectura alrededor de una tecnologÃ­a especÃ­fica.
+
+---
+
+# Estado
+
+VersiÃ³n: 1.1
+
+Fecha: 2026-08-03
+
+Fase 1: completada.

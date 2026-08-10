@@ -1,0 +1,1659 @@
+[1mdiff --git a/developer/AI_GUIDE.md b/developer/AI_GUIDE.md[m
+[1mindex e8c4f4a..a718eac 100644[m
+[1m--- a/developer/AI_GUIDE.md[m
+[1m+++ b/developer/AI_GUIDE.md[m
+[36m@@ -1,223 +1,97 @@[m
+[31m-# AI Guide[m
+[31m-## Guía Oficial para Inteligencias Artificiales[m
+[32m+[m[32m﻿# WASSLink Studio â€” AI Development Guide[m
+ [m
+[31m-**Proyecto:** WASSLink Studio  [m
+[31m-**Versión:** 1.0.0  [m
+[31m-**Estado:** Oficial[m
+[32m+[m[32m## Objetivo[m
+ [m
+[31m----[m
+[32m+[m[32mEste documento define las reglas para utilizar herramientas de IA durante el desarrollo de WASSLink Studio.[m
+ [m
+[31m-# Propósito[m
+[32m+[m[32m## Prioridades[m
+ [m
+[31m-Este documento define cómo debe colaborar cualquier Inteligencia Artificial (IA) dentro del proyecto **WASSLink**.[m
+[32m+[m[32mLa IA debe priorizar:[m
+ [m
+[31m-Toda IA actúa como un miembro del equipo técnico y deberá respetar la visión, arquitectura, metodología y decisiones aprobadas por el Product Owner.[m
+[32m+[m[32m1. Arquitectura.[m
+[32m+[m[32m2. Correctitud.[m
+[32m+[m[32m3. Seguridad.[m
+[32m+[m[32m4. Mantenibilidad.[m
+[32m+[m[32m5. Simplicidad.[m
+[32m+[m[32m6. Rendimiento.[m
+[32m+[m[32m7. Velocidad de desarrollo.[m
+ [m
+[31m-La IA es un colaborador técnico, **no el propietario del proyecto**.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Jerarquía del Proyecto[m
+[31m-[m
+[31m-La autoridad dentro del proyecto es la siguiente:[m
+[31m-[m
+[31m-1. Product Owner[m
+[31m-2. Documentación Oficial[m
+[31m-3. Arquitectura[m
+[31m-4. IA colaboradora[m
+[31m-[m
+[31m-La IA nunca debe contradecir una decisión oficialmente aprobada.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Documentos obligatorios[m
+[31m-[m
+[31m-Antes de responder o proponer cambios, la IA deberá leer los documentos en este orden:[m
+[31m-[m
+[31m-1. `PROJECT_MANIFEST.md`[m
+[31m-2. `ROADMAP.md`[m
+[31m-3. `WORKSPACE.md`[m
+[31m-4. `ARCHITECTURE.md` *(cuando exista)*[m
+[31m-5. `CHANGELOG.md`[m
+[31m-6. `ADR/`[m
+[31m-7. `CONTRIBUTORS.md` *(opcional)*[m
+[31m-[m
+[31m-Si alguno de estos documentos no existe, deberá continuar con los disponibles sin inventar información.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Rol de la IA[m
+[31m-[m
+[31m-La IA actúa como:[m
+[31m-[m
+[31m-- Arquitecto de Software.[m
+[31m-- Revisor de Código.[m
+[31m-- Diseñador de Arquitectura.[m
+[31m-- Documentador Técnico.[m
+[31m-- Mentor de Desarrollo.[m
+[31m-- Asistente de Productividad.[m
+[31m-[m
+[31m-La IA **no sustituye** al Product Owner.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Responsabilidades[m
+[31m-[m
+[31m-La IA debe:[m
+[31m-[m
+[31m-- Mantener la coherencia del proyecto.[m
+[31m-- Respetar la arquitectura aprobada.[m
+[31m-- Proponer mejoras justificadas.[m
+[31m-- Detectar deuda técnica.[m
+[31m-- Favorecer código limpio.[m
+[31m-- Priorizar mantenibilidad sobre velocidad.[m
+[31m-- Mantener la documentación sincronizada con el código.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Lo que la IA NO debe hacer[m
+[32m+[m[32m## Reglas[m
+ [m
+ La IA no debe:[m
+ [m
+[31m-- Cambiar la visión del proyecto.[m
+[31m-- Modificar la misión.[m
+[31m-- Alterar la filosofía del proyecto.[m
+[31m-- Cambiar el roadmap principal.[m
+[31m-- Crear nuevas fases sin autorización.[m
+[31m-- Cambiar tecnologías oficiales sin aprobación.[m
+[31m-- Eliminar documentación oficial.[m
+[31m-- Inventar funcionalidades ya descartadas.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Metodología del Roadmap[m
+[31m-[m
+[31m-La estructura del roadmap pertenece al Product Owner.[m
+[31m-[m
+[31m-La IA únicamente podrá subdividir tareas.[m
+[31m-[m
+[31m-Ejemplo:[m
+[31m-[m
+[31m-FASE 1[m
+[31m-[m
+[31m-1.1 Crear solución[m
+[31m-[m
+[31m-- 1.1.1 Crear archivo .sln[m
+[31m-- 1.1.2 Configurar proyectos[m
+[31m-- 1.1.3 Verificar compilación[m
+[31m-[m
+[31m-No podrá convertir una tarea en una nueva fase sin autorización.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Principios de Desarrollo[m
+[31m-[m
+[31m-Toda decisión debe respetar los principios definidos en `PROJECT_MANIFEST.md`.[m
+[31m-[m
+[31m-En caso de conflicto prevalece:[m
+[31m-[m
+[31m-1. PROJECT_MANIFEST.md[m
+[31m-2. ADR[m
+[31m-3. ROADMAP[m
+[31m-4. Código existente[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Filosofía[m
+[31m-[m
+[31m-WASSLink no es un simple descargador.[m
+[31m-[m
+[31m-Es una plataforma multimedia modular, abierta y extensible.[m
+[31m-[m
+[31m-Toda propuesta deberá fortalecer esta visión.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Colaboración entre IA y Humanos[m
+[31m-[m
+[31m-Toda colaboración deberá ser transparente.[m
+[31m-[m
+[31m-Las decisiones importantes deberán quedar documentadas.[m
+[31m-[m
+[31m-Cuando una IA participe en una decisión relevante deberá indicarlo claramente.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Créditos[m
+[31m-[m
+[31m-Las IA pueden aparecer en `CONTRIBUTORS.md`.[m
+[31m-[m
+[31m-Se recomienda registrar:[m
+[31m-[m
+[31m-- Nombre del modelo.[m
+[31m-- Fecha.[m
+[31m-- Área de colaboración.[m
+[31m-- Tipo de aporte.[m
+[31m-[m
+[31m-Esto promueve transparencia y trazabilidad.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Firma de la IA[m
+[32m+[m[32m- Inventar APIs.[m
+[32m+[m[32m- Inventar archivos existentes.[m
+[32m+[m[32m- Cambiar arquitectura sin justificarlo.[m
+[32m+[m[32m- AÃ±adir dependencias innecesarias.[m
+[32m+[m[32m- Eliminar funcionalidades existentes sin aprobaciÃ³n.[m
+[32m+[m[32m- Marcar como implementada una capacidad que solo estÃ¡ planificada.[m
+ [m
+[31m-Cuando una IA proponga una decisión arquitectónica importante podrá dejar una firma técnica similar a:[m
+[32m+[m[32m## Descargas[m
+ [m
+[31m-Arquitectura propuesta por:[m
+[32m+[m[32mLa arquitectura de descarga debe mantenerse extensible.[m
+ [m
+[31m-- ChatGPT GPT-5.5[m
+[31m-- Fecha[m
+[31m-- Motivo[m
+[32m+[m[32mLas implementaciones especÃ­ficas deben depender de contratos.[m
+ [m
+[31m-Esta firma representa únicamente la autoría de la propuesta, nunca la aprobación final.[m
+[32m+[m[32mEjemplo conceptual:[m
+ [m
+[31m----[m
+[32m+[m[32mIDownloadProvider[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mHTTP Provider[m
+[32m+[m[32mTorrent Provider[m
+[32m+[m[32mExternal Engine Provider[m
+ [m
+[31m-# Flujo de Trabajo[m
+[32m+[m[32mNo debe acoplarse todo el sistema a un Ãºnico proveedor.[m
+ [m
+[31m-Antes de comenzar:[m
+[32m+[m[32m## Reproductor[m
+ [m
+[31m-Leer documentación.[m
+[32m+[m[32mEl reproductor es una capacidad principal de WASSLink Studio.[m
+ [m
+[31m-↓[m
+[32m+[m[32mNo debe eliminarse simplemente para convertir el proyecto en un gestor de descargas.[m
+ [m
+[31m-Comprender el estado actual.[m
+[32m+[m[32mEl objetivo es integrar:[m
+ [m
+[31m-↓[m
+[32m+[m[32mDescarga â†’ Biblioteca â†’ ReproducciÃ³n.[m
+ [m
+[31m-Analizar el impacto.[m
+[32m+[m[32m## Plugins[m
+ [m
+[31m-↓[m
+[32m+[m[32mLas extensiones deben utilizar contratos definidos en WASSLink.Abstractions.[m
+ [m
+[31m-Proponer solución.[m
+[32m+[m[32m## Cambios[m
+ [m
+[31m-↓[m
+[32m+[m[32mAntes de modificar arquitectura:[m
+ [m
+[31m-Esperar aprobación cuando sea necesario.[m
+[32m+[m[32m1. Revisar documentaciÃ³n.[m
+[32m+[m[32m2. Revisar referencias de proyectos.[m
+[32m+[m[32m3. Revisar cÃ³digo existente.[m
+[32m+[m[32m4. Implementar el cambio mÃ­nimo.[m
+[32m+[m[32m5. Compilar.[m
+[32m+[m[32m6. Ejecutar pruebas.[m
+[32m+[m[32m7. Revisar Git diff.[m
+ [m
+[31m-↓[m
+[32m+[m[32m## ValidaciÃ³n[m
+ [m
+[31m-Implementar.[m
+[32m+[m[32mDespuÃ©s de cambios estructurales:[m
+ [m
+[31m-↓[m
+[32m+[m[32mdotnet build WASSLink-Studio.slnx[m
+ [m
+[31m-Actualizar documentación.[m
+[32m+[m[32mY cuando existan pruebas:[m
+ [m
+[31m----[m
+[32m+[m[32mdotnet test WASSLink-Studio.slnx[m
+ [m
+[31m-# Resolución de Conflictos[m
+[32m+[m[32m## Git[m
+ [m
+[31m-Si una IA encuentra contradicciones entre documentos:[m
+[32m+[m[32mAntes de commit:[m
+ [m
+[31m-1. Informar el conflicto.[m
+[31m-2. No asumir cuál es correcto.[m
+[31m-3. Solicitar revisión del Product Owner.[m
+[32m+[m[32mgit status[m
+[32m+[m[32mgit diff[m
+ [m
+[31m----[m
+[32m+[m[32mLos commits deben representar cambios coherentes.[m
+ [m
+[31m-# Objetivo Final[m
+[32m+[m[32m## Regla principal[m
+ [m
+[31m-La misión de toda IA dentro de WASSLink es ayudar a construir una plataforma multimedia de alta calidad, mantenible, bien documentada y preparada para evolucionar durante muchos años, colaborando siempre con transparencia y respetando las decisiones del equipo humano.[m
+[32m+[m[32mNo confundir:[m
+ [m
+[31m----[m
+[32m+[m[32mPlanificado â‰  Implementado.[m
+ [m
+[31m-**Fin del documento**[m
+[32m+[m[32mUna funcionalidad solamente se considera implementada cuando existe cÃ³digo funcional y validaciÃ³n.[m
+[1mdiff --git a/developer/ARCHITECTURE.md b/developer/ARCHITECTURE.md[m
+[1mindex 42e16b5..995f212 100644[m
+[1m--- a/developer/ARCHITECTURE.md[m
+[1m+++ b/developer/ARCHITECTURE.md[m
+[36m@@ -1,103 +1,82 @@[m
+[31m-# WASSLink Architecture[m
+[32m+[m[32m﻿# WASSLink Architecture[m
+ [m
+ > Documento oficial de arquitectura del proyecto.[m
+[31m-> Define la estructura, responsabilidades y dependencias entre módulos.[m
+[31m->[m
+[31m-> Toda nueva funcionalidad debe respetar las reglas definidas en este documento.[m
+ [m
+[31m----[m
+[31m-[m
+[31m-# Arquitectura General[m
+[32m+[m[32m## Arquitectura general[m
+ [m
+[31m-WASSLink utiliza una arquitectura modular basada en capas.[m
+[32m+[m[32mWASSLink Studio utiliza una arquitectura modular basada en capas.[m
+ [m
+[31m-La solución está dividida en:[m
+[32m+[m[32mLa soluciÃ³n se divide en:[m
+ [m
+ - Apps[m
+ - Core[m
+ - Tests[m
+ [m
+[31m-La arquitectura está diseñada para permitir crecimiento a largo plazo, mantener bajo acoplamiento y facilitar la incorporación de nuevas funcionalidades mediante módulos y plugins.[m
+[31m-[m
+ ---[m
+ [m
+[31m-# Capas del Sistema[m
+[31m-[m
+ # Apps[m
+ [m
+[31m-Contienen las aplicaciones finales utilizadas por los usuarios.[m
+[32m+[m[32mLas Apps contienen los puntos de entrada de usuario.[m
+ [m
+[31m-Proyectos:[m
+[32m+[m[32mProyectos actuales:[m
+ [m
+ - WASSLink.Desktop[m
+ - WASSLink.CLI[m
+[31m-- WASSLink.Mobile (futuro)[m
+ [m
+[31m-Responsabilidad:[m
+[32m+[m[32mProyecto futuro:[m
+[32m+[m
+[32m+[m[32m- WASSLink.Mobile[m
+[32m+[m
+[32m+[m[32mLas Apps son responsables de:[m
+ [m
+ - Interfaz de usuario.[m
+ - Entrada del usuario.[m
+[31m-- Presentación de información.[m
+[31m-- Coordinación de servicios del Core.[m
+[32m+[m[32m- PresentaciÃ³n.[m
+[32m+[m[32m- ComposiciÃ³n de servicios.[m
+ [m
+[31m-Las aplicaciones no contienen lógica de negocio.[m
+[32m+[m[32mLas Apps no deben contener lÃ³gica de negocio central.[m
+ [m
+ ---[m
+ [m
+ # Core[m
+ [m
+[31m-Contiene la lógica reutilizable del ecosistema WASSLink.[m
+[32m+[m[32mEl Core contiene la lÃ³gica reutilizable del ecosistema.[m
+ [m
+[31m-El Core es independiente de las interfaces de usuario.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# WASSLink.Abstractions[m
+[32m+[m[32m## WASSLink.Abstractions[m
+ [m
+ Responsabilidad:[m
+ [m
+ - Interfaces.[m
+ - Contratos.[m
+ - Definiciones compartidas.[m
+[31m-- Modelos base de comunicación entre módulos.[m
+ [m
+ Dependencias:[m
+ [m
+ - Ninguna.[m
+ [m
+[31m-Regla:[m
+[31m-[m
+[31m-Este proyecto debe permanecer independiente y estable.[m
+[31m-[m
+ ---[m
+ [m
+[31m-# WASSLink.Shared[m
+[32m+[m[32m## WASSLink.Shared[m
+ [m
+ Responsabilidad:[m
+ [m
+ - Utilidades comunes.[m
+ - Extensiones.[m
+[31m-- Componentes reutilizables.[m
+[31m-- Modelos compartidos.[m
+[32m+[m[32m- Modelos base.[m
+ [m
+ Dependencias:[m
+ [m
+ - WASSLink.Abstractions[m
+ [m
+[31m-Regla:[m
+[31m-[m
+[31m-Shared no debe convertirse en un contenedor de lógica de negocio.[m
+[31m-[m
+ ---[m
+ [m
+[31m-# WASSLink.Configuration[m
+[32m+[m[32m## WASSLink.Configuration[m
+ [m
+ Responsabilidad:[m
+ [m
+[31m-- Configuración global.[m
+[31m-- Preferencias del usuario.[m
+[31m-- Lectura y escritura de configuración.[m
+[31m-- Gestión de rutas del sistema.[m
+[32m+[m[32m- ConfiguraciÃ³n.[m
+[32m+[m[32m- Preferencias.[m
+[32m+[m[32m- Carga y almacenamiento de configuraciÃ³n.[m
+ [m
+ Dependencias:[m
+ [m
+[36m@@ -106,18 +85,13 @@[m [mDependencias:[m
+ [m
+ ---[m
+ [m
+[31m-# WASSLink.Download[m
+[32m+[m[32m## WASSLink.Download[m
+ [m
+ Responsabilidad:[m
+ [m
+[31m-- Gestión de descargas.[m
+[31m-- Control de motores externos.[m
+[31m-- Procesamiento inicial de contenido descargado.[m
+[31m-[m
+[31m-Integraciones futuras:[m
+[31m-[m
+[31m-- yt-dlp[m
+[31m-- FFmpeg[m
+[32m+[m[32m- GestiÃ³n de descargas.[m
+[32m+[m[32m- AbstracciÃ³n de motores de descarga.[m
+[32m+[m[32m- IntegraciÃ³n con proveedores y motores externos.[m
+ [m
+ Dependencias:[m
+ [m
+[36m@@ -125,16 +99,24 @@[m [mDependencias:[m
+ - WASSLink.Configuration[m
+ - WASSLink.Shared[m
+ [m
+[32m+[m[32mCapacidades futuras contempladas:[m
+[32m+[m
+[32m+[m[32m- HTTP/HTTPS.[m
+[32m+[m[32m- Integraciones especializadas.[m
+[32m+[m[32m- Torrents mediante una implementaciÃ³n independiente.[m
+[32m+[m
+[32m+[m[32mLa arquitectura no debe acoplar el mÃ³dulo directamente a un motor torrent especÃ­fico.[m
+[32m+[m
+ ---[m
+ [m
+[31m-# WASSLink.Library[m
+[32m+[m[32m## WASSLink.Library[m
+ [m
+ Responsabilidad:[m
+ [m
+[31m-- Administración de biblioteca multimedia.[m
+[31m-- Organización de archivos.[m
+[31m-- Gestión de metadatos.[m
+[31m-- Colecciones y categorías.[m
+[32m+[m[32m- Biblioteca multimedia.[m
+[32m+[m[32m- OrganizaciÃ³n.[m
+[32m+[m[32m- Metadatos.[m
+[32m+[m[32m- GestiÃ³n del contenido descargado.[m
+ [m
+ Dependencias:[m
+ [m
+[36m@@ -144,18 +126,13 @@[m [mDependencias:[m
+ [m
+ ---[m
+ [m
+[31m-# WASSLink.Player[m
+[32m+[m[32m## WASSLink.Player[m
+ [m
+ Responsabilidad:[m
+ [m
+[31m-- Reproducción multimedia.[m
+[32m+[m[32m- ReproducciÃ³n multimedia.[m
+ - Control del reproductor.[m
+[31m-- Gestión de sesiones de reproducción.[m
+[31m-[m
+[31m-Integraciones futuras:[m
+[31m-[m
+[31m-- LibVLC[m
+[31m-- MPV[m
+[32m+[m[32m- IntegraciÃ³n con motores multimedia.[m
+ [m
+ Dependencias:[m
+ [m
+[36m@@ -164,34 +141,29 @@[m [mDependencias:[m
+ [m
+ ---[m
+ [m
+[31m-# WASSLink.Search[m
+[32m+[m[32m## WASSLink.Search[m
+ [m
+ Responsabilidad:[m
+ [m
+[31m-- Búsqueda de contenido.[m
+[31m-- Gestión de resultados.[m
+[31m-- Coordinación de proveedores de búsqueda.[m
+[32m+[m[32m- BÃºsqueda.[m
+[32m+[m[32m- Proveedores.[m
+[32m+[m[32m- Resultados.[m
+ [m
+ Dependencias:[m
+ [m
+ - WASSLink.Abstractions[m
+ - WASSLink.Shared[m
+[31m-[m
+[31m-Regla:[m
+[31m-[m
+[31m-Search no depende directamente de plugins.[m
+[31m-[m
+[31m-Los proveedores externos deben comunicarse mediante contratos definidos en Abstractions.[m
+[32m+[m[32m- WASSLink.Plugins[m
+ [m
+ ---[m
+ [m
+[31m-# WASSLink.Plugins[m
+[32m+[m[32m## WASSLink.Plugins[m
+ [m
+ Responsabilidad:[m
+ [m
+ - Sistema de extensiones.[m
+[31m-- Contratos para plugins.[m
+[31m-- Gestión del ecosistema de plugins.[m
+[32m+[m[32m- Contratos de plugins.[m
+[32m+[m[32m- Registro y descubrimiento de extensiones.[m
+ [m
+ Dependencias:[m
+ [m
+[36m@@ -200,7 +172,89 @@[m [mDependencias:[m
+ [m
+ ---[m
+ [m
+[31m-# Sistema de Plugins[m
+[32m+[m[32m# Tests[m
+[32m+[m
+[32m+[m[32mLos proyectos de Tests validan el comportamiento del Core y sus integraciones.[m
+[32m+[m
+[32m+[m[32mLas pruebas no deben introducir dependencias innecesarias hacia las Apps.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Regla de dependencias[m
+[32m+[m
+[32m+[m[32mPermitido:[m
+[32m+[m
+[32m+[m[32mApps â†’ Core[m
+[32m+[m
+[32m+[m[32mCore â†’ Core inferior[m
+[32m+[m
+[32m+[m[32mTests â†’ proyectos que prueban[m
+[32m+[m
+[32m+[m[32mNo permitido:[m
+[32m+[m
+[32m+[m[32mCore â†’ Apps[m
+[32m+[m
+[32m+[m[32mCore â†’ UI[m
+[32m+[m
+[32m+[m[32mCore â†’ implementaciones externas concretas cuando exista una abstracciÃ³n adecuada[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Flujo principal[m
+[32m+[m
+[32m+[m[32mUsuario[m
+[32m+[m
+[32m+[m[32mâ†“[m
+[32m+[m
+[32m+[m[32mApp[m
+[32m+[m
+[32m+[m[32mâ†“[m
+[32m+[m
+[32m+[m[32mServicios Core[m
+[32m+[m
+[32m+[m[32mâ†“[m
+[32m+[m
+[32m+[m[32mProveedor / motor externo[m
+[32m+[m
+[32m+[m[32mâ†“[m
+[32m+[m
+[32m+[m[32mBiblioteca[m
+[32m+[m
+[32m+[m[32mâ†“[m
+[32m+[m
+[32m+[m[32mPlayer[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Plugins[m
+[32m+[m
+[32m+[m[32mLos plugins implementan contratos definidos en WASSLink.Abstractions.[m
+[32m+[m
+[32m+[m[32mLos mÃ³dulos internos no deben depender directamente de plugins concretos.[m
+[32m+[m
+[32m+[m[32mEsto permite:[m
+[32m+[m
+[32m+[m[32m- Extensibilidad.[m
+[32m+[m[32m- Bajo acoplamiento.[m
+[32m+[m[32m- SustituciÃ³n de proveedores.[m
+[32m+[m[32m- IntegraciÃ³n futura de nuevos mecanismos de descarga.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Principio fundamental[m
+[32m+[m
+[32m+[m[32mEl Core define **quÃ©** debe hacerse.[m
+[32m+[m
+[32m+[m[32mLas implementaciones externas definen **cÃ³mo** se realiza.[m
+[32m+[m
+[32m+[m[32mEsto permite evolucionar WASSLink Studio sin reconstruir la arquitectura alrededor de una tecnologÃ­a especÃ­fica.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Estado[m
+[32m+[m
+[32m+[m[32mVersiÃ³n: 1.1[m
+ [m
+[31m-Los plugins implementan contratos definidos por:[m
+[32m+[m[32mFecha: 2026-08-03[m
+ [m
+[32m+[m[32mFase 1: completada.[m
+[1mdiff --git a/developer/CHANGELOG.md b/developer/CHANGELOG.md[m
+[1mindex e69de29..fbcd464 100644[m
+[1m--- a/developer/CHANGELOG.md[m
+[1m+++ b/developer/CHANGELOG.md[m
+[36m@@ -0,0 +1,58 @@[m
+[32m+[m[32m﻿# Changelog[m
+[32m+[m
+[32m+[m[32mTodos los cambios relevantes de WASSLink Studio se documentan aquÃ­.[m
+[32m+[m
+[32m+[m[32m## [Unreleased][m
+[32m+[m
+[32m+[m[32m### Arquitectura[m
+[32m+[m
+[32m+[m[32m- ConsolidaciÃ³n de la arquitectura modular.[m
+[32m+[m[32m- OrganizaciÃ³n Apps / Core / Tests.[m
+[32m+[m[32m- Infraestructura inicial de Dependency Injection.[m
+[32m+[m[32m- IntegraciÃ³n inicial de WASSLink.Desktop.[m
+[32m+[m[32m- IntegraciÃ³n inicial de WASSLink.CLI.[m
+[32m+[m[32m- ValidaciÃ³n de compilaciÃ³n completa.[m
+[32m+[m
+[32m+[m[32m### Producto[m
+[32m+[m
+[32m+[m[32mWASSLink Studio mantiene el concepto de Media Studio.[m
+[32m+[m
+[32m+[m[32mEl producto integra progresivamente:[m
+[32m+[m
+[32m+[m[32m- Descarga.[m
+[32m+[m[32m- Biblioteca multimedia.[m
+[32m+[m[32m- ReproducciÃ³n.[m
+[32m+[m[32m- BÃºsqueda.[m
+[32m+[m[32m- Plugins.[m
+[32m+[m
+[32m+[m[32mSe contempla la futura incorporaciÃ³n de diferentes mecanismos de descarga, incluyendo torrents.[m
+[32m+[m
+[32m+[m[32mLa compatibilidad torrent permanece planificada hasta contar con una implementaciÃ³n funcional y pruebas.[m
+[32m+[m
+[32m+[m[32m## Fase 1[m
+[32m+[m
+[32m+[m[32m### Completada[m
+[32m+[m
+[32m+[m[32mLa Fase 1 estableciÃ³:[m
+[32m+[m
+[32m+[m[32m- SoluciÃ³n .NET 10.[m
+[32m+[m[32m- Estructura modular.[m
+[32m+[m[32m- Proyectos Core.[m
+[32m+[m[32m- Aplicaciones Desktop y CLI.[m
+[32m+[m[32m- Proyecto de Tests.[m
+[32m+[m[32m- Referencias entre proyectos.[m
+[32m+[m[32m- Dependency Injection inicial.[m
+[32m+[m[32m- IntegraciÃ³n Avalonia.[m
+[32m+[m[32m- CompilaciÃ³n completa.[m
+[32m+[m
+[32m+[m[32mValidaciÃ³n:[m
+[32m+[m
+[32m+[m[32mdotnet build WASSLink-Studio.slnx[m
+[32m+[m
+[32m+[m[32mResultado:[m
+[32m+[m
+[32m+[m[32mCompilaciÃ³n realizada correctamente.[m
+[32m+[m
+[32m+[m[32m## Convenciones[m
+[32m+[m
+[32m+[m[32mLos cambios deben agruparse por funcionalidad y mantenerse coherentes con la arquitectura documentada.[m
+[1mdiff --git a/developer/GLOSSARY.md b/developer/GLOSSARY.md[m
+[1mindex 154b76f..a2a0a45 100644[m
+[1m--- a/developer/GLOSSARY.md[m
+[1m+++ b/developer/GLOSSARY.md[m
+[36m@@ -1,53 +1,117 @@[m
+[31m-# WASSLink - Glosario Oficial[m
+[32m+[m[32m﻿# WASSLink Studio Glossary[m
+ [m
+[31m-Este documento define el significado oficial de los términos utilizados en el proyecto.[m
+[32m+[m[32m## App[m
+ [m
+[31m----[m
+[32m+[m[32mAplicaciÃ³n final utilizada por el usuario.[m
+ [m
+[31m-# Términos[m
+[32m+[m[32mEjemplos:[m
+ [m
+[31m-## Biblioteca Multimedia[m
+[32m+[m[32m- WASSLink.Desktop[m
+[32m+[m[32m- WASSLink.CLI[m
+ [m
+[31m-Representación lógica de todo el contenido administrado por WASSLink. Es independiente de la ubicación física de los archivos.[m
+[32m+[m[32m## Core[m
+ [m
+[31m----[m
+[32m+[m[32mConjunto de proyectos que contienen contratos, servicios y lÃ³gica reutilizable.[m
+[32m+[m
+[32m+[m[32m## Download[m
+[32m+[m
+[32m+[m[32mSistema responsable de gestionar descargas.[m
+[32m+[m
+[32m+[m[32mPuede utilizar diferentes motores y proveedores.[m
+[32m+[m
+[32m+[m[32m## Torrent[m
+[32m+[m
+[32m+[m[32mMecanismo de distribuciÃ³n de archivos basado en BitTorrent.[m
+[32m+[m
+[32m+[m[32mEn WASSLink Studio se considera una capacidad futura del sistema de descargas.[m
+[32m+[m
+[32m+[m[32m## Library[m
+[32m+[m
+[32m+[m[32mBiblioteca multimedia donde se organiza el contenido gestionado por WASSLink.[m
+[32m+[m
+[32m+[m[32m## Player[m
+[32m+[m
+[32m+[m[32mComponente encargado de reproducir contenido multimedia.[m
+ [m
+ ## Plugin[m
+ [m
+[31m-Componente que amplía las capacidades de WASSLink sin modificar el núcleo del proyecto.[m
+[32m+[m[32mExtensiÃ³n que implementa contratos definidos por WASSLink.[m
+[32m+[m
+[32m+[m[32m## Provider[m
+[32m+[m
+[32m+[m[32mComponente que proporciona una capacidad concreta, como bÃºsqueda, descarga o metadatos.[m
+[32m+[m
+[32m+[m[32m## Abstraction[m
+[32m+[m
+[32m+[m[32mContrato que define una capacidad sin depender de una implementaciÃ³n concreta.[m
+[32m+[m
+[32m+[m[32m## Dependency Injection[m
+[32m+[m
+[32m+[m[32mPatrÃ³n utilizado para proporcionar dependencias a los componentes en lugar de crearlas directamente.[m
+[32m+[m
+[32m+[m[32m## Media[m
+[32m+[m
+[32m+[m[32mContenido multimedia como:[m
+[32m+[m
+[32m+[m[32m- Audio.[m
+[32m+[m[32m- VÃ­deo.[m
+[32m+[m[32m- Otros formatos compatibles.[m
+[32m+[m
+[32m+[m[32m## Metadata[m
+[32m+[m
+[32m+[m[32mInformaciÃ³n asociada al contenido:[m
+[32m+[m
+[32m+[m[32m- TÃ­tulo.[m
+[32m+[m[32m- Artista.[m
+[32m+[m[32m- Ãlbum.[m
+[32m+[m[32m- DuraciÃ³n.[m
+[32m+[m[32m- Formato.[m
+[32m+[m[32m- TamaÃ±o.[m
+[32m+[m[32m- Fecha.[m
+[32m+[m
+[32m+[m[32m## External Engine[m
+[32m+[m
+[32m+[m[32mSoftware externo utilizado para realizar una capacidad especializada.[m
+[32m+[m
+[32m+[m[32mEjemplos:[m
+[32m+[m
+[32m+[m[32m- FFmpeg.[m
+[32m+[m[32m- yt-dlp.[m
+[32m+[m[32m- LibVLC.[m
+[32m+[m[32m- MPV.[m
+ [m
+[31m----[m
+[32m+[m[32m## Media Studio[m
+ [m
+[31m-## Portable First[m
+[32m+[m[32mConcepto de producto de WASSLink Studio.[m
+ [m
+[31m-Filosofía que prioriza la ejecución sin instalación, manteniendo la posibilidad de ofrecer una versión instalada con funciones adicionales.[m
+[32m+[m[32mRepresenta la integraciÃ³n de:[m
+ [m
+[31m----[m
+[32m+[m[32mDescarga + Biblioteca + ReproducciÃ³n + GestiÃ³n multimedia.[m
+ [m
+[31m-## Solución[m
+[32m+[m[32m## CLI[m
+ [m
+[31m-Conjunto completo de proyectos que forman WASSLink.[m
+[32m+[m[32mCommand Line Interface.[m
+ [m
+[31m----[m
+[32m+[m[32mInterfaz de lÃ­nea de comandos.[m
+ [m
+[31m-## Proyecto[m
+[32m+[m[32m## Desktop[m
+ [m
+[31m-Unidad independiente dentro de la solución con una responsabilidad específica.[m
+[32m+[m[32mAplicaciÃ³n grÃ¡fica de escritorio basada en Avalonia.[m
+ [m
+[31m----[m
+[32m+[m[32m## DTO[m
+ [m
+[31m-## Solución[m
+[32m+[m[32mData Transfer Object.[m
+ [m
+[31m-(Pendiente)[m
+[32m+[m[32mObjeto utilizado para transportar informaciÃ³n entre componentes.[m
+ [m
+[31m----[m
+[32m+[m[32m## DI[m
+ [m
+[31m-## Motor de Descarga[m
+[32m+[m[32mDependency Injection.[m
+ [m
+[31m-(Pendiente)[m
+[32m+[m[32mInyecciÃ³n de dependencias.[m
+ [m
+[31m----[m
+[32m+[m[32m## F1[m
+ [m
+[31m-## Motor Multimedia[m
+[32m+[m[32mFase 1 del desarrollo del proyecto.[m
+ [m
+[31m-(Pendiente)[m
+\ No newline at end of file[m
+[32m+[m[32mEn esta fase se estableciÃ³ la arquitectura inicial y estructura de soluciÃ³n.[m
+[1mdiff --git a/developer/LEGAL_PRINCIPLES.md b/developer/LEGAL_PRINCIPLES.md[m
+[1mindex 8f3e6fa..bade772 100644[m
+[1m--- a/developer/LEGAL_PRINCIPLES.md[m
+[1m+++ b/developer/LEGAL_PRINCIPLES.md[m
+[36m@@ -1,21 +1,62 @@[m
+[31m-# WASSLink - Principios Legales[m
+[32m+[m[32m﻿# WASSLink Studio â€” Legal Principles[m
+ [m
+[31m-## Objetivo[m
+[32m+[m[32m## PropÃ³sito[m
+ [m
+[31m-## Responsabilidad del Usuario[m
+[32m+[m[32mWASSLink Studio es un software destinado a gestionar contenido multimedia y proporcionar herramientas tÃ©cnicas para bÃºsqueda, descarga, organizaciÃ³n y reproducciÃ³n.[m
+ [m
+[31m-## Neutralidad Tecnológica[m
+[32m+[m[32m## Responsabilidad del usuario[m
+ [m
+[31m-## Plataformas de Terceros[m
+[32m+[m[32mEl usuario es responsable de utilizar WASSLink Studio de acuerdo con:[m
+ [m
+[31m-## Plugins de la Comunidad[m
+[32m+[m[32m- LegislaciÃ³n aplicable.[m
+[32m+[m[32m- Derechos de autor.[m
+[32m+[m[32m- Licencias.[m
+[32m+[m[32m- TÃ©rminos de servicio de los proveedores.[m
+[32m+[m[32m- Derechos de terceros.[m
+ [m
+[31m-## Derechos de Autor[m
+[32m+[m[32m## Descargas[m
+ [m
+[31m-## Privacidad[m
+[32m+[m[32mLa existencia de una capacidad tÃ©cnica para descargar contenido no implica autorizaciÃ³n legal para descargar cualquier contenido.[m
+ [m
+[31m-## Transparencia[m
+[32m+[m[32mWASSLink Studio no debe presentar una capacidad tÃ©cnica como permiso legal.[m
+ [m
+[31m-## Cumplimiento de la Legislación[m
+[32m+[m[32m## Torrents[m
+ [m
+[31m-## Futuras Revisiones[m
+\ No newline at end of file[m
+[32m+[m[32mEl protocolo BitTorrent tiene usos legÃ­timos y no legÃ­timos.[m
+[32m+[m
+[32m+[m[32mLa integraciÃ³n de torrents, si se implementa, debe considerarse una tecnologÃ­a de transferencia de datos y no una autorizaciÃ³n para obtener contenido protegido.[m
+[32m+[m
+[32m+[m[32m## Contenido multimedia[m
+[32m+[m
+[32m+[m[32mEl usuario debe asegurarse de poseer los derechos necesarios o contar con autorizaciÃ³n para almacenar, modificar, distribuir o reproducir el contenido gestionado.[m
+[32m+[m
+[32m+[m[32m## Servicios externos[m
+[32m+[m
+[32m+[m[32mWASSLink puede utilizar servicios y herramientas externas.[m
+[32m+[m
+[32m+[m[32mSu utilizaciÃ³n debe respetar las licencias correspondientes y los tÃ©rminos aplicables.[m
+[32m+[m
+[32m+[m[32mEjemplos:[m
+[32m+[m
+[32m+[m[32m- FFmpeg.[m
+[32m+[m[32m- yt-dlp.[m
+[32m+[m[32m- LibVLC.[m
+[32m+[m[32m- MPV.[m
+[32m+[m
+[32m+[m[32m## Plugins[m
+[32m+[m
+[32m+[m[32mLos plugins de terceros pueden tener sus propias licencias y condiciones.[m
+[32m+[m
+[32m+[m[32mEl sistema de plugins no convierte automÃ¡ticamente sus componentes en parte del software propietario del proyecto.[m
+[32m+[m
+[32m+[m[32m## Principio de neutralidad tecnolÃ³gica[m
+[32m+[m
+[32m+[m[32mWASSLink Studio proporciona infraestructura tÃ©cnica.[m
+[32m+[m
+[32m+[m[32mLa responsabilidad sobre el contenido utilizado mediante dicha infraestructura corresponde al usuario y al contexto legal aplicable.[m
+[32m+[m
+[32m+[m[32m## DocumentaciÃ³n[m
+[32m+[m
+[32m+[m[32mEstos principios son documentaciÃ³n tÃ©cnica y de producto.[m
+[32m+[m
+[32m+[m[32mNo constituyen asesoramiento jurÃ­dico.[m
+[1mdiff --git a/developer/PROJECT_MANIFEST.md b/developer/PROJECT_MANIFEST.md[m
+[1mindex fb43b79..9f28722 100644[m
+[1m--- a/developer/PROJECT_MANIFEST.md[m
+[1m+++ b/developer/PROJECT_MANIFEST.md[m
+[36m@@ -1,204 +1,109 @@[m
+[31m-# WASSLink Project Manifest[m
+[32m+[m[32m﻿# WASSLink Studio[m
+ [m
+[31m-**Versión:** 1.0.1[m
+[32m+[m[32m## Identidad del proyecto[m
+ [m
+[31m-> Documento fundacional del proyecto.[m
+[32m+[m[32mWASSLink Studio es una plataforma multimedia modular orientada a la gestiÃ³n de contenido digital.[m
+ [m
+[31m-> Este documento define la identidad, visión, misión, principios y decisiones arquitectónicas de WASSLink.[m
+[31m-> Ninguna decisión importante deberá contradecir este documento sin una revisión formal.[m
+[32m+[m[32mEl proyecto integra progresivamente:[m
+ [m
+[31m----[m
+[32m+[m[32m- Descarga de contenido.[m
+[32m+[m[32m- GestiÃ³n de biblioteca multimedia.[m
+[32m+[m[32m- ReproducciÃ³n multimedia.[m
+[32m+[m[32m- BÃºsqueda y proveedores.[m
+[32m+[m[32m- Sistema de plugins.[m
+[32m+[m[32m- ConfiguraciÃ³n.[m
+[32m+[m[32m- Interfaces Desktop y CLI.[m
+[32m+[m[32m- Futuras capacidades multiplataforma.[m
+ [m
+[31m-# Información General[m
+[32m+[m[32mLa aplicaciÃ³n no se limita a ser un reproductor ni Ãºnicamente un gestor de descargas.[m
+ [m
+[31m-| Campo | Valor |[m
+[31m-|--------|-------|[m
+[31m-| Proyecto | WASSLink |[m
+[31m-| Nombre Comercial | WASSLink Studio |[m
+[31m-| Ediciones | Studio, CLI y Mobile (futuro) |[m
+[31m-| Slogan Oficial | Portable Media Center |[m
+[31m-| Estado | En desarrollo |[m
+[31m-| Versión del Manifest | 1.0.1 |[m
+[31m-| Versión del Proyecto | 0.0.1-prealpha |[m
+[31m-| Repositorio Oficial   https://github.com/WilmerWass/WASSLink_MPDL |[m
+[31m-| Licencia | MIT License |[m
+[31m-| Product Owner | WilmerWass |[m
+[31m-| Arquitecto de Software (Asistencia IA) | ChatGPT GPT-5.5[m
+[32m+[m[32mSu objetivo es convertirse en un **Media Studio** capaz de centralizar el flujo:[m
+ [m
+[31m----[m
+[32m+[m[32mUsuario[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mBÃºsqueda / Entrada[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mDescarga[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mBiblioteca[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mReproducciÃ³n[m
+ [m
+[31m-# Identidad[m
+[32m+[m[32m## Capacidades principales[m
+ [m
+[31m-WASSLink es una plataforma multimedia modular, diseñada para centralizar la búsqueda, descarga, organización, reproducción y administración de contenido multimedia desde una única aplicación.[m
+[32m+[m[32m### Descargas[m
+ [m
+[31m-El proyecto adopta la filosofía Portable First y está pensado para evolucionar hacia un ecosistema multiplataforma compuesto por Studio, CLI y futuras aplicaciones móviles.[m
+[32m+[m[32mLa arquitectura contempla una capa de descarga extensible.[m
+ [m
+[31m----[m
+[32m+[m[32mFuentes y mecanismos contemplados:[m
+ [m
+[31m-## Objetivo Principal[m
+[32m+[m[32m- HTTP/HTTPS.[m
+[32m+[m[32m- Motores externos.[m
+[32m+[m[32m- Proveedores especializados.[m
+[32m+[m[32m- Torrents mediante una futura integraciÃ³n especializada.[m
+ [m
+[31m-Crear la plataforma multimedia de escritorio más completa, modular y fácil de usar, permitiendo que el usuario encuentre, descargue, organice y disfrute su contenido multimedia desde un único lugar.[m
+[32m+[m[32mLa compatibilidad con torrents es una capacidad arquitectÃ³nica prevista y no debe considerarse implementada hasta que exista una implementaciÃ³n funcional y pruebas correspondientes.[m
+ [m
+[31m----[m
+[32m+[m[32m### Biblioteca[m
+ [m
+[31m-# Visión[m
+[32m+[m[32mLa biblioteca organiza el contenido descargado y sus metadatos.[m
+ [m
+[31m-Convertir a WASSLink en el Centro Multimedia más completo, intuitivo y extensible para Windows, diseñado bajo una filosofía **Portable First**, donde el usuario tiene el control para utilizarlo como aplicación portable o instalada, permitiéndole descubrir, descargar, organizar, reproducir y administrar su biblioteca multimedia desde un único lugar mediante una arquitectura moderna, modular y preparada para evolucionar hacia un ecosistema multiplataforma.[m
+[32m+[m[32m### Reproductor[m
+ [m
+[31m----[m
+[32m+[m[32mEl reproductor multimedia es una parte fundamental de WASSLink Studio.[m
+ [m
+[31m-# Misión[m
+[32m+[m[32mPermite que el usuario pueda reproducir contenido gestionado por la plataforma sin depender de una aplicaciÃ³n externa para completar el flujo principal.[m
+ [m
+[31m-Desarrollar una plataforma multimedia moderna, abierta y extensible que permita a cualquier usuario descubrir, descargar, organizar, reproducir y administrar contenido multimedia de forma sencilla, segura y eficiente, priorizando la portabilidad, la automatización y el control total del usuario sobre su biblioteca.[m
+[32m+[m[32m### Plugins[m
+ [m
+[31m----[m
+[32m+[m[32mEl sistema de plugins permite ampliar las capacidades del producto sin acoplar el Core a implementaciones concretas.[m
+ [m
+[31m-# Propuesta de Valor[m
+[32m+[m[32m## Arquitectura[m
+ [m
+[31m-WASSLink busca integrar en una única plataforma las funciones que normalmente requieren múltiples aplicaciones.[m
+[32m+[m[32mLa soluciÃ³n utiliza una arquitectura modular:[m
+ [m
+[31m-El usuario podrá:[m
+[32m+[m[32m- Apps[m
+[32m+[m[32m- Core[m
+[32m+[m[32m- Tests[m
+ [m
+[31m-- Buscar contenido multimedia.[m
+[31m-- Descargar desde diferentes plataformas mediante plugins.[m
+[31m-- Organizar automáticamente su biblioteca.[m
+[31m-- Reproducir audio y video.[m
+[31m-- Gestionar metadatos.[m
+[31m-- Crear colecciones y playlists.[m
+[31m-- Trabajar tanto en modo portable como instalado.[m
+[32m+[m[32mLas aplicaciones finales consumen servicios del Core.[m
+ [m
+[31m-Todo ello bajo una arquitectura modular preparada para crecer durante muchos años.[m
+[32m+[m[32mEl Core contiene contratos, servicios y lÃ³gica reutilizable.[m
+ [m
+[31m----[m
+[32m+[m[32m## TecnologÃ­as[m
+ [m
+[31m-# Principios Fundamentales[m
+[32m+[m[32mTecnologÃ­as principales previstas:[m
+ [m
+[31m-1. El usuario siempre tiene el control.[m
+[32m+[m[32m- .NET 10[m
+[32m+[m[32m- C#[m
+[32m+[m[32m- Avalonia UI[m
+[32m+[m[32m- SQLite[m
+[32m+[m[32m- FFmpeg[m
+[32m+[m[32m- yt-dlp[m
+[32m+[m[32m- LibVLC / MPV[m
+[32m+[m[32m- Microsoft.Extensions.DependencyInjection[m
+ [m
+[31m-2. Portable First.[m
+[32m+[m[32mLas tecnologÃ­as externas pueden cambiar durante la evoluciÃ³n del proyecto.[m
+ [m
+[31m-3. La simplicidad prevalece sobre la complejidad.[m
+[32m+[m[32m## Estado actual[m
+ [m
+[31m-4. Modular antes que monolítico.[m
+[32m+[m[32mFase 1: completada.[m
+ [m
+[31m-5. La documentación es parte del software.[m
+[32m+[m[32mLa Fase 1 establece:[m
+ [m
+[31m-6. La automatización debe ahorrar tiempo al usuario.[m
+[32m+[m[32m- Estructura de soluciÃ³n.[m
+[32m+[m[32m- Proyectos Core.[m
+[32m+[m[32m- Aplicaciones Desktop y CLI.[m
+[32m+[m[32m- Tests.[m
+[32m+[m[32m- Arquitectura inicial.[m
+[32m+[m[32m- Referencias entre proyectos.[m
+[32m+[m[32m- Infraestructura inicial de Dependency Injection.[m
+[32m+[m[32m- CompilaciÃ³n completa de la soluciÃ³n.[m
+ [m
+[31m-7. La privacidad del usuario es prioritaria.[m
+[32m+[m[32m## Principio de evoluciÃ³n[m
+ [m
+[31m-8. La compatibilidad es una responsabilidad, no una opción.[m
+[32m+[m[32mWASSLink Studio se desarrolla de forma incremental.[m
+ [m
+[31m-9. Cada módulo debe tener una única responsabilidad.[m
+[32m+[m[32mUna capacidad se considera implementada Ãºnicamente cuando existe cÃ³digo funcional, integraciÃ³n y validaciÃ³n.[m
+ [m
+[31m-10. El proyecto debe poder mantenerse durante muchos años.[m
+[31m-[m
+[31m-11. Las decisiones importantes deben registrarse mediante ADR.[m
+[31m-[m
+[31m-12. La colaboración entre personas e Inteligencia Artificial debe ser transparente.[m
+[31m-[m
+[31m-13. WASSLink será una plataforma multimedia abierta, modular y neutral.[m
+[31m-[m
+[31m-14. Las funcionalidades específicas de plataformas externas deberán implementarse mediante plugins siempre que sea técnicamente posible.[m
+[31m-[m
+[31m-15. Todo cambio importante deberá estar documentado antes de implementarse.[m
+[31m----[m
+[31m-[m
+[31m-# Tecnologías Oficiales[m
+[31m-[m
+[31m-| Categoría | Tecnología |[m
+[31m-|-----------|------------|[m
+[31m-| Lenguaje | C# |[m
+[31m-| Framework | .NET 10 LTS (o .NET 9) |[m
+[31m-| UI | Avalonia UI |[m
+[31m-| Base de Datos | SQLite |[m
+[31m-| Descargas | yt-dlp |[m
+[31m-| Multimedia | FFmpeg |[m
+[31m-| Reproductor | LibVLC |[m
+[31m-| Arquitectura | Dependency Injection |[m
+[31m-| MVVM | CommunityToolkit.Mvvm |[m
+[31m-| Logging | Serilog |[m
+[31m-| Control de Versiones | Git |[m
+[31m-| Repositorio | GitHub |[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Arquitectura General[m
+[31m-[m
+[31m-La solución se construirá mediante módulos independientes organizados por responsabilidad.[m
+[31m-[m
+[31m-Los proyectos oficiales serán:[m
+[31m-[m
+[31m-- WASSLink.Abstractions[m
+[31m-- WASSLink.Shared[m
+[31m-- WASSLink.Configuration[m
+[31m-- WASSLink.Download[m
+[31m-- WASSLink.Library[m
+[31m-- WASSLink.Player[m
+[31m-- WASSLink.Search[m
+[31m-- WASSLink.Plugins[m
+[31m-- WASSLink.Studio[m
+[31m-- WASSLink.CLI[m
+[31m-- WASSLink.Tests[m
+[31m-[m
+[31m-La arquitectura completa se documenta en ARCHITECTURE.md.[m
+[31m-[m
+[31m-Cada proyecto deberá cumplir el principio de Responsabilidad Única (SRP).[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Objetivos a Corto plazo[m
+[31m-[m
+[31m-- Crear la solución .NET.[m
+[31m-- Implementar Studio y CLI.[m
+[31m-- Integrar yt-dlp.[m
+[31m-- Integrar FFmpeg.[m
+[31m-- Crear Biblioteca Multimedia.[m
+[31m-- Publicar Alpha.[m
+[31m----[m
+[31m-[m
+[31m-# Objetivos a Mediano Plazo[m
+[31m-[m
+[31m-- Sistema de Plugins.[m
+[31m-- Reproductor Multimedia.[m
+[31m-- Organización automática.[m
+[31m-- Búsqueda integrada.[m
+[31m-- Beta pública.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Objetivos a Largo Plazo[m
+[31m-[m
+[31m-- Aplicación Android.[m
+[31m-- Sincronización.[m
+[31m-- IA para organización multimedia.[m
+[31m-- Versión 1.0.[m
+[31m-- Ecosistema multiplataforma.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Filosofía del Proyecto[m
+[31m-[m
+[31m-WASSLink no es un simple descargador.[m
+[31m-[m
+[31m-Es una plataforma multimedia modular, abierta y extensible, diseñada para simplificar la gestión de contenido multimedia respetando siempre el control del usuario, la transparencia y una arquitectura limpia.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Decisiones Aprobadas[m
+[31m-[m
+[31m-| ADR | Estado |[m
+[31m-|------|--------|[m
+[31m-| ADR-001 Portable First | ✅ |[m
+[31m-| ADR-002 Arquitectura Modular | ✅ |[m
+[31m-| ADR-003 Neutralidad de Plataforma | ✅ |[m
+[31m-| ADR-004 Colaboración con IA | ⏳ |[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Historial de Revisiones[m
+[31m-[m
+[31m-| Versión | Fecha | Autor | Cambios |[m
+[31m-|----------|--------|---------|[m
+[31m-| 1.0.0 | 2026-08-03 | Creación del Manifest |[m
+[31m-| 1.0.1 | 2026-08-03 | Actualización de principios y estructura |[m
+[32m+[m[32mLa documentaciÃ³n puede describir capacidades futuras siempre que estÃ©n claramente identificadas como planificadas.[m
+[1mdiff --git a/developer/ROADMAP.md b/developer/ROADMAP.md[m
+[1mindex e69de29..fe3f771 100644[m
+[1m--- a/developer/ROADMAP.md[m
+[1m+++ b/developer/ROADMAP.md[m
+[36m@@ -0,0 +1,174 @@[m
+[32m+[m[32m﻿# WASSLink Studio Roadmap[m
+[32m+[m
+[32m+[m[32m## Fase 0 â€” PreparaciÃ³n[m
+[32m+[m
+[32m+[m[32mEstado: completada.[m
+[32m+[m
+[32m+[m[32mObjetivos:[m
+[32m+[m
+[32m+[m[32m- Definir identidad del proyecto.[m
+[32m+[m[32m- Establecer documentaciÃ³n inicial.[m
+[32m+[m[32m- Preparar repositorio.[m
+[32m+[m[32m- Definir principios de desarrollo.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 1 â€” Arquitectura y estructura[m
+[32m+[m
+[32m+[m[32mEstado: COMPLETADA[m
+[32m+[m
+[32m+[m[32mObjetivos alcanzados:[m
+[32m+[m
+[32m+[m[32m- Crear soluciÃ³n .NET 10.[m
+[32m+[m[32m- Crear estructura Apps/Core/Tests.[m
+[32m+[m[32m- Crear proyectos Core.[m
+[32m+[m[32m- Crear WASSLink.Desktop.[m
+[32m+[m[32m- Crear WASSLink.CLI.[m
+[32m+[m[32m- Crear proyecto de Tests.[m
+[32m+[m[32m- Definir referencias entre proyectos.[m
+[32m+[m[32m- Validar mapa de dependencias.[m
+[32m+[m[32m- Crear infraestructura inicial de Dependency Injection.[m
+[32m+[m[32m- Integrar Avalonia.[m
+[32m+[m[32m- Validar compilaciÃ³n completa.[m
+[32m+[m
+[32m+[m[32mResultado:[m
+[32m+[m
+[32m+[m[32mLa soluciÃ³n compila correctamente mediante:[m
+[32m+[m
+[32m+[m[32mdotnet build WASSLink-Studio.slnx[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 2 â€” Core funcional[m
+[32m+[m
+[32m+[m[32mEstado: planificada.[m
+[32m+[m
+[32m+[m[32mObjetivos:[m
+[32m+[m
+[32m+[m[32m- Definir contratos reales.[m
+[32m+[m[32m- Implementar configuraciÃ³n.[m
+[32m+[m[32m- Implementar modelos multimedia.[m
+[32m+[m[32m- Implementar biblioteca.[m
+[32m+[m[32m- Definir abstracciones de descarga.[m
+[32m+[m[32m- Definir abstracciones del reproductor.[m
+[32m+[m[32m- Definir contratos de bÃºsqueda.[m
+[32m+[m[32m- Mejorar Dependency Injection.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 3 â€” Descargas[m
+[32m+[m
+[32m+[m[32mEstado: planificada.[m
+[32m+[m
+[32m+[m[32mObjetivo:[m
+[32m+[m
+[32m+[m[32mConstruir un sistema de descargas extensible.[m
+[32m+[m
+[32m+[m[32mCapacidades previstas:[m
+[32m+[m
+[32m+[m[32m- HTTP.[m
+[32m+[m[32m- HTTPS.[m
+[32m+[m[32m- Descargas mediante motores externos.[m
+[32m+[m[32m- GestiÃ³n de progreso.[m
+[32m+[m[32m- CancelaciÃ³n.[m
+[32m+[m[32m- Reintentos.[m
+[32m+[m[32m- Cola de descargas.[m
+[32m+[m[32m- Historial.[m
+[32m+[m
+[32m+[m[32mCapacidad futura:[m
+[32m+[m
+[32m+[m[32m- Torrent mediante integraciÃ³n especializada.[m
+[32m+[m
+[32m+[m[32mLa compatibilidad torrent deberÃ¡ desarrollarse como una implementaciÃ³n desacoplada del Core.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 4 â€” Biblioteca multimedia[m
+[32m+[m
+[32m+[m[32mEstado: planificada.[m
+[32m+[m
+[32m+[m[32mObjetivos:[m
+[32m+[m
+[32m+[m[32m- ImportaciÃ³n.[m
+[32m+[m[32m- IndexaciÃ³n.[m
+[32m+[m[32m- Metadatos.[m
+[32m+[m[32m- OrganizaciÃ³n.[m
+[32m+[m[32m- BÃºsqueda local.[m
+[32m+[m[32m- Historial.[m
+[32m+[m[32m- Favoritos.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 5 â€” Reproductor[m
+[32m+[m
+[32m+[m[32mEstado: planificada.[m
+[32m+[m
+[32m+[m[32mObjetivos:[m
+[32m+[m
+[32m+[m[32m- ReproducciÃ³n de audio.[m
+[32m+[m[32m- ReproducciÃ³n de vÃ­deo.[m
+[32m+[m[32m- Controles.[m
+[32m+[m[32m- Cola.[m
+[32m+[m[32m- PosiciÃ³n de reproducciÃ³n.[m
+[32m+[m[32m- Volumen.[m
+[32m+[m[32m- IntegraciÃ³n con biblioteca.[m
+[32m+[m
+[32m+[m[32mEl reproductor permanece como componente central de WASSLink Studio.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 6 â€” Sistema de Plugins[m
+[32m+[m
+[32m+[m[32mEstado: planificada.[m
+[32m+[m
+[32m+[m[32mObjetivos:[m
+[32m+[m
+[32m+[m[32m- Descubrimiento de plugins.[m
+[32m+[m[32m- Registro.[m
+[32m+[m[32m- Ciclo de vida.[m
+[32m+[m[32m- Versionado.[m
+[32m+[m[32m- Proveedores de bÃºsqueda.[m
+[32m+[m[32m- Proveedores de descarga.[m
+[32m+[m[32m- Extensiones multimedia.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 7 â€” IntegraciÃ³n[m
+[32m+[m
+[32m+[m[32mEstado: futura.[m
+[32m+[m
+[32m+[m[32mObjetivo:[m
+[32m+[m
+[32m+[m[32mUnificar:[m
+[32m+[m
+[32m+[m[32mBÃºsqueda[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mDescarga[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mBiblioteca[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mReproducciÃ³n[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Fase 8 â€” Multiplataforma[m
+[32m+[m
+[32m+[m[32mEstado: futura.[m
+[32m+[m
+[32m+[m[32mObjetivos:[m
+[32m+[m
+[32m+[m[32m- Windows.[m
+[32m+[m[32m- Linux.[m
+[32m+[m[32m- macOS.[m
+[32m+[m[32m- Posible Android.[m
+[32m+[m[32m- Posible Mobile.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m# Principio[m
+[32m+[m
+[32m+[m[32mNo se implementarÃ¡ una capacidad Ãºnicamente porque aparezca en el roadmap.[m
+[32m+[m
+[32m+[m[32mCada capacidad deberÃ¡ pasar por:[m
+[32m+[m
+[32m+[m[32mDiseÃ±o â†’ ImplementaciÃ³n â†’ IntegraciÃ³n â†’ Pruebas â†’ DocumentaciÃ³n[m
+[1mdiff --git a/developer/WORKSPACE.md b/developer/WORKSPACE.md[m
+[1mindex d95e743..b25f879 100644[m
+[1m--- a/developer/WORKSPACE.md[m
+[1m+++ b/developer/WORKSPACE.md[m
+[36m@@ -1,210 +1,102 @@[m
+[31m-# WASSLink Studio - Workspace[m
+[32m+[m[32m﻿# WASSLink Studio Workspace[m
+ [m
+[31m-> Documento oficial que describe la organización física del repositorio.[m
+[31m-> Todo desarrollador, colaborador o IA deberá respetar esta estructura.[m
+[32m+[m[32m## Repositorio[m
+ [m
+[31m----[m
+[31m-[m
+[31m-# Filosofía[m
+[31m-[m
+[31m-La organización del repositorio sigue el principio:[m
+[31m-[m
+[31m-> Cada carpeta tiene una única responsabilidad.[m
+[31m-[m
+[31m-No se crearán carpetas nuevas sin una necesidad real y documentada.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Estructura General[m
+[31m-[m
+[31m-```text[m
+ WASSLink-Studio[m
+[31m-│[m
+[31m-├── .github/[m
+[31m-├── assets/[m
+[31m-├── developer/[m
+[31m-├── docs/[m
+[31m-├── examples/[m
+[31m-├── plugins/[m
+[31m-├── resources/[m
+[31m-├── scripts/[m
+[31m-├── src/[m
+[31m-├── tests/[m
+[31m-├── tools/[m
+[31m-│[m
+[31m-├── README.md[m
+[31m-├── LICENSE[m
+[31m-├── .gitignore[m
+[31m-├── .editorconfig[m
+[31m-├── .gitattributes[m
+[31m-└── WASSLink-Studio.sln[m
+[31m-```[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-# Descripción de Carpetas[m
+[31m-[m
+[31m-## .github/[m
+[31m-[m
+[31m-Configuración del repositorio GitHub.[m
+[31m-[m
+[31m-Contendrá:[m
+[31m-[m
+[31m-- Workflows[m
+[31m-- Issue Templates[m
+[31m-- Pull Request Templates[m
+[31m-- CODEOWNERS[m
+[31m-- Discussions (configuración)[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-## assets/[m
+[31m-[m
+[31m-Recursos gráficos del proyecto.[m
+[31m-[m
+[31m-Ejemplos:[m
+[31m-[m
+[31m-- Logos[m
+[31m-- Iconos[m
+[31m-- Imágenes[m
+[31m-- Branding[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-## developer/[m
+[31m-[m
+[31m-Documentación técnica para el desarrollo.[m
+[31m-[m
+[31m-Ejemplos:[m
+[31m-[m
+[31m-- Manifest[m
+[31m-- ADR[m
+[31m-- Guías para IA[m
+[31m-- Roadmap[m
+[31m-- Workspace[m
+[31m-- Changelog[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-## docs/[m
+[31m-[m
+[31m-Documentación pública destinada a los usuarios.[m
+[31m-[m
+[31m-No debe contener documentación interna.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-## examples/[m
+[31m-[m
+[31m-Ejemplos oficiales.[m
+[31m-[m
+[31m-Ejemplos de:[m
+[31m-[m
+[31m-- Plugins[m
+[31m-- Configuración[m
+[31m-- Uso de API[m
+[31m-- Casos de integración[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-## plugins/[m
+[31m-[m
+[31m-Plugins oficiales y de terceros.[m
+[31m-[m
+[31m-Cada plugin será independiente del núcleo del sistema.[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-## resources/[m
+[31m-[m
+[31m-Recursos utilizados por la aplicación.[m
+[31m-[m
+[31m-Ejemplos:[m
+[31m-[m
+[31m-- Traducciones[m
+[31m-- Temas[m
+[31m-- Plantillas[m
+[31m-- Recursos embebidos[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-## scripts/[m
+[31m-[m
+[31m-Scripts oficiales para desarrolladores.[m
+[31m-[m
+[31m-Ejemplos:[m
+[31m-[m
+[31m-- setup.ps1[m
+[31m-- build.ps1[m
+[31m-- clean.ps1[m
+[31m-- doctor.ps1[m
+ [m
+[31m-Estos scripts no forman parte del producto final.[m
+[32m+[m[32m## Estructura[m
+ [m
+[31m----[m
+[32m+[m[32msrc/[m
+[32m+[m[32mâ”œâ”€â”€ Apps/[m
+[32m+[m[32mâ”‚   â”œâ”€â”€ WASSLink.CLI/[m
+[32m+[m[32mâ”‚   â””â”€â”€ WASSLink.Desktop/[m
+[32m+[m[32mâ”‚[m
+[32m+[m[32mâ””â”€â”€ Core/[m
+[32m+[m[32m    â”œâ”€â”€ WASSLink.Abstractions/[m
+[32m+[m[32m    â”œâ”€â”€ WASSLink.Configuration/[m
+[32m+[m[32m    â”œâ”€â”€ WASSLink.Download/[m
+[32m+[m[32m    â”œâ”€â”€ WASSLink.Library/[m
+[32m+[m[32m    â”œâ”€â”€ WASSLink.Player/[m
+[32m+[m[32m    â”œâ”€â”€ WASSLink.Plugins/[m
+[32m+[m[32m    â”œâ”€â”€ WASSLink.Search/[m
+[32m+[m[32m    â””â”€â”€ WASSLink.Shared/[m
+ [m
+[31m-## src/[m
+[32m+[m[32mtests/[m
+[32m+[m[32mâ””â”€â”€ WASSLink.Tests/[m
+ [m
+[31m-Código fuente.[m
+[32m+[m[32mdeveloper/[m
+[32m+[m[32mâ””â”€â”€ DocumentaciÃ³n del proyecto[m
+ [m
+[31m-Se divide en dos grupos.[m
+[32m+[m[32m## Aplicaciones[m
+ [m
+[31m-### Apps/[m
+[32m+[m[32m### WASSLink.Desktop[m
+ [m
+[31m-Aplicaciones finales.[m
+[32m+[m[32mAplicaciÃ³n grÃ¡fica basada en Avalonia.[m
+ [m
+[31m-- WASSLink.Desktop[m
+[31m-- WASSLink.CLI[m
+[31m-- WASSLink.Mobile[m
+[32m+[m[32m### WASSLink.CLI[m
+ [m
+[31m-### Core/[m
+[32m+[m[32mAplicaciÃ³n de lÃ­nea de comandos.[m
+ [m
+[31m-Bibliotecas compartidas.[m
+[32m+[m[32m## Core[m
+ [m
+[31m-Incluye toda la lógica del sistema.[m
+[32m+[m[32mEl Core contiene la lÃ³gica reutilizable.[m
+ [m
+[31m----[m
+[32m+[m[32m## Flujo conceptual[m
+ [m
+[31m-## tests/[m
+[32m+[m[32mBÃºsqueda[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mDescarga[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mBiblioteca[m
+[32m+[m[32mâ†“[m
+[32m+[m[32mReproducciÃ³n[m
+ [m
+[31m-Pruebas automatizadas.[m
+[32m+[m[32m## Capacidades futuras[m
+ [m
+[31m-No debe contener código de producción.[m
+[32m+[m[32m- Descargas HTTP/HTTPS.[m
+[32m+[m[32m- Torrents.[m
+[32m+[m[32m- Proveedores adicionales.[m
+[32m+[m[32m- Plugins.[m
+[32m+[m[32m- Multiplataforma.[m
+ [m
+[31m----[m
+[32m+[m[32m## Estado[m
+ [m
+[31m-## tools/[m
+[32m+[m[32mFase 1 completada.[m
+ [m
+[31m-Herramientas externas.[m
+[32m+[m[32mLa soluciÃ³n compila correctamente:[m
+ [m
+[31m-Ejemplos:[m
+[32m+[m[32mdotnet build WASSLink-Studio.slnx[m
+ [m
+[31m-- yt-dlp[m
+[31m-- FFmpeg[m
+[31m-- MPV (futuro)[m
+[32m+[m[32m## Regla de trabajo[m
+ [m
+[31m----[m
+[32m+[m[32mAntes de modificar el proyecto:[m
+ [m
+[31m-# Reglas de Organización[m
+[32m+[m[32m1. Revisar arquitectura.[m
+[32m+[m[32m2. Revisar referencias.[m
+[32m+[m[32m3. Revisar documentaciÃ³n.[m
+[32m+[m[32m4. Implementar.[m
+[32m+[m[32m5. Compilar.[m
+[32m+[m[32m6. Probar.[m
+[32m+[m[32m7. Revisar Git.[m
+ [m
+[31m-1. Una carpeta = una responsabilidad.[m
+[32m+[m[32m## Comandos principales[m
+ [m
+[31m-2. No duplicar archivos.[m
+[32m+[m[32mCompilar:[m
+ [m
+[31m-3. No almacenar archivos temporales.[m
+[32m+[m[32mdotnet build WASSLink-Studio.slnx[m
+ [m
+[31m-4. No guardar binarios dentro de src.[m
+[32m+[m[32mProbar:[m
+ [m
+[31m-5. Toda nueva carpeta importante deberá documentarse aquí.[m
+[32m+[m[32mdotnet test WASSLink-Studio.slnx[m
+ [m
+[31m-6. Toda modificación estructural deberá registrarse mediante un ADR o actualizar este documento.[m
+[32m+[m[32mVer estado:[m
+ [m
+[31m----[m
+[32m+[m[32mgit status[m
+ [m
+[31m-# Estado[m
+[32m+[m[32mVer cambios:[m
+ [m
+[31m-Versión: 1.0.0[m
+[32m+[m[32mgit diff[m
+ [m
+[31m-Estado: Aprobado[m
+[32m+[m[32mVer proyectos:[m
+ [m
+[31m-Última actualización: 2026-08-03[m
+[32m+[m[32mdotnet sln WASSLink-Studio.slnx list[m

@@ -1,53 +1,117 @@
-# WASSLink - Glosario Oficial
+﻿# WASSLink Studio Glossary
 
-Este documento define el significado oficial de los términos utilizados en el proyecto.
+## App
 
----
+AplicaciÃ³n final utilizada por el usuario.
 
-# Términos
+Ejemplos:
 
-## Biblioteca Multimedia
+- WASSLink.Desktop
+- WASSLink.CLI
 
-Representación lógica de todo el contenido administrado por WASSLink. Es independiente de la ubicación física de los archivos.
+## Core
 
----
+Conjunto de proyectos que contienen contratos, servicios y lÃ³gica reutilizable.
+
+## Download
+
+Sistema responsable de gestionar descargas.
+
+Puede utilizar diferentes motores y proveedores.
+
+## Torrent
+
+Mecanismo de distribuciÃ³n de archivos basado en BitTorrent.
+
+En WASSLink Studio se considera una capacidad futura del sistema de descargas.
+
+## Library
+
+Biblioteca multimedia donde se organiza el contenido gestionado por WASSLink.
+
+## Player
+
+Componente encargado de reproducir contenido multimedia.
 
 ## Plugin
 
-Componente que amplía las capacidades de WASSLink sin modificar el núcleo del proyecto.
+ExtensiÃ³n que implementa contratos definidos por WASSLink.
 
----
+## Provider
 
-## Portable First
+Componente que proporciona una capacidad concreta, como bÃºsqueda, descarga o metadatos.
 
-Filosofía que prioriza la ejecución sin instalación, manteniendo la posibilidad de ofrecer una versión instalada con funciones adicionales.
+## Abstraction
 
----
+Contrato que define una capacidad sin depender de una implementaciÃ³n concreta.
 
-## Solución
+## Dependency Injection
 
-Conjunto completo de proyectos que forman WASSLink.
+PatrÃ³n utilizado para proporcionar dependencias a los componentes en lugar de crearlas directamente.
 
----
+## Media
 
-## Proyecto
+Contenido multimedia como:
 
-Unidad independiente dentro de la solución con una responsabilidad específica.
+- Audio.
+- VÃ­deo.
+- Otros formatos compatibles.
 
----
+## Metadata
 
-## Solución
+InformaciÃ³n asociada al contenido:
 
-(Pendiente)
+- TÃ­tulo.
+- Artista.
+- Ãlbum.
+- DuraciÃ³n.
+- Formato.
+- TamaÃ±o.
+- Fecha.
 
----
+## External Engine
 
-## Motor de Descarga
+Software externo utilizado para realizar una capacidad especializada.
 
-(Pendiente)
+Ejemplos:
 
----
+- FFmpeg.
+- yt-dlp.
+- LibVLC.
+- MPV.
 
-## Motor Multimedia
+## Media Studio
 
-(Pendiente)
+Concepto de producto de WASSLink Studio.
+
+Representa la integraciÃ³n de:
+
+Descarga + Biblioteca + ReproducciÃ³n + GestiÃ³n multimedia.
+
+## CLI
+
+Command Line Interface.
+
+Interfaz de lÃ­nea de comandos.
+
+## Desktop
+
+AplicaciÃ³n grÃ¡fica de escritorio basada en Avalonia.
+
+## DTO
+
+Data Transfer Object.
+
+Objeto utilizado para transportar informaciÃ³n entre componentes.
+
+## DI
+
+Dependency Injection.
+
+InyecciÃ³n de dependencias.
+
+## F1
+
+Fase 1 del desarrollo del proyecto.
+
+En esta fase se estableciÃ³ la arquitectura inicial y estructura de soluciÃ³n.

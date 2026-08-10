@@ -1,210 +1,102 @@
-# WASSLink Studio - Workspace
+﻿# WASSLink Studio Workspace
 
-> Documento oficial que describe la organización física del repositorio.
-> Todo desarrollador, colaborador o IA deberá respetar esta estructura.
+## Repositorio
 
----
-
-# Filosofía
-
-La organización del repositorio sigue el principio:
-
-> Cada carpeta tiene una única responsabilidad.
-
-No se crearán carpetas nuevas sin una necesidad real y documentada.
-
----
-
-# Estructura General
-
-```text
 WASSLink-Studio
-│
-├── .github/
-├── assets/
-├── developer/
-├── docs/
-├── examples/
-├── plugins/
-├── resources/
-├── scripts/
-├── src/
-├── tests/
-├── tools/
-│
-├── README.md
-├── LICENSE
-├── .gitignore
-├── .editorconfig
-├── .gitattributes
-└── WASSLink-Studio.sln
-```
 
----
+## Estructura
 
-# Descripción de Carpetas
+src/
+â”œâ”€â”€ Apps/
+â”‚   â”œâ”€â”€ WASSLink.CLI/
+â”‚   â””â”€â”€ WASSLink.Desktop/
+â”‚
+â””â”€â”€ Core/
+    â”œâ”€â”€ WASSLink.Abstractions/
+    â”œâ”€â”€ WASSLink.Configuration/
+    â”œâ”€â”€ WASSLink.Download/
+    â”œâ”€â”€ WASSLink.Library/
+    â”œâ”€â”€ WASSLink.Player/
+    â”œâ”€â”€ WASSLink.Plugins/
+    â”œâ”€â”€ WASSLink.Search/
+    â””â”€â”€ WASSLink.Shared/
 
-## .github/
+tests/
+â””â”€â”€ WASSLink.Tests/
 
-Configuración del repositorio GitHub.
+developer/
+â””â”€â”€ DocumentaciÃ³n del proyecto
 
-Contendrá:
+## Aplicaciones
 
-- Workflows
-- Issue Templates
-- Pull Request Templates
-- CODEOWNERS
-- Discussions (configuración)
+### WASSLink.Desktop
 
----
+AplicaciÃ³n grÃ¡fica basada en Avalonia.
 
-## assets/
+### WASSLink.CLI
 
-Recursos gráficos del proyecto.
+AplicaciÃ³n de lÃ­nea de comandos.
 
-Ejemplos:
+## Core
 
-- Logos
-- Iconos
-- Imágenes
-- Branding
+El Core contiene la lÃ³gica reutilizable.
 
----
+## Flujo conceptual
 
-## developer/
+BÃºsqueda
+â†“
+Descarga
+â†“
+Biblioteca
+â†“
+ReproducciÃ³n
 
-Documentación técnica para el desarrollo.
+## Capacidades futuras
 
-Ejemplos:
+- Descargas HTTP/HTTPS.
+- Torrents.
+- Proveedores adicionales.
+- Plugins.
+- Multiplataforma.
 
-- Manifest
-- ADR
-- Guías para IA
-- Roadmap
-- Workspace
-- Changelog
+## Estado
 
----
+Fase 1 completada.
 
-## docs/
+La soluciÃ³n compila correctamente:
 
-Documentación pública destinada a los usuarios.
+dotnet build WASSLink-Studio.slnx
 
-No debe contener documentación interna.
+## Regla de trabajo
 
----
+Antes de modificar el proyecto:
 
-## examples/
+1. Revisar arquitectura.
+2. Revisar referencias.
+3. Revisar documentaciÃ³n.
+4. Implementar.
+5. Compilar.
+6. Probar.
+7. Revisar Git.
 
-Ejemplos oficiales.
+## Comandos principales
 
-Ejemplos de:
+Compilar:
 
-- Plugins
-- Configuración
-- Uso de API
-- Casos de integración
+dotnet build WASSLink-Studio.slnx
 
----
+Probar:
 
-## plugins/
+dotnet test WASSLink-Studio.slnx
 
-Plugins oficiales y de terceros.
+Ver estado:
 
-Cada plugin será independiente del núcleo del sistema.
+git status
 
----
+Ver cambios:
 
-## resources/
+git diff
 
-Recursos utilizados por la aplicación.
+Ver proyectos:
 
-Ejemplos:
-
-- Traducciones
-- Temas
-- Plantillas
-- Recursos embebidos
-
----
-
-## scripts/
-
-Scripts oficiales para desarrolladores.
-
-Ejemplos:
-
-- setup.ps1
-- build.ps1
-- clean.ps1
-- doctor.ps1
-
-Estos scripts no forman parte del producto final.
-
----
-
-## src/
-
-Código fuente.
-
-Se divide en dos grupos.
-
-### Apps/
-
-Aplicaciones finales.
-
-- WASSLink.Desktop
-- WASSLink.CLI
-- WASSLink.Mobile
-
-### Core/
-
-Bibliotecas compartidas.
-
-Incluye toda la lógica del sistema.
-
----
-
-## tests/
-
-Pruebas automatizadas.
-
-No debe contener código de producción.
-
----
-
-## tools/
-
-Herramientas externas.
-
-Ejemplos:
-
-- yt-dlp
-- FFmpeg
-- MPV (futuro)
-
----
-
-# Reglas de Organización
-
-1. Una carpeta = una responsabilidad.
-
-2. No duplicar archivos.
-
-3. No almacenar archivos temporales.
-
-4. No guardar binarios dentro de src.
-
-5. Toda nueva carpeta importante deberá documentarse aquí.
-
-6. Toda modificación estructural deberá registrarse mediante un ADR o actualizar este documento.
-
----
-
-# Estado
-
-Versión: 1.0.0
-
-Estado: Aprobado
-
-Última actualización: 2026-08-03
+dotnet sln WASSLink-Studio.slnx list

@@ -1,223 +1,97 @@
-# AI Guide
-## Guía Oficial para Inteligencias Artificiales
+﻿# WASSLink Studio â€” AI Development Guide
 
-**Proyecto:** WASSLink Studio  
-**Versión:** 1.0.0  
-**Estado:** Oficial
+## Objetivo
 
----
+Este documento define las reglas para utilizar herramientas de IA durante el desarrollo de WASSLink Studio.
 
-# Propósito
+## Prioridades
 
-Este documento define cómo debe colaborar cualquier Inteligencia Artificial (IA) dentro del proyecto **WASSLink**.
+La IA debe priorizar:
 
-Toda IA actúa como un miembro del equipo técnico y deberá respetar la visión, arquitectura, metodología y decisiones aprobadas por el Product Owner.
+1. Arquitectura.
+2. Correctitud.
+3. Seguridad.
+4. Mantenibilidad.
+5. Simplicidad.
+6. Rendimiento.
+7. Velocidad de desarrollo.
 
-La IA es un colaborador técnico, **no el propietario del proyecto**.
-
----
-
-# Jerarquía del Proyecto
-
-La autoridad dentro del proyecto es la siguiente:
-
-1. Product Owner
-2. Documentación Oficial
-3. Arquitectura
-4. IA colaboradora
-
-La IA nunca debe contradecir una decisión oficialmente aprobada.
-
----
-
-# Documentos obligatorios
-
-Antes de responder o proponer cambios, la IA deberá leer los documentos en este orden:
-
-1. `PROJECT_MANIFEST.md`
-2. `ROADMAP.md`
-3. `WORKSPACE.md`
-4. `ARCHITECTURE.md` *(cuando exista)*
-5. `CHANGELOG.md`
-6. `ADR/`
-7. `CONTRIBUTORS.md` *(opcional)*
-
-Si alguno de estos documentos no existe, deberá continuar con los disponibles sin inventar información.
-
----
-
-# Rol de la IA
-
-La IA actúa como:
-
-- Arquitecto de Software.
-- Revisor de Código.
-- Diseñador de Arquitectura.
-- Documentador Técnico.
-- Mentor de Desarrollo.
-- Asistente de Productividad.
-
-La IA **no sustituye** al Product Owner.
-
----
-
-# Responsabilidades
-
-La IA debe:
-
-- Mantener la coherencia del proyecto.
-- Respetar la arquitectura aprobada.
-- Proponer mejoras justificadas.
-- Detectar deuda técnica.
-- Favorecer código limpio.
-- Priorizar mantenibilidad sobre velocidad.
-- Mantener la documentación sincronizada con el código.
-
----
-
-# Lo que la IA NO debe hacer
+## Reglas
 
 La IA no debe:
 
-- Cambiar la visión del proyecto.
-- Modificar la misión.
-- Alterar la filosofía del proyecto.
-- Cambiar el roadmap principal.
-- Crear nuevas fases sin autorización.
-- Cambiar tecnologías oficiales sin aprobación.
-- Eliminar documentación oficial.
-- Inventar funcionalidades ya descartadas.
+- Inventar APIs.
+- Inventar archivos existentes.
+- Cambiar arquitectura sin justificarlo.
+- AÃ±adir dependencias innecesarias.
+- Eliminar funcionalidades existentes sin aprobaciÃ³n.
+- Marcar como implementada una capacidad que solo estÃ¡ planificada.
 
----
+## Descargas
 
-# Metodología del Roadmap
+La arquitectura de descarga debe mantenerse extensible.
 
-La estructura del roadmap pertenece al Product Owner.
+Las implementaciones especÃ­ficas deben depender de contratos.
 
-La IA únicamente podrá subdividir tareas.
+Ejemplo conceptual:
 
-Ejemplo:
+IDownloadProvider
+â†“
+HTTP Provider
+Torrent Provider
+External Engine Provider
 
-FASE 1
+No debe acoplarse todo el sistema a un Ãºnico proveedor.
 
-1.1 Crear solución
+## Reproductor
 
-- 1.1.1 Crear archivo .sln
-- 1.1.2 Configurar proyectos
-- 1.1.3 Verificar compilación
+El reproductor es una capacidad principal de WASSLink Studio.
 
-No podrá convertir una tarea en una nueva fase sin autorización.
+No debe eliminarse simplemente para convertir el proyecto en un gestor de descargas.
 
----
+El objetivo es integrar:
 
-# Principios de Desarrollo
+Descarga â†’ Biblioteca â†’ ReproducciÃ³n.
 
-Toda decisión debe respetar los principios definidos en `PROJECT_MANIFEST.md`.
+## Plugins
 
-En caso de conflicto prevalece:
+Las extensiones deben utilizar contratos definidos en WASSLink.Abstractions.
 
-1. PROJECT_MANIFEST.md
-2. ADR
-3. ROADMAP
-4. Código existente
+## Cambios
 
----
+Antes de modificar arquitectura:
 
-# Filosofía
+1. Revisar documentaciÃ³n.
+2. Revisar referencias de proyectos.
+3. Revisar cÃ³digo existente.
+4. Implementar el cambio mÃ­nimo.
+5. Compilar.
+6. Ejecutar pruebas.
+7. Revisar Git diff.
 
-WASSLink no es un simple descargador.
+## ValidaciÃ³n
 
-Es una plataforma multimedia modular, abierta y extensible.
+DespuÃ©s de cambios estructurales:
 
-Toda propuesta deberá fortalecer esta visión.
+dotnet build WASSLink-Studio.slnx
 
----
+Y cuando existan pruebas:
 
-# Colaboración entre IA y Humanos
+dotnet test WASSLink-Studio.slnx
 
-Toda colaboración deberá ser transparente.
+## Git
 
-Las decisiones importantes deberán quedar documentadas.
+Antes de commit:
 
-Cuando una IA participe en una decisión relevante deberá indicarlo claramente.
+git status
+git diff
 
----
+Los commits deben representar cambios coherentes.
 
-# Créditos
+## Regla principal
 
-Las IA pueden aparecer en `CONTRIBUTORS.md`.
+No confundir:
 
-Se recomienda registrar:
+Planificado â‰  Implementado.
 
-- Nombre del modelo.
-- Fecha.
-- Área de colaboración.
-- Tipo de aporte.
-
-Esto promueve transparencia y trazabilidad.
-
----
-
-# Firma de la IA
-
-Cuando una IA proponga una decisión arquitectónica importante podrá dejar una firma técnica similar a:
-
-Arquitectura propuesta por:
-
-- ChatGPT GPT-5.5
-- Fecha
-- Motivo
-
-Esta firma representa únicamente la autoría de la propuesta, nunca la aprobación final.
-
----
-
-# Flujo de Trabajo
-
-Antes de comenzar:
-
-Leer documentación.
-
-↓
-
-Comprender el estado actual.
-
-↓
-
-Analizar el impacto.
-
-↓
-
-Proponer solución.
-
-↓
-
-Esperar aprobación cuando sea necesario.
-
-↓
-
-Implementar.
-
-↓
-
-Actualizar documentación.
-
----
-
-# Resolución de Conflictos
-
-Si una IA encuentra contradicciones entre documentos:
-
-1. Informar el conflicto.
-2. No asumir cuál es correcto.
-3. Solicitar revisión del Product Owner.
-
----
-
-# Objetivo Final
-
-La misión de toda IA dentro de WASSLink es ayudar a construir una plataforma multimedia de alta calidad, mantenible, bien documentada y preparada para evolucionar durante muchos años, colaborando siempre con transparencia y respetando las decisiones del equipo humano.
-
----
-
-**Fin del documento**
+Una funcionalidad solamente se considera implementada cuando existe cÃ³digo funcional y validaciÃ³n.

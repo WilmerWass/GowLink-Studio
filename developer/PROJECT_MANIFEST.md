@@ -1,204 +1,109 @@
-# WASSLink Project Manifest
+﻿# WASSLink Studio
 
-**Versión:** 1.0.1
+## Identidad del proyecto
 
-> Documento fundacional del proyecto.
+WASSLink Studio es una plataforma multimedia modular orientada a la gestiÃ³n de contenido digital.
 
-> Este documento define la identidad, visión, misión, principios y decisiones arquitectónicas de WASSLink.
-> Ninguna decisión importante deberá contradecir este documento sin una revisión formal.
+El proyecto integra progresivamente:
 
----
+- Descarga de contenido.
+- GestiÃ³n de biblioteca multimedia.
+- ReproducciÃ³n multimedia.
+- BÃºsqueda y proveedores.
+- Sistema de plugins.
+- ConfiguraciÃ³n.
+- Interfaces Desktop y CLI.
+- Futuras capacidades multiplataforma.
 
-# Información General
+La aplicaciÃ³n no se limita a ser un reproductor ni Ãºnicamente un gestor de descargas.
 
-| Campo | Valor |
-|--------|-------|
-| Proyecto | WASSLink |
-| Nombre Comercial | WASSLink Studio |
-| Ediciones | Studio, CLI y Mobile (futuro) |
-| Slogan Oficial | Portable Media Center |
-| Estado | En desarrollo |
-| Versión del Manifest | 1.0.1 |
-| Versión del Proyecto | 0.0.1-prealpha |
-| Repositorio Oficial   https://github.com/WilmerWass/WASSLink_MPDL |
-| Licencia | MIT License |
-| Product Owner | WilmerWass |
-| Arquitecto de Software (Asistencia IA) | ChatGPT GPT-5.5
+Su objetivo es convertirse en un **Media Studio** capaz de centralizar el flujo:
 
----
+Usuario
+â†“
+BÃºsqueda / Entrada
+â†“
+Descarga
+â†“
+Biblioteca
+â†“
+ReproducciÃ³n
 
-# Identidad
+## Capacidades principales
 
-WASSLink es una plataforma multimedia modular, diseñada para centralizar la búsqueda, descarga, organización, reproducción y administración de contenido multimedia desde una única aplicación.
+### Descargas
 
-El proyecto adopta la filosofía Portable First y está pensado para evolucionar hacia un ecosistema multiplataforma compuesto por Studio, CLI y futuras aplicaciones móviles.
+La arquitectura contempla una capa de descarga extensible.
 
----
+Fuentes y mecanismos contemplados:
 
-## Objetivo Principal
+- HTTP/HTTPS.
+- Motores externos.
+- Proveedores especializados.
+- Torrents mediante una futura integraciÃ³n especializada.
 
-Crear la plataforma multimedia de escritorio más completa, modular y fácil de usar, permitiendo que el usuario encuentre, descargue, organice y disfrute su contenido multimedia desde un único lugar.
+La compatibilidad con torrents es una capacidad arquitectÃ³nica prevista y no debe considerarse implementada hasta que exista una implementaciÃ³n funcional y pruebas correspondientes.
 
----
+### Biblioteca
 
-# Visión
+La biblioteca organiza el contenido descargado y sus metadatos.
 
-Convertir a WASSLink en el Centro Multimedia más completo, intuitivo y extensible para Windows, diseñado bajo una filosofía **Portable First**, donde el usuario tiene el control para utilizarlo como aplicación portable o instalada, permitiéndole descubrir, descargar, organizar, reproducir y administrar su biblioteca multimedia desde un único lugar mediante una arquitectura moderna, modular y preparada para evolucionar hacia un ecosistema multiplataforma.
+### Reproductor
 
----
+El reproductor multimedia es una parte fundamental de WASSLink Studio.
 
-# Misión
+Permite que el usuario pueda reproducir contenido gestionado por la plataforma sin depender de una aplicaciÃ³n externa para completar el flujo principal.
 
-Desarrollar una plataforma multimedia moderna, abierta y extensible que permita a cualquier usuario descubrir, descargar, organizar, reproducir y administrar contenido multimedia de forma sencilla, segura y eficiente, priorizando la portabilidad, la automatización y el control total del usuario sobre su biblioteca.
+### Plugins
 
----
+El sistema de plugins permite ampliar las capacidades del producto sin acoplar el Core a implementaciones concretas.
 
-# Propuesta de Valor
+## Arquitectura
 
-WASSLink busca integrar en una única plataforma las funciones que normalmente requieren múltiples aplicaciones.
+La soluciÃ³n utiliza una arquitectura modular:
 
-El usuario podrá:
+- Apps
+- Core
+- Tests
 
-- Buscar contenido multimedia.
-- Descargar desde diferentes plataformas mediante plugins.
-- Organizar automáticamente su biblioteca.
-- Reproducir audio y video.
-- Gestionar metadatos.
-- Crear colecciones y playlists.
-- Trabajar tanto en modo portable como instalado.
+Las aplicaciones finales consumen servicios del Core.
 
-Todo ello bajo una arquitectura modular preparada para crecer durante muchos años.
+El Core contiene contratos, servicios y lÃ³gica reutilizable.
 
----
+## TecnologÃ­as
 
-# Principios Fundamentales
+TecnologÃ­as principales previstas:
 
-1. El usuario siempre tiene el control.
+- .NET 10
+- C#
+- Avalonia UI
+- SQLite
+- FFmpeg
+- yt-dlp
+- LibVLC / MPV
+- Microsoft.Extensions.DependencyInjection
 
-2. Portable First.
+Las tecnologÃ­as externas pueden cambiar durante la evoluciÃ³n del proyecto.
 
-3. La simplicidad prevalece sobre la complejidad.
+## Estado actual
 
-4. Modular antes que monolítico.
+Fase 1: completada.
 
-5. La documentación es parte del software.
+La Fase 1 establece:
 
-6. La automatización debe ahorrar tiempo al usuario.
+- Estructura de soluciÃ³n.
+- Proyectos Core.
+- Aplicaciones Desktop y CLI.
+- Tests.
+- Arquitectura inicial.
+- Referencias entre proyectos.
+- Infraestructura inicial de Dependency Injection.
+- CompilaciÃ³n completa de la soluciÃ³n.
 
-7. La privacidad del usuario es prioritaria.
+## Principio de evoluciÃ³n
 
-8. La compatibilidad es una responsabilidad, no una opción.
+WASSLink Studio se desarrolla de forma incremental.
 
-9. Cada módulo debe tener una única responsabilidad.
+Una capacidad se considera implementada Ãºnicamente cuando existe cÃ³digo funcional, integraciÃ³n y validaciÃ³n.
 
-10. El proyecto debe poder mantenerse durante muchos años.
-
-11. Las decisiones importantes deben registrarse mediante ADR.
-
-12. La colaboración entre personas e Inteligencia Artificial debe ser transparente.
-
-13. WASSLink será una plataforma multimedia abierta, modular y neutral.
-
-14. Las funcionalidades específicas de plataformas externas deberán implementarse mediante plugins siempre que sea técnicamente posible.
-
-15. Todo cambio importante deberá estar documentado antes de implementarse.
----
-
-# Tecnologías Oficiales
-
-| Categoría | Tecnología |
-|-----------|------------|
-| Lenguaje | C# |
-| Framework | .NET 10 LTS (o .NET 9) |
-| UI | Avalonia UI |
-| Base de Datos | SQLite |
-| Descargas | yt-dlp |
-| Multimedia | FFmpeg |
-| Reproductor | LibVLC |
-| Arquitectura | Dependency Injection |
-| MVVM | CommunityToolkit.Mvvm |
-| Logging | Serilog |
-| Control de Versiones | Git |
-| Repositorio | GitHub |
-
----
-
-# Arquitectura General
-
-La solución se construirá mediante módulos independientes organizados por responsabilidad.
-
-Los proyectos oficiales serán:
-
-- WASSLink.Abstractions
-- WASSLink.Shared
-- WASSLink.Configuration
-- WASSLink.Download
-- WASSLink.Library
-- WASSLink.Player
-- WASSLink.Search
-- WASSLink.Plugins
-- WASSLink.Studio
-- WASSLink.CLI
-- WASSLink.Tests
-
-La arquitectura completa se documenta en ARCHITECTURE.md.
-
-Cada proyecto deberá cumplir el principio de Responsabilidad Única (SRP).
-
----
-
-# Objetivos a Corto plazo
-
-- Crear la solución .NET.
-- Implementar Studio y CLI.
-- Integrar yt-dlp.
-- Integrar FFmpeg.
-- Crear Biblioteca Multimedia.
-- Publicar Alpha.
----
-
-# Objetivos a Mediano Plazo
-
-- Sistema de Plugins.
-- Reproductor Multimedia.
-- Organización automática.
-- Búsqueda integrada.
-- Beta pública.
-
----
-
-# Objetivos a Largo Plazo
-
-- Aplicación Android.
-- Sincronización.
-- IA para organización multimedia.
-- Versión 1.0.
-- Ecosistema multiplataforma.
-
----
-
-# Filosofía del Proyecto
-
-WASSLink no es un simple descargador.
-
-Es una plataforma multimedia modular, abierta y extensible, diseñada para simplificar la gestión de contenido multimedia respetando siempre el control del usuario, la transparencia y una arquitectura limpia.
-
----
-
-# Decisiones Aprobadas
-
-| ADR | Estado |
-|------|--------|
-| ADR-001 Portable First | ✅ |
-| ADR-002 Arquitectura Modular | ✅ |
-| ADR-003 Neutralidad de Plataforma | ✅ |
-| ADR-004 Colaboración con IA | ⏳ |
-
----
-
-# Historial de Revisiones
-
-| Versión | Fecha | Autor | Cambios |
-|----------|--------|---------|
-| 1.0.0 | 2026-08-03 | Creación del Manifest |
-| 1.0.1 | 2026-08-03 | Actualización de principios y estructura |
+La documentaciÃ³n puede describir capacidades futuras siempre que estÃ©n claramente identificadas como planificadas.
