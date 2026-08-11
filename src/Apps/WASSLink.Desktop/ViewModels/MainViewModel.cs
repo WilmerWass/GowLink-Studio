@@ -5,5 +5,14 @@ namespace WASSLink.Desktop.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     [ObservableProperty]
-    public partial string Greeting { get; set; } = "Welcome to Avalonia!";
+    private string downloadUrl = string.Empty;
+
+    [ObservableProperty]
+    private string statusMessage = "Listo para descargar.";
+
+    [ObservableProperty]
+    private double downloadProgress;
+
+    [ObservableProperty]
+    private bool isDownloading;
 }

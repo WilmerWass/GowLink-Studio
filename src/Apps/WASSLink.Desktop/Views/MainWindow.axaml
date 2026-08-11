@@ -1,22 +1,102 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:WASSLink.Desktop.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="using:WASSLink.Desktop.ViewModels"
         x:Class="WASSLink.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="WASSLink.Desktop">
+        mc:Ignorable="d"
+        d:DesignWidth="900"
+        d:DesignHeight="600"
+        Width="900"
+        Height="600"
+        MinWidth="700"
+        MinHeight="500"
+        Title="WASSLink Studio">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+    <Grid RowDefinitions="Auto,*"
+          Margin="32">
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0"
+                    Spacing="6">
+            <TextBlock Text="WASSLink Studio"
+                       FontSize="28"
+                       FontWeight="Bold" />
+
+            <TextBlock Text="Downloader"
+                       FontSize="16"
+                       Opacity="0.7" />
+        </StackPanel>
+
+        <!-- Downloader -->
+        <Border Grid.Row="1"
+                Margin="0,32,0,0"
+                Padding="28"
+                CornerRadius="12"
+                BorderThickness="1">
+
+            <StackPanel Spacing="18">
+
+                <TextBlock Text="Nueva descarga"
+                           FontSize="22"
+                           FontWeight="SemiBold" />
+
+                <TextBlock Text="URL del contenido"
+                           FontWeight="SemiBold" />
+
+                <TextBox Text="{Binding DownloadUrl}"
+                         PlaceholderText="Pega aquí el enlace..."
+                         MinHeight="42" />
+
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="16">
+
+                    <StackPanel Grid.Column="0"
+                                Spacing="6">
+                        <TextBlock Text="Tipo" />
+                        <ComboBox SelectedIndex="0"
+                                  MinHeight="40">
+                            <ComboBoxItem Content="Audio" />
+                            <ComboBoxItem Content="Video" />
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Spacing="6">
+                        <TextBlock Text="Formato" />
+                        <ComboBox SelectedIndex="0"
+                                  MinHeight="40">
+                            <ComboBoxItem Content="MP3" />
+                            <ComboBoxItem Content="MP4" />
+                        </ComboBox>
+                    </StackPanel>
+
+                </Grid>
+
+                <Button Content="Descargar"
+                        HorizontalAlignment="Left"
+                        Padding="24,10"
+                        MinWidth="140" />
+
+                <Separator />
+
+                <TextBlock Text="{Binding StatusMessage}"
+                           FontSize="14" />
+
+                <ProgressBar Minimum="0"
+                             Maximum="100"
+                             Value="{Binding DownloadProgress}"
+                             Height="8" />
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
 
 </Window>

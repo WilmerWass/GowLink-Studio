@@ -31,5 +31,6 @@
     <ProjectReference Include="..\..\Core\WASSLink.Search\WASSLink.Search.csproj" />
     <ProjectReference Include="..\..\Core\WASSLink.Download\WASSLink.Download.csproj" />
     <ProjectReference Include="..\..\Core\WASSLink.Plugins\WASSLink.Plugins.csproj" />
+    <ProjectReference Include="..\..\Core\WassLink.Shared\WassLink.Shared.csproj" />
   </ItemGroup>
 </Project>
