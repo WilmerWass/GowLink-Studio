@@ -77,11 +77,13 @@
                     </StackPanel>
 
                 </Grid>
-
+                
                 <Button Content="Descargar"
-                        HorizontalAlignment="Left"
-                        Padding="24,10"
-                        MinWidth="140" />
+                Command="{Binding DownloadCommand}"
+                IsEnabled="{Binding !IsDownloading}"
+                HorizontalAlignment="Left"
+                Padding="24,10"
+                MinWidth="140" />
 
                 <Separator />
 
