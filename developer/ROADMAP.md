@@ -1,25 +1,27 @@
-﻿# WASSLink Studio Roadmap
+﻿# WASSLink Studio — Roadmap Oficial
 
-## Fase 0 â€” PreparaciÃ³n
+## Historial
+
+### Fase 0 — Preparación
 
 Estado: completada.
 
-Objetivos:
+Objetivos cumplidos:
 
 - Definir identidad del proyecto.
-- Establecer documentaciÃ³n inicial.
+- Establecer documentación inicial.
 - Preparar repositorio.
 - Definir principios de desarrollo.
 
 ---
 
-# Fase 1 â€” Arquitectura y estructura
+### Fase 1 — Arquitectura y estructura
 
-Estado: COMPLETADA
+Estado: COMPLETADA.
 
 Objetivos alcanzados:
 
-- Crear soluciÃ³n .NET 10.
+- Crear solución .NET 10.
 - Crear estructura Apps/Core/Tests.
 - Crear proyectos Core.
 - Crear WASSLink.Desktop.
@@ -29,146 +31,300 @@ Objetivos alcanzados:
 - Validar mapa de dependencias.
 - Crear infraestructura inicial de Dependency Injection.
 - Integrar Avalonia.
-- Validar compilaciÃ³n completa.
+- Validar compilación completa.
 
 Resultado:
 
-La soluciÃ³n compila correctamente mediante:
-
-dotnet build WASSLink-Studio.slnx
-
----
-
-# Fase 2 â€” Core funcional
-
-Estado: planificada.
-
-Objetivos:
-
-- Definir contratos reales.
-- Implementar configuraciÃ³n.
-- Implementar modelos multimedia.
-- Implementar biblioteca.
-- Definir abstracciones de descarga.
-- Definir abstracciones del reproductor.
-- Definir contratos de bÃºsqueda.
-- Mejorar Dependency Injection.
+    dotnet build WASSLink-Studio.slnx
+    // Compilación realizada correctamente.
 
 ---
 
-# Fase 3 â€” Descargas
+## Roadmap actual
 
-Estado: planificada.
+---
+
+# Beta 1 — Download Studio
+
+Estado: EN CURSO.
 
 Objetivo:
 
-Construir un sistema de descargas extensible.
+Crear un descargador multimedia funcional.
 
-Capacidades previstas:
+Proveedor inicial: YouTube (yt-dlp).
 
-- HTTP.
-- HTTPS.
-- Descargas mediante motores externos.
-- GestiÃ³n de progreso.
-- CancelaciÃ³n.
-- Reintentos.
-- Cola de descargas.
-- Historial.
+Capacidades de Beta 1:
 
-Capacidad futura:
+- Descarga de audio (MP3) y vídeo (MP4).
+- Entrada por URL.
+- Progreso de descarga en tiempo real.
+- Cancelación de descarga.
+- Manejo básico de errores.
+- Organización básica de archivos descargados.
+- Logs y diagnóstico.
+- Interfaz moderna con barra lateral.
 
-- Torrent mediante integraciÃ³n especializada.
+## Sub-betas de Beta 1
 
-La compatibilidad torrent deberÃ¡ desarrollarse como una implementaciÃ³n desacoplada del Core.
+Las sub-betas se crean únicamente cuando una funcionalidad concreta está terminada y probada.
+
+NO utilizar fechas artificiales.
+
+### B1.1 — Base e interfaz
+
+Objetivo:
+Infraestructura DI correcta + UI con barra lateral + contrato IDownloadProvider.
+
+Criterios:
+- IDownloadProvider definido en WASSLink.Abstractions.
+- YtDlpDownloadService implementa IDownloadProvider.
+- MainViewModel recibe IDownloadProvider por DI (sin new()).
+- UI con barra lateral funcional.
+- Compilación correcta.
+
+### B1.2 — Descarga real de YouTube
+
+Objetivo:
+Descarga de audio y vídeo desde YouTube.
+
+Criterios:
+- URL de YouTube → descarga → archivo en carpeta de salida.
+- Sin errores inesperados en flujo normal.
+
+### B1.3 — Progreso y cancelación robustos
+
+Objetivo:
+Progreso en tiempo real, cancelación limpia.
+
+Criterios:
+- Barra de progreso actualizada durante descarga.
+- Cancelación detiene el proceso de yt-dlp correctamente.
+- Estado visual claro (descargando / completado / cancelado / error).
+
+### B1.4 — Organización
+
+Objetivo:
+Organización automática de archivos descargados.
+
+Criterios:
+- Carpeta de destino configurable.
+- Subcarpetas por plataforma/creador cuando sea posible.
+
+### B1.5 — Robustez y errores
+
+Objetivo:
+Manejo de casos de error comunes.
+
+Criterios:
+- URL inválida → mensaje claro.
+- yt-dlp no encontrado → mensaje claro con instrucciones.
+- Descarga fallida → mensaje de error legible.
+
+### B1 FINAL — Primera beta pública
+
+Objetivo:
+Beta 1 completa, funcional y documentada.
+
+Criterios:
+- Todos los objetivos de B1.1 a B1.5 cumplidos.
+- Changelog actualizado.
+- Release en GitHub.
+- Documentación actualizada.
 
 ---
 
-# Fase 4 â€” Biblioteca multimedia
+# Beta 2 — Search Studio
 
 Estado: planificada.
 
-Objetivos:
+Implementar:
 
-- ImportaciÃ³n.
-- IndexaciÃ³n.
-- Metadatos.
-- OrganizaciÃ³n.
-- BÃºsqueda local.
-- Historial.
-- Favoritos.
+- Búsqueda integrada de contenido.
+- Resultados de búsqueda.
+- Selección de resultado para descarga.
+- Conexión: búsqueda → descarga.
 
 ---
 
-# Fase 5 â€” Reproductor
+# Beta 3 — Media Player
 
 Estado: planificada.
 
-Objetivos:
+Implementar:
 
-- ReproducciÃ³n de audio.
-- ReproducciÃ³n de vÃ­deo.
-- Controles.
-- Cola.
-- PosiciÃ³n de reproducciÃ³n.
+- Reproducción de audio.
+- Reproducción de vídeo.
+- Controles: play, pause, stop, seek.
 - Volumen.
-- IntegraciÃ³n con biblioteca.
+- Duración y posición.
+- Siguiente / anterior.
+- Integración con biblioteca.
 
 El reproductor permanece como componente central de WASSLink Studio.
 
 ---
 
-# Fase 6 â€” Sistema de Plugins
+# Beta 4 — Library Studio
 
 Estado: planificada.
 
-Objetivos:
+Implementar:
 
+- Biblioteca local de contenido descargado.
+- Detección e importación.
+- Organización.
+- Metadatos.
+- Búsqueda local.
+- Filtros.
+- Historial.
+- Favoritos.
+
+---
+
+# Beta 5 — Multi-Platform Providers
+
+Estado: planificada.
+
+Objetivo:
+Incorporar proveedores de descarga adicionales.
+
+Proveedores experimentales candidatos:
+
+- MediaFire
+- MEGA
+- Servidores HTTP/HTTPS directos
+- Otros proveedores según compatibilidad real
+
+IMPORTANTE:
+No afirmar compatibilidad con ningún proveedor hasta probarlo.
+La compatibilidad depende de las capacidades y restricciones de cada plataforma.
+
+---
+
+# Beta 6 — Plugin System
+
+Estado: planificada.
+
+Implementar:
+
+- Sistema modular de proveedores/plugins.
 - Descubrimiento de plugins.
 - Registro.
 - Ciclo de vida.
 - Versionado.
-- Proveedores de bÃºsqueda.
+- Proveedores de búsqueda.
 - Proveedores de descarga.
-- Extensiones multimedia.
+- Adaptadores de plataforma.
+
+Los plugins deben permitir adaptar capacidades a diferentes plataformas:
+
+Core
+↓
+Plugin System
+├── Windows
+├── Linux
+└── Android
 
 ---
 
-# Fase 7 â€” IntegraciÃ³n
+# Beta 7 — File Studio
+
+Estado: planificada.
+
+Objetivo:
+Descargador de archivos generales (no solo multimedia).
+
+Tipos contemplados:
+
+- ZIP, RAR, 7Z
+- PDF, documentos
+- Imágenes
+- Instaladores, EXE, ISO
+- Otros archivos descargables
+
+Separar conceptualmente:
+
+Media Download ≠ General File Download.
+
+Incluye:
+- Descarga segmentada (si el servidor lo permite).
+- Detección de archivos multipartes.
+- Reanudación de descargas interrumpidas.
+
+---
+
+# Beta 8 — Torrent Studio
+
+Estado: planificada.
+
+Implementar:
+
+- Magnet links.
+- Archivos .torrent.
+- Progreso.
+- Pausa y reanudación.
+- Velocidad.
+- Destino personalizable.
+- Integración con biblioteca.
+
+Debe ser modular y respetar las capacidades de cada plataforma.
+
+La implementación torrent debe ser desacoplada del Core.
+
+---
+
+# Beta 9 — Linux Edition
+
+Estado: planificada.
+
+Objetivo:
+Adaptar el producto para Linux.
+
+La arquitectura Core debe minimizar dependencias específicas de Windows.
+
+---
+
+# Beta 10 — Mobile / Android
 
 Estado: futura.
 
 Objetivo:
+Adaptar el producto para Android.
 
-Unificar:
+No asumir que Android tendrá exactamente las mismas capacidades que Windows/Linux.
 
-BÃºsqueda
-â†“
-Descarga
-â†“
-Biblioteca
-â†“
-ReproducciÃ³n
+Usar plugins/adaptadores cuando las restricciones de plataforma lo requieran.
 
 ---
 
-# Fase 8 â€” Multiplataforma
+# V2 — WASSLink Media Studio
 
 Estado: futura.
 
-Objetivos:
+Producto completo integrando:
 
-- Windows.
-- Linux.
-- macOS.
-- Posible Android.
-- Posible Mobile.
+- Downloader
+- Search
+- Library
+- Player
+- Plugins
+- File Downloader
+- Torrent
+- Multi-platform
 
 ---
 
-# Principio
+# Principios del roadmap
 
-No se implementarÃ¡ una capacidad Ãºnicamente porque aparezca en el roadmap.
+No se implementará una capacidad únicamente porque aparezca en el roadmap.
 
-Cada capacidad deberÃ¡ pasar por:
+Cada capacidad debe pasar por:
 
-DiseÃ±o â†’ ImplementaciÃ³n â†’ IntegraciÃ³n â†’ Pruebas â†’ DocumentaciÃ³n
+Diseño → Implementación → Integración → Pruebas → Documentación
+
+Una sub-beta solamente se crea cuando una funcionalidad concreta está terminada y probada.
+
+NO implementar todas las funcionalidades simultáneamente.
+
+Prioridad actual: Beta 1 funcional y sólida antes de avanzar a Beta 2.

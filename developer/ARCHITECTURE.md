@@ -6,7 +6,7 @@
 
 WASSLink Studio utiliza una arquitectura modular basada en capas.
 
-La soluciÃ³n se divide en:
+La solución se divide en:
 
 - Apps
 - Core
@@ -20,27 +20,29 @@ Las Apps contienen los puntos de entrada de usuario.
 
 Proyectos actuales:
 
-- WASSLink.Desktop
-- WASSLink.CLI
+- WASSLink.Desktop (Avalonia UI)
+- WASSLink.CLI (consola)
 
 Proyecto futuro:
 
-- WASSLink.Mobile
+- WASSLink.Mobile (Android / futuro)
 
 Las Apps son responsables de:
 
 - Interfaz de usuario.
 - Entrada del usuario.
-- PresentaciÃ³n.
-- ComposiciÃ³n de servicios.
+- Presentación.
+- Composición de servicios.
 
-Las Apps no deben contener lÃ³gica de negocio central.
+Las Apps no deben contener lógica de negocio central.
+
+Las Apps inyectan dependencias del Core mediante DI. No instancian servicios Core con new().
 
 ---
 
 # Core
 
-El Core contiene la lÃ³gica reutilizable del ecosistema.
+El Core contiene la lógica reutilizable del ecosistema.
 
 ## WASSLink.Abstractions
 
@@ -54,6 +56,12 @@ Dependencias:
 
 - Ninguna.
 
+Contratos implementados (Beta 1):
+
+- IDownloadProvider
+- DownloadRequest
+- DownloadProgress
+
 ---
 
 ## WASSLink.Shared
@@ -63,6 +71,8 @@ Responsabilidad:
 - Utilidades comunes.
 - Extensiones.
 - Modelos base.
+- Logging (WassLinkLogger).
+- Diagnósticos (DiagnosticReportGenerator).
 
 Dependencias:
 
@@ -74,14 +84,16 @@ Dependencias:
 
 Responsabilidad:
 
-- ConfiguraciÃ³n.
+- Configuración.
 - Preferencias.
-- Carga y almacenamiento de configuraciÃ³n.
+- Carga y almacenamiento de configuración.
 
 Dependencias:
 
 - WASSLink.Abstractions
 - WASSLink.Shared
+
+Estado: scaffold (Beta 2).
 
 ---
 
@@ -89,9 +101,9 @@ Dependencias:
 
 Responsabilidad:
 
-- GestiÃ³n de descargas.
-- AbstracciÃ³n de motores de descarga.
-- IntegraciÃ³n con proveedores y motores externos.
+- Gestión de descargas.
+- Abstracción de motores de descarga.
+- Integración con proveedores y motores externos.
 
 Dependencias:
 
@@ -99,13 +111,17 @@ Dependencias:
 - WASSLink.Configuration
 - WASSLink.Shared
 
+Implementaciones actuales (Beta 1):
+
+- YtDlpDownloadService — implementa IDownloadProvider.
+
 Capacidades futuras contempladas:
 
-- HTTP/HTTPS.
-- Integraciones especializadas.
-- Torrents mediante una implementaciÃ³n independiente.
+- HTTP/HTTPS (Beta 1 extendido).
+- MediaFire, MEGA (Beta 5 — experimental).
+- Torrents (Beta 8).
 
-La arquitectura no debe acoplar el mÃ³dulo directamente a un motor torrent especÃ­fico.
+La arquitectura no debe acoplar el módulo directamente a un motor externo concreto.
 
 ---
 
@@ -114,9 +130,9 @@ La arquitectura no debe acoplar el mÃ³dulo directamente a un motor torrent esp
 Responsabilidad:
 
 - Biblioteca multimedia.
-- OrganizaciÃ³n.
+- Organización.
 - Metadatos.
-- GestiÃ³n del contenido descargado.
+- Gestión del contenido descargado.
 
 Dependencias:
 
@@ -124,20 +140,24 @@ Dependencias:
 - WASSLink.Shared
 - WASSLink.Configuration
 
+Estado: scaffold (Beta 4).
+
 ---
 
 ## WASSLink.Player
 
 Responsabilidad:
 
-- ReproducciÃ³n multimedia.
+- Reproducción multimedia.
 - Control del reproductor.
-- IntegraciÃ³n con motores multimedia.
+- Integración con motores multimedia.
 
 Dependencias:
 
 - WASSLink.Abstractions
 - WASSLink.Shared
+
+Estado: scaffold (Beta 3).
 
 ---
 
@@ -145,8 +165,8 @@ Dependencias:
 
 Responsabilidad:
 
-- BÃºsqueda.
-- Proveedores.
+- Búsqueda.
+- Proveedores de búsqueda.
 - Resultados.
 
 Dependencias:
@@ -154,6 +174,8 @@ Dependencias:
 - WASSLink.Abstractions
 - WASSLink.Shared
 - WASSLink.Plugins
+
+Estado: scaffold (Beta 2).
 
 ---
 
@@ -170,6 +192,8 @@ Dependencias:
 - WASSLink.Abstractions
 - WASSLink.Shared
 
+Estado: scaffold (Beta 6).
+
 ---
 
 # Tests
@@ -178,51 +202,94 @@ Los proyectos de Tests validan el comportamiento del Core y sus integraciones.
 
 Las pruebas no deben introducir dependencias innecesarias hacia las Apps.
 
+Framework: xUnit.
+
 ---
 
 # Regla de dependencias
 
 Permitido:
 
-Apps â†’ Core
+Apps → Core
 
-Core â†’ Core inferior
+Core → Core inferior
 
-Tests â†’ proyectos que prueban
+Tests → proyectos que prueban
 
 No permitido:
 
-Core â†’ Apps
+Core → Apps
 
-Core â†’ UI
+Core → UI
 
-Core â†’ implementaciones externas concretas cuando exista una abstracciÃ³n adecuada
+Core → implementaciones externas concretas cuando exista una abstracción adecuada
 
 ---
 
-# Flujo principal
+# Flujo principal (Beta 1)
 
 Usuario
+↓
+WASSLink.Desktop (App)
+↓
+MainViewModel (IDownloadProvider via DI)
+↓
+YtDlpDownloadService (Core/Download)
+↓
+yt-dlp.exe (motor externo)
+↓
+Archivo de salida (carpeta local)
 
-â†“
+---
 
-App
+# Flujo principal (visión completa)
 
-â†“
+URL / Fuente
+↓
+Source Detection
+↓
+Provider (IDownloadProvider)
+↓
+Download Engine (yt-dlp, HTTP, Torrent...)
+↓
+Processing (FFmpeg)
+↓
+Organization (carpetas, metadatos)
+↓
+Library / Player
 
-Servicios Core
+---
 
-â†“
+# Providers
 
-Proveedor / motor externo
+Los proveedores implementan IDownloadProvider.
 
-â†“
+Un provider puede informar sobre sus capacidades:
 
-Biblioteca
+- CanHandle(url) — si puede gestionar la URL dada.
+- (futuro) CanResume — si soporta reanudación.
+- (futuro) CanSegment — si soporta descarga segmentada.
+- (futuro) CanExtractMetadata — si puede extraer metadatos.
 
-â†“
+La arquitectura no obliga a implementar todas las capacidades desde el principio.
 
-Player
+---
+
+# Descarga segmentada (futuro — Beta 7)
+
+Para archivos grandes, WASSLink debe detectar las capacidades del servidor:
+
+URL
+↓
+HEAD / metadata
+↓
+¿Acepta Range Requests?
+├── Sí → descarga segmentada posible
+└── No → descarga convencional
+
+NO asumir que todo archivo puede dividirse.
+
+La arquitectura de Beta 1 no debe impedir esta implementación futura.
 
 ---
 
@@ -230,31 +297,33 @@ Player
 
 Los plugins implementan contratos definidos en WASSLink.Abstractions.
 
-Los mÃ³dulos internos no deben depender directamente de plugins concretos.
+Los módulos internos no deben depender directamente de plugins concretos.
 
 Esto permite:
 
 - Extensibilidad.
 - Bajo acoplamiento.
-- SustituciÃ³n de proveedores.
-- IntegraciÃ³n futura de nuevos mecanismos de descarga.
+- Sustitución de proveedores.
+- Integración futura de nuevos mecanismos de descarga.
 
 ---
 
 # Principio fundamental
 
-El Core define **quÃ©** debe hacerse.
+El Core define QUÉ debe hacerse.
 
-Las implementaciones externas definen **cÃ³mo** se realiza.
+Las implementaciones externas definen CÓMO se realiza.
 
-Esto permite evolucionar WASSLink Studio sin reconstruir la arquitectura alrededor de una tecnologÃ­a especÃ­fica.
+Esto permite evolucionar WASSLink Studio sin reconstruir la arquitectura alrededor de una tecnología específica.
 
 ---
 
 # Estado
 
-VersiÃ³n: 1.1
+Version: 1.2
 
-Fecha: 2026-08-03
+Fecha: 2026-08-21
 
 Fase 1: completada.
+
+Beta 1: en curso.

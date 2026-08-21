@@ -1,58 +1,77 @@
 ﻿# Changelog
 
-Todos los cambios relevantes de WASSLink Studio se documentan aquÃ­.
+Todos los cambios relevantes de WASSLink Studio se documentan aquí.
 
-## [Unreleased]
+## Beta 1 — Download Studio (en curso)
 
-### Arquitectura
+### B1.1 — Base e interfaz (en curso)
 
-- ConsolidaciÃ³n de la arquitectura modular.
-- OrganizaciÃ³n Apps / Core / Tests.
+#### Arquitectura
+
+- Definición de IDownloadProvider en WASSLink.Abstractions.
+- DownloadRequest y DownloadProgress como contratos de datos.
+- YtDlpDownloadService implementa IDownloadProvider.
+- MainViewModel recibe IDownloadProvider mediante DI.
+- UI renovada con barra lateral y secciones "Próximamente".
+
+#### Pendiente para B1.1
+
+- Compilación verificada con cambios de DI.
+- Tests básicos de compilación.
+
+### Funcionalidades implementadas (acumuladas desde Fase 1)
+
+#### Arquitectura
+
+- Consolidación de la arquitectura modular.
+- Organización Apps / Core / Tests.
 - Infraestructura inicial de Dependency Injection.
-- IntegraciÃ³n inicial de WASSLink.Desktop.
-- IntegraciÃ³n inicial de WASSLink.CLI.
-- ValidaciÃ³n de compilaciÃ³n completa.
+- Integración inicial de WASSLink.Desktop.
+- Integración inicial de WASSLink.CLI.
+- Validación de compilación completa.
 
-### Producto
+#### Logging y diagnóstico
 
-WASSLink Studio mantiene el concepto de Media Studio.
+- WassLinkLogger: escritura de logs a archivo con rotación diaria y sincronización.
+- DiagnosticReportGenerator: reportes de diagnóstico (OS, .NET, logs recientes).
 
-El producto integra progresivamente:
+#### Descarga
 
-- Descarga.
-- Biblioteca multimedia.
-- ReproducciÃ³n.
-- BÃºsqueda.
-- Plugins.
+- YtDlpDownloadService: ejecución de yt-dlp.exe como proceso externo.
+- Resolución de ruta portable (busca herramientas relativas a la carpeta de instalación).
+- Parsing de progreso mediante regex.
+- Soporte de CancellationToken para cancelación de descarga.
+- UI básica: campo URL, selección de tipo (Audio/Vídeo) y formato (MP3/MP4), botón descargar, barra de progreso, estado.
 
-Se contempla la futura incorporaciÃ³n de diferentes mecanismos de descarga, incluyendo torrents.
+---
 
-La compatibilidad torrent permanece planificada hasta contar con una implementaciÃ³n funcional y pruebas.
-
-## Fase 1
+## Fase 1 — Arquitectura
 
 ### Completada
 
-La Fase 1 estableciÃ³:
+La Fase 1 estableció:
 
-- SoluciÃ³n .NET 10.
+- Solución .NET 10.
 - Estructura modular.
 - Proyectos Core.
 - Aplicaciones Desktop y CLI.
 - Proyecto de Tests.
 - Referencias entre proyectos.
 - Dependency Injection inicial.
-- IntegraciÃ³n Avalonia.
-- CompilaciÃ³n completa.
+- Integración Avalonia.
+- Compilación completa.
 
-ValidaciÃ³n:
+Validación:
 
-dotnet build WASSLink-Studio.slnx
+    dotnet build WASSLink-Studio.slnx
+    // Compilación realizada correctamente.
 
-Resultado:
-
-CompilaciÃ³n realizada correctamente.
+---
 
 ## Convenciones
 
 Los cambios deben agruparse por funcionalidad y mantenerse coherentes con la arquitectura documentada.
+
+Diferenciar siempre:
+
+IMPLEMENTADO / EN CURSO / PLANIFICADO / EXPERIMENTAL / FUTURO

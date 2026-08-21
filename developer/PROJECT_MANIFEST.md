@@ -4,57 +4,81 @@
 
 WASSLink Studio es una plataforma multimedia modular orientada a la gestiÃ³n de contenido digital.
 
-El proyecto integra progresivamente:
+El producto principal en desarrollo activo es:
 
-- Descarga de contenido.
-- GestiÃ³n de biblioteca multimedia.
-- ReproducciÃ³n multimedia.
-- BÃºsqueda y proveedores.
-- Sistema de plugins.
-- ConfiguraciÃ³n.
-- Interfaces Desktop y CLI.
-- Futuras capacidades multiplataforma.
+**WASSLink Downloader**
 
-La aplicaciÃ³n no se limita a ser un reproductor ni Ãºnicamente un gestor de descargas.
+Lema:
 
-Su objetivo es convertirse en un **Media Studio** capaz de centralizar el flujo:
+"Descarga lo que quieras, cuando quieras y como quieras."
 
-Usuario
+El lema representa libertad de uso, no una promesa tÃ©cnica absoluta ni autorizaciÃ³n para evadir restricciones.
+
+## Ecosistema WASSLink Studio
+
+WASSLink Studio integra progresivamente:
+
+WASSLink Studio
+â”‚
+â”œâ”€â”€ WASSLink Downloader   (Beta 1 â€” en curso)
+â”œâ”€â”€ WASSLink Search       (Beta 2 â€” planificado)
+â”œâ”€â”€ WASSLink Player       (Beta 3 â€” planificado)
+â”œâ”€â”€ WASSLink Library      (Beta 4 â€” planificado)
+â”œâ”€â”€ WASSLink Files        (Beta 7 â€” planificado)
+â”œâ”€â”€ WASSLink Torrents     (Beta 8 â€” planificado)
+â””â”€â”€ WASSLink Plugins      (Beta 6 â€” planificado)
+
+## Flujo principal (visiÃ³n completa)
+
+URL / Fuente
 â†“
-BÃºsqueda / Entrada
+Source Detection
 â†“
-Descarga
+Provider
 â†“
-Biblioteca
+Download Engine
 â†“
-ReproducciÃ³n
+Processing
+â†“
+Organization
+â†“
+Library / Player
 
 ## Capacidades principales
 
-### Descargas
+### Descargas (Beta 1)
 
 La arquitectura contempla una capa de descarga extensible.
 
-Fuentes y mecanismos contemplados:
+Proveedor inicial:
 
-- HTTP/HTTPS.
-- Motores externos.
-- Proveedores especializados.
-- Torrents mediante una futura integraciÃ³n especializada.
+- yt-dlp (YouTube â€” Beta 1, implementado)
 
-La compatibilidad con torrents es una capacidad arquitectÃ³nica prevista y no debe considerarse implementada hasta que exista una implementaciÃ³n funcional y pruebas correspondientes.
+Proveedores futuros contemplados:
 
-### Biblioteca
+- HTTP/HTTPS directos (Beta 1 extendido)
+- MediaFire (Beta 5 â€” experimental)
+- MEGA (Beta 5 â€” experimental)
+- Torrents (Beta 8)
+- Proveedores adicionales mediante plugins (Beta 6)
 
-La biblioteca organiza el contenido descargado y sus metadatos.
+La compatibilidad con cada proveedor se considera planificada hasta que exista implementaciÃ³n funcional y pruebas.
 
-### Reproductor
+### BÃºsqueda (Beta 2)
+
+Motor de bÃºsqueda integrado.
+
+### Reproductor (Beta 3)
 
 El reproductor multimedia es una parte fundamental de WASSLink Studio.
 
-Permite que el usuario pueda reproducir contenido gestionado por la plataforma sin depender de una aplicaciÃ³n externa para completar el flujo principal.
+Permite que el usuario reproduzca contenido gestionado por la plataforma sin depender de una aplicaciÃ³n externa.
 
-### Plugins
+### Biblioteca (Beta 4)
+
+La biblioteca organiza el contenido descargado y sus metadatos.
+
+### Plugins (Beta 6)
 
 El sistema de plugins permite ampliar las capacidades del producto sin acoplar el Core a implementaciones concretas.
 
@@ -62,25 +86,27 @@ El sistema de plugins permite ampliar las capacidades del producto sin acoplar e
 
 La soluciÃ³n utiliza una arquitectura modular:
 
-- Apps
-- Core
+- Apps (WASSLink.Desktop, WASSLink.CLI)
+- Core (contratos, servicios, lÃ³gica reutilizable)
 - Tests
 
-Las aplicaciones finales consumen servicios del Core.
+Las aplicaciones finales consumen servicios del Core mediante Dependency Injection.
 
 El Core contiene contratos, servicios y lÃ³gica reutilizable.
 
+Los mÃ³dulos Core no deben depender de implementaciones concretas cuando exista una abstracciÃ³n adecuada.
+
 ## TecnologÃ­as
 
-TecnologÃ­as principales previstas:
+TecnologÃ­as principales:
 
 - .NET 10
 - C#
 - Avalonia UI
-- SQLite
+- SQLite (futuro)
 - FFmpeg
 - yt-dlp
-- LibVLC / MPV
+- LibVLC / MPV (futuro)
 - Microsoft.Extensions.DependencyInjection
 
 Las tecnologÃ­as externas pueden cambiar durante la evoluciÃ³n del proyecto.
@@ -89,7 +115,7 @@ Las tecnologÃ­as externas pueden cambiar durante la evoluciÃ³n del proyecto.
 
 Fase 1: completada.
 
-La Fase 1 establece:
+La Fase 1 estableciÃ³:
 
 - Estructura de soluciÃ³n.
 - Proyectos Core.
@@ -100,10 +126,24 @@ La Fase 1 establece:
 - Infraestructura inicial de Dependency Injection.
 - CompilaciÃ³n completa de la soluciÃ³n.
 
+Beta 1 (Download Studio): en curso.
+
+Estado de Beta 1:
+
+- IMPLEMENTADO: YtDlpDownloadService (descarga mediante yt-dlp)
+- IMPLEMENTADO: WassLinkLogger
+- IMPLEMENTADO: DiagnosticReportGenerator
+- IMPLEMENTADO: UI bÃ¡sica de descarga (MainWindow, MainViewModel)
+- EN CURSO: contrato IDownloadProvider en WASSLink.Abstractions
+- EN CURSO: DI correcto en MainViewModel
+- EN CURSO: UI renovada con barra lateral
+- PLANIFICADO: progreso robusto, cancelaciÃ³n, organizaciÃ³n de archivos
+
 ## Principio de evoluciÃ³n
 
-WASSLink Studio se desarrolla de forma incremental.
+WASSLink Studio se desarrolla de forma incremental, por betas.
 
 Una capacidad se considera implementada Ãºnicamente cuando existe cÃ³digo funcional, integraciÃ³n y validaciÃ³n.
 
 La documentaciÃ³n puede describir capacidades futuras siempre que estÃ©n claramente identificadas como planificadas.
+

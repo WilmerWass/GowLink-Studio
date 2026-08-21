@@ -2,7 +2,7 @@
 
 ## App
 
-AplicaciÃ³n final utilizada por el usuario.
+Aplicación final utilizada por el usuario.
 
 Ejemplos:
 
@@ -11,7 +11,7 @@ Ejemplos:
 
 ## Core
 
-Conjunto de proyectos que contienen contratos, servicios y lÃ³gica reutilizable.
+Conjunto de proyectos que contienen contratos, servicios y lógica reutilizable.
 
 ## Download
 
@@ -21,7 +21,7 @@ Puede utilizar diferentes motores y proveedores.
 
 ## Torrent
 
-Mecanismo de distribuciÃ³n de archivos basado en BitTorrent.
+Mecanismo de distribución de archivos basado en BitTorrent.
 
 En WASSLink Studio se considera una capacidad futura del sistema de descargas.
 
@@ -35,19 +35,19 @@ Componente encargado de reproducir contenido multimedia.
 
 ## Plugin
 
-ExtensiÃ³n que implementa contratos definidos por WASSLink.
+Extensión que implementa contratos definidos por WASSLink.
 
 ## Provider
 
-Componente que proporciona una capacidad concreta, como bÃºsqueda, descarga o metadatos.
+Componente que proporciona una capacidad concreta, como búsqueda, descarga o metadatos.
 
 ## Abstraction
 
-Contrato que define una capacidad sin depender de una implementaciÃ³n concreta.
+Contrato que define una capacidad sin depender de una implementación concreta.
 
 ## Dependency Injection
 
-PatrÃ³n utilizado para proporcionar dependencias a los componentes en lugar de crearlas directamente.
+Patrón utilizado para proporcionar dependencias a los componentes en lugar de crearlas directamente.
 
 ## Media
 
