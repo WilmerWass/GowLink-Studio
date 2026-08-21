@@ -7,7 +7,7 @@ $CONFIG_FILE = "config_downloader.txt"
 $ARCHIVO_PLAYLISTS = "playlists.txt"
 
 # Valores predeterminados
-$CARPETA_DESTINO = "$HOME\Music\MUNDO\Descargas"
+$CARPETA_DESTINO = "$HOME\Music\Descargas"
 $AlertaDiscoPorcentaje = 11
 
 # Cargar configuración guardada
