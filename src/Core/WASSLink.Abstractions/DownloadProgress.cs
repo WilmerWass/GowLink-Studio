@@ -7,5 +7,7 @@ public record DownloadProgress(
     double Percentage,
     string? StatusMessage = null,
     string? Speed = null,
-    string? Eta = null
+    string? Eta = null,
+    string? Title = null,
+    string? TotalSize = null
 );

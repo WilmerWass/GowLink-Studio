@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:WASSLink.Desktop.ViewModels"
+        xmlns:models="using:WASSLink.Desktop.Models"
         x:Class="WASSLink.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         mc:Ignorable="d"
@@ -20,6 +21,7 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
+    <!-- Root Grid: Sidebar + Content + Modal Overlay todo en col 1 del root -->
     <Grid ColumnDefinitions="250,*">
 
         <!-- ==================== BARRA LATERAL (SIDEBAR) ==================== -->
@@ -65,7 +67,7 @@
                             Padding="8,4"
                             Margin="0,6,0,0"
                             HorizontalAlignment="Left">
-                        <TextBlock Text="Beta 1.1 — Download Studio"
+                        <TextBlock Text="Beta 1.2 — Quality Grid"
                                    FontSize="11"
                                    Foreground="#9CA3AF" />
                     </Border>
@@ -115,7 +117,7 @@
                         </Grid>
                     </Border>
 
-                    <!-- Player (Próximamente Beta 3) -->
+                    <!-- Player -->
                     <Border Background="Transparent"
                             BorderBrush="#1F2130"
                             BorderThickness="1"
@@ -131,7 +133,7 @@
                         </Grid>
                     </Border>
 
-                    <!-- Library (Próximamente Beta 4) -->
+                    <!-- Library -->
                     <Border Background="Transparent"
                             BorderBrush="#1F2130"
                             BorderThickness="1"
@@ -147,7 +149,7 @@
                         </Grid>
                     </Border>
 
-                    <!-- Files / Torrents (Próximamente) -->
+                    <!-- Files / Torrents -->
                     <Border Background="Transparent"
                             BorderBrush="#1F2130"
                             BorderThickness="1"
@@ -164,7 +166,7 @@
                     </Border>
                 </StackPanel>
 
-                <!-- Pie de barra lateral: Estado del motor y Ajustes -->
+                <!-- Pie de barra lateral -->
                 <StackPanel Grid.Row="2" Spacing="10">
                     <Border Background="#1A1C28"
                             BorderBrush="#272A3C"
@@ -186,6 +188,24 @@
                         </StackPanel>
                     </Border>
 
+                    <Button Command="{Binding OpenLogsFolderCommand}"
+                            Background="#1A1C28"
+                            BorderBrush="#374151"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10,8"
+                            HorizontalAlignment="Stretch"
+                            Cursor="Hand">
+                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                            <TextBlock Text="📜" FontSize="12" VerticalAlignment="Center" />
+                            <TextBlock Text="Abrir carpeta de Logs"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       Foreground="#E5E7EB"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
                     <TextBlock Text="© WASSLink Studio 2026"
                                FontSize="10"
                                Foreground="#4B5563"
@@ -194,166 +214,600 @@
             </Grid>
         </Border>
 
-        <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
-        <ScrollViewer Grid.Column="1">
-            <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
+        <!-- ==================== ÁREA PRINCIPAL ==================== -->
+        <!-- Panel relativo para superponer el modal sobre el contenido -->
+        <Panel Grid.Column="1">
 
-                <!-- Cabecera de Página -->
-                <StackPanel Spacing="6">
-                    <TextBlock Text="WASSLink Downloader"
-                               FontSize="26"
-                               FontWeight="Bold"
-                               Foreground="#F9FAFB" />
+            <!-- Contenido scrollable principal -->
+            <ScrollViewer>
+                <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
 
-                    <TextBlock Text="Descarga lo que quieras, cuando quieras y como quieras."
-                               FontSize="14"
-                               Foreground="#9CA3AF"
-                               FontStyle="Italic" />
-                </StackPanel>
+                    <!-- Cabecera de Página -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="WASSLink Downloader"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#F9FAFB" />
 
-                <!-- Tarjeta Principal de Descarga -->
-                <Border Background="#161823"
-                        BorderBrush="#25283A"
-                        BorderThickness="1"
-                        CornerRadius="14"
-                        Padding="28">
-                    <StackPanel Spacing="20">
+                        <TextBlock Text="Descarga lo que quieras, cuando quieras y como quieras."
+                                   FontSize="14"
+                                   Foreground="#9CA3AF"
+                                   FontStyle="Italic" />
+                    </StackPanel>
 
-                        <TextBlock Text="Nueva descarga"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
-                                   Foreground="#F3F4F6" />
+                    <!-- Tarjeta Principal de Descarga -->
+                    <Border Background="#161823"
+                            BorderBrush="#25283A"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="28">
+                        <StackPanel Spacing="20">
 
-                        <!-- Entrada de URL -->
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Enlace del contenido (YouTube, etc.)"
-                                       FontWeight="Medium"
-                                       FontSize="13"
-                                       Foreground="#D1D5DB" />
+                            <TextBlock Text="Nueva descarga"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F3F4F6" />
 
-                            <TextBox Text="{Binding DownloadUrl}"
-                                     PlaceholderText="https://www.youtube.com/watch?v=..."
-                                     MinHeight="44"
-                                     FontSize="14"
-                                     CornerRadius="8"
-                                     BorderBrush="#31354C"
-                                     Background="#1D2030"
-                                     Foreground="#F9FAFB" />
+                            <!-- Entrada de URL -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Enlace del contenido (YouTube, etc.)"
+                                           FontWeight="Medium"
+                                           FontSize="13"
+                                           Foreground="#D1D5DB" />
+
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                    <TextBox Grid.Column="0"
+                                             Text="{Binding DownloadUrl}"
+                                             PlaceholderText="https://www.youtube.com/watch?v=..."
+                                             MinHeight="44"
+                                             FontSize="14"
+                                             CornerRadius="8"
+                                             BorderBrush="#31354C"
+                                             Background="#1D2030"
+                                             Foreground="#F9FAFB" />
+
+                                            <Button Grid.Column="1"
+                                                Width="44"
+                                                Height="44"
+                                                Command="{Binding ClearDownloadUrlCommand}"
+                                                IsEnabled="{Binding !IsDownloading}"
+                                                Background="#25283D"
+                                                BorderBrush="#374151"
+                                                BorderThickness="1"
+                                                CornerRadius="8"
+                                                ToolTip.Tip="Limpiar enlace"
+                                                Cursor="Hand">
+                                            <TextBlock Text="✕"
+                                                   FontSize="16"
+                                                   Foreground="#FCA5A5"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                            </Button>
+
+                                            <Button Grid.Column="2"
+                                            Command="{Binding PasteFromClipboardCommand}"
+                                            Background="#25283D"
+                                            BorderBrush="#4F46E5"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="14,10"
+                                            ToolTip.Tip="Pegar enlace desde el portapapeles"
+                                            Cursor="Hand">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <TextBlock Text="📋" FontSize="14" VerticalAlignment="Center" />
+                                            <TextBlock Text="Pegar" FontWeight="SemiBold" FontSize="13" Foreground="#E0E7FF" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Botón Quality Grid + indicador de selección activa -->
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Formato y calidad"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="#D1D5DB" />
+
+                                <Button HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Command="{Binding OpenFormatModalCommand}"
+                                        IsEnabled="{Binding !IsDownloading}"
+                                        Background="#1D2030"
+                                        BorderBrush="#4F46E5"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,12"
+                                        Cursor="Hand">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="🎛"
+                                                   FontSize="16"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,10,0" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding SelectedFormatLabel}"
+                                                   FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#E0E7FF"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2"
+                                                   Text="Inspeccionar →"
+                                                   FontSize="12"
+                                                   Foreground="#6366F1"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
+
+                            <!-- Carpeta de Descargas -->
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Destino de guardado"
+                                           FontSize="12"
+                                           Foreground="#9CA3AF" />
+                                <Border Background="#1B1D2B"
+                                        BorderBrush="#2B2F44"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="10,6">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <TextBlock Grid.Column="0" Text="📁 " FontSize="12" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding OutputPath}"
+                                                   FontSize="12"
+                                                   Foreground="#9CA3AF"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Botones de Acción -->
+                            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+                                <Button Content="Descargar ahora"
+                                        Command="{Binding DownloadCommand}"
+                                        IsEnabled="{Binding !IsDownloading}"
+                                        Background="#4F46E5"
+                                        Foreground="White"
+                                        FontWeight="SemiBold"
+                                        FontSize="14"
+                                        Padding="24,12"
+                                        CornerRadius="8"
+                                        Cursor="Hand" />
+
+                                <Button Content="Cancelar"
+                                        Command="{Binding CancelDownloadCommand}"
+                                        IsEnabled="{Binding IsDownloading}"
+                                        Background="#371E2B"
+                                        BorderBrush="#EF4444"
+                                        BorderThickness="1"
+                                        Foreground="#F87171"
+                                        FontWeight="SemiBold"
+                                        FontSize="14"
+                                        Padding="20,12"
+                                        CornerRadius="8"
+                                        Cursor="Hand" />
+                            </StackPanel>
+
+                            <!-- Separador -->
+                            <Border Height="1" Background="#242636" Margin="0,4" />
+
+                            <!-- Estado y Progreso -->
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding StatusMessage}"
+                                               FontSize="13"
+                                               Foreground="#E5E7EB"
+                                               TextWrapping="Wrap" />
+
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding DownloadProgress, StringFormat='{}{0:F0}%'}"
+                                               FontSize="13"
+                                               FontWeight="Bold"
+                                               Foreground="#818CF8"
+                                               Margin="8,0,0,0" />
+                                </Grid>
+
+                                <ProgressBar Minimum="0"
+                                             Maximum="100"
+                                             Value="{Binding DownloadProgress}"
+                                             Height="8"
+                                             CornerRadius="4"
+                                             Background="#23263B"
+                                             Foreground="#6366F1" />
+
+                                <!-- Telemetría en vivo -->
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                                        <Border Background="#1F2335"
+                                                BorderBrush="#2C324D"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Padding="6,2"
+                                                IsVisible="{Binding !!CurrentSpeed.Length}">
+                                            <TextBlock Text="{Binding CurrentSpeed, StringFormat='⚡ {0}'}"
+                                                       FontSize="11"
+                                                       Foreground="#38BDF8"
+                                                       FontWeight="SemiBold" />
+                                        </Border>
+
+                                        <Border Background="#1F2335"
+                                                BorderBrush="#2C324D"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Padding="6,2"
+                                                IsVisible="{Binding !!CurrentSize.Length}">
+                                            <TextBlock Text="{Binding CurrentSize, StringFormat='📦 {0}'}"
+                                                       FontSize="11"
+                                                       Foreground="#A78BFA"
+                                                       FontWeight="SemiBold" />
+                                        </Border>
+                                    </StackPanel>
+
+                                    <Border Grid.Column="1"
+                                            Background="#1F2335"
+                                            BorderBrush="#2C324D"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="6,2"
+                                            IsVisible="{Binding !!CurrentEta.Length}">
+                                        <TextBlock Text="{Binding CurrentEta, StringFormat='⏱ {0}'}"
+                                                   FontSize="11"
+                                                   Foreground="#FBBF24"
+                                                   FontWeight="SemiBold" />
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+
                         </StackPanel>
+                    </Border>
 
-                        <!-- Opciones: Tipo y Formato -->
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
-                            <StackPanel Grid.Column="0" Spacing="6">
-                                <TextBlock Text="Tipo de medio"
-                                           FontSize="13"
-                                           FontWeight="Medium"
-                                           Foreground="#D1D5DB" />
-                                <ComboBox SelectedIndex="{Binding SelectedMediaTypeIndex}"
-                                          HorizontalAlignment="Stretch"
-                                          MinHeight="40"
-                                          CornerRadius="8">
-                                    <ComboBoxItem Content="Audio (Extracción)" />
-                                    <ComboBoxItem Content="Vídeo (Completo)" />
-                                </ComboBox>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ==================== MODAL QUALITY GRID ==================== -->
+            <!-- Overlay de fondo oscuro semi-transparente -->
+            <Border IsVisible="{Binding IsFormatModalOpen}"
+                    Background="#B20F1015"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+
+                <!-- Tarjeta modal centrada -->
+                <Border Background="#161823"
+                        BorderBrush="#3C3F5A"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="28"
+                        MaxWidth="740"
+                        MaxHeight="580"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="20">
+
+                        <!-- ── Cabecera del modal ── -->
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="🎛  Selección de Formato y Calidad"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Foreground="#F9FAFB" />
+                                <TextBlock Text="Elige exactamente cómo quieres descargar el contenido"
+                                           FontSize="12"
+                                           Foreground="#9CA3AF" />
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Spacing="6">
-                                <TextBlock Text="Formato de salida"
-                                           FontSize="13"
-                                           FontWeight="Medium"
-                                           Foreground="#D1D5DB" />
-                                <ComboBox SelectedIndex="{Binding SelectedFormatIndex}"
-                                          HorizontalAlignment="Stretch"
-                                          MinHeight="40"
-                                          CornerRadius="8">
-                                    <ComboBoxItem Content="Predeterminado (MP3 / MP4)" />
-                                    <ComboBoxItem Content="Original disponible" />
-                                </ComboBox>
-                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Content="✕"
+                                    Command="{Binding CloseModalCommand}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Foreground="#6B7280"
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Cursor="Hand"
+                                    VerticalAlignment="Top" />
                         </Grid>
 
-                        <!-- Carpeta de Descargas -->
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="Destino de guardado"
-                                       FontSize="12"
-                                       Foreground="#9CA3AF" />
-                            <Border Background="#1B1D2B"
-                                    BorderBrush="#2B2F44"
-                                    BorderThickness="1"
-                                    CornerRadius="6"
-                                    Padding="10,6">
-                                <Grid ColumnDefinitions="Auto,*">
-                                    <TextBlock Grid.Column="0" Text="📁 " FontSize="12" VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding OutputPath}"
-                                               FontSize="12"
-                                               Foreground="#9CA3AF"
-                                               VerticalAlignment="Center" />
-                                </Grid>
-                            </Border>
-                        </StackPanel>
+                        <!-- ── Cuerpo scrollable del modal ── -->
+                        <ScrollViewer Grid.Row="1">
+                            <StackPanel Spacing="24">
 
-                        <!-- Botones de Acción -->
-                        <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
-                            <Button Content="Descargar ahora"
-                                    Command="{Binding DownloadCommand}"
-                                    IsEnabled="{Binding !IsDownloading}"
+                                <!-- Estado de carga -->
+                                <StackPanel IsVisible="{Binding IsLoadingFormats}"
+                                            HorizontalAlignment="Center"
+                                            Spacing="12"
+                                            Margin="0,16">
+                                    <TextBlock Text="⏳  Analizando formatos disponibles..."
+                                               FontSize="14"
+                                               Foreground="#9CA3AF"
+                                               HorizontalAlignment="Center" />
+                                    <ProgressBar IsIndeterminate="True"
+                                                 Width="280"
+                                                 Height="4"
+                                                 CornerRadius="2"
+                                                 Foreground="#6366F1"
+                                                 Background="#23263B" />
+                                </StackPanel>
+
+                                <!-- Error de carga -->
+                                <Border IsVisible="{Binding !!FormatLoadError.Length}"
+                                        Background="#2D1F1F"
+                                        BorderBrush="#7F1D1D"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,10">
+                                    <TextBlock Text="{Binding FormatLoadError}"
+                                               Foreground="#FCA5A5"
+                                               FontSize="13"
+                                               TextWrapping="Wrap" />
+                                </Border>
+
+                                <!-- ── GRUPO AUDIO ── -->
+                                <StackPanel IsVisible="{Binding !!AudioOptions.Count}"
+                                            Spacing="12">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="🎵"
+                                                   FontSize="15"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="Música / Audio solo"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#818CF8"
+                                                   VerticalAlignment="Center" />
+                                        <Border Background="#1E2035"
+                                                CornerRadius="4"
+                                                Padding="6,2">
+                                            <TextBlock Text="{Binding AudioOptions.Count, StringFormat='{}{0} opciones'}"
+                                                       FontSize="11"
+                                                       Foreground="#6366F1" />
+                                        </Border>
+                                    </StackPanel>
+
+                                    <ItemsControl ItemsSource="{Binding AudioOptions}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:MediaFormatOption">
+                                                <Button Width="176"
+                                                        Height="108"
+                                                        Margin="0,0,10,10"
+                                                        Padding="0"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Cursor="Hand"
+                                                        Command="{Binding $parent[Window].DataContext.SelectFormatCommand}"
+                                                        CommandParameter="{Binding}">
+                                                    <Border Width="174"
+                                                            Height="106"
+                                                            CornerRadius="12"
+                                                            Padding="14,12"
+                                                            Background="#1A1C30">
+                                                        <Border.Styles>
+                                                            <Style Selector="Border">
+                                                                <Setter Property="BorderBrush" Value="#2C2F4A" />
+                                                                <Setter Property="BorderThickness" Value="1.5" />
+                                                            </Style>
+                                                            <Style Selector="Border.recommended">
+                                                                <Setter Property="BorderBrush" Value="#6366F1" />
+                                                                <Setter Property="BorderThickness" Value="2" />
+                                                            </Style>
+                                                            <Style Selector="Border.selected">
+                                                                <Setter Property="BorderBrush" Value="#22D3EE" />
+                                                                <Setter Property="BorderThickness" Value="2" />
+                                                            </Style>
+                                                        </Border.Styles>
+                                                        <Grid RowDefinitions="Auto,*,Auto">
+
+                                                            <!-- Badge recomendado -->
+                                                            <Border Grid.Row="0"
+                                                                    Background="#4F46E5"
+                                                                    CornerRadius="4"
+                                                                    Padding="7,2"
+                                                                    HorizontalAlignment="Left"
+                                                                    IsVisible="{Binding IsRecommended}">
+                                                                <TextBlock Text="★  Recomendado"
+                                                                           FontSize="9"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="White" />
+                                                            </Border>
+
+                                                            <!-- Info principal -->
+                                                            <StackPanel Grid.Row="1"
+                                                                        VerticalAlignment="Center"
+                                                                        Spacing="2">
+                                                                <TextBlock Text="{Binding QualityLabel}"
+                                                                           FontSize="18"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="#F9FAFB" />
+                                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                    <TextBlock Text="{Binding Extension}"
+                                                                               FontSize="12"
+                                                                               FontWeight="SemiBold"
+                                                                               Foreground="#818CF8" />
+                                                                    <TextBlock Text="·"
+                                                                               FontSize="12"
+                                                                               Foreground="#4B5563" />
+                                                                    <TextBlock Text="{Binding Codec}"
+                                                                               FontSize="12"
+                                                                               Foreground="#6B7280" />
+                                                                </StackPanel>
+                                                            </StackPanel>
+
+                                                            <!-- Tamaño estimado -->
+                                                            <TextBlock Grid.Row="2"
+                                                                       Text="{Binding FormattedSize}"
+                                                                       FontSize="11"
+                                                                       Foreground="#6B7280"
+                                                                       HorizontalAlignment="Right" />
+                                                        </Grid>
+                                                    </Border>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+
+                                <!-- ── GRUPO VIDEO ── -->
+                                <StackPanel IsVisible="{Binding !!VideoOptions.Count}"
+                                            Spacing="12">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="🎬"
+                                                   FontSize="15"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="Vídeo completo"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#38BDF8"
+                                                   VerticalAlignment="Center" />
+                                        <Border Background="#1A2535"
+                                                CornerRadius="4"
+                                                Padding="6,2">
+                                            <TextBlock Text="{Binding VideoOptions.Count, StringFormat='{}{0} opciones'}"
+                                                       FontSize="11"
+                                                       Foreground="#38BDF8" />
+                                        </Border>
+                                    </StackPanel>
+
+                                    <ItemsControl ItemsSource="{Binding VideoOptions}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:MediaFormatOption">
+                                                <Button Width="176"
+                                                        Height="108"
+                                                        Margin="0,0,10,10"
+                                                        Padding="0"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Cursor="Hand"
+                                                        Command="{Binding $parent[Window].DataContext.SelectFormatCommand}"
+                                                        CommandParameter="{Binding}">
+                                                    <Border Width="174"
+                                                            Height="106"
+                                                            CornerRadius="12"
+                                                            Padding="14,12"
+                                                            Background="#151C2A">
+                                                        <Border.Styles>
+                                                            <Style Selector="Border">
+                                                                <Setter Property="BorderBrush" Value="#1E2D40" />
+                                                                <Setter Property="BorderThickness" Value="1.5" />
+                                                            </Style>
+                                                        </Border.Styles>
+                                                        <Grid RowDefinitions="Auto,*,Auto">
+
+                                                            <!-- Badge recomendado -->
+                                                            <Border Grid.Row="0"
+                                                                    Background="#0E7490"
+                                                                    CornerRadius="4"
+                                                                    Padding="7,2"
+                                                                    HorizontalAlignment="Left"
+                                                                    IsVisible="{Binding IsRecommended}">
+                                                                <TextBlock Text="★  Recomendado"
+                                                                           FontSize="9"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="White" />
+                                                            </Border>
+
+                                                            <!-- Info principal -->
+                                                            <StackPanel Grid.Row="1"
+                                                                        VerticalAlignment="Center"
+                                                                        Spacing="2">
+                                                                <TextBlock Text="{Binding QualityLabel}"
+                                                                           FontSize="18"
+                                                                           FontWeight="Bold"
+                                                                           Foreground="#F0F9FF" />
+                                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                    <TextBlock Text="{Binding Extension}"
+                                                                               FontSize="12"
+                                                                               FontWeight="SemiBold"
+                                                                               Foreground="#38BDF8" />
+                                                                    <TextBlock Text="·"
+                                                                               FontSize="12"
+                                                                               Foreground="#374151" />
+                                                                    <TextBlock Text="{Binding Codec}"
+                                                                               FontSize="12"
+                                                                               Foreground="#6B7280" />
+                                                                </StackPanel>
+                                                            </StackPanel>
+
+                                                            <!-- Tamaño estimado -->
+                                                            <TextBlock Grid.Row="2"
+                                                                       Text="{Binding FormattedSize}"
+                                                                       FontSize="11"
+                                                                       Foreground="#6B7280"
+                                                                       HorizontalAlignment="Right" />
+                                                        </Grid>
+                                                    </Border>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+
+                                <!-- Placeholder cuando no hay formatos y no está cargando -->
+                                <StackPanel IsVisible="{Binding !HasFormats}"
+                                            HorizontalAlignment="Center"
+                                            Spacing="8"
+                                            Margin="0,20">
+                                    <TextBlock Text="Sin formatos cargados"
+                                               FontSize="14"
+                                               Foreground="#4B5563"
+                                               HorizontalAlignment="Center" />
+                                </StackPanel>
+
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- ── Pie del modal: selección activa + botón confirmar ── -->
+                        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+
+                            <!-- Indicador de selección activa -->
+                            <Border Grid.Column="0"
+                                    Background="#1E2035"
+                                    BorderBrush="#2C324D"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="12,10"
+                                    IsVisible="{Binding SelectedFormatOption, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="✔"
+                                               FontSize="13"
+                                               Foreground="#10B981"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding SelectedFormatLabel}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               Foreground="#E0E7FF"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Botón Confirmar -->
+                            <Button Grid.Column="1"
+                                    Content="Confirmar y Descargar →"
+                                    Command="{Binding ConfirmSelectionCommand}"
+                                    IsEnabled="{Binding SelectedFormatOption, Converter={x:Static ObjectConverters.IsNotNull}}"
                                     Background="#4F46E5"
                                     Foreground="White"
                                     FontWeight="SemiBold"
                                     FontSize="14"
-                                    Padding="24,12"
+                                    Padding="22,12"
                                     CornerRadius="8"
                                     Cursor="Hand" />
+                        </Grid>
 
-                            <Button Content="Cancelar"
-                                    Command="{Binding CancelDownloadCommand}"
-                                    IsEnabled="{Binding IsDownloading}"
-                                    Background="#371E2B"
-                                    BorderBrush="#EF4444"
-                                    BorderThickness="1"
-                                    Foreground="#F87171"
-                                    FontWeight="SemiBold"
-                                    FontSize="14"
-                                    Padding="20,12"
-                                    CornerRadius="8"
-                                    Cursor="Hand" />
-                        </StackPanel>
-
-                        <!-- Separador -->
-                        <Border Height="1" Background="#242636" Margin="0,4" />
-
-                        <!-- Estado y Progreso -->
-                        <StackPanel Spacing="10">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding StatusMessage}"
-                                           FontSize="13"
-                                           Foreground="#E5E7EB"
-                                           TextWrapping="Wrap" />
-
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding DownloadProgress, StringFormat='{}{0:F0}%'}"
-                                           FontSize="13"
-                                           FontWeight="Bold"
-                                           Foreground="#818CF8"
-                                           Margin="8,0,0,0" />
-                            </Grid>
-
-                            <ProgressBar Minimum="0"
-                                         Maximum="100"
-                                         Value="{Binding DownloadProgress}"
-                                         Height="8"
-                                         CornerRadius="4"
-                                         Background="#23263B"
-                                         Foreground="#6366F1" />
-                        </StackPanel>
-
-                    </StackPanel>
+                    </Grid>
                 </Border>
+            </Border>
+            <!-- ==================== FIN MODAL ==================== -->
 
-            </StackPanel>
-        </ScrollViewer>
+        </Panel>
 
     </Grid>
 

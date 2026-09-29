@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -17,6 +18,73 @@ public class YtDlpDownloadService : IDownloadProvider
     private static readonly Regex ProgressRegex = new(
         @"\[download\]\s+(?<pct>\d+(?:\.\d+)?)%(?:\s+of\s+~?(?<size>\S+))?(?:\s+at\s+(?<speed>\S+))?(?:\s+ETA\s+(?<eta>\S+))?",
         RegexOptions.Compiled);
+
+    private static readonly Regex DestinationRegex = new(
+        @"\[(?:download|ExtractAudio)\]\s+Destination:\s+(?<dest>.+)",
+        RegexOptions.Compiled);
+
+    private static readonly Regex AlreadyDownloadedRegex = new(
+        @"\[download\]\s+(?<dest>.+)\s+has already been downloaded",
+        RegexOptions.Compiled);
+
+    public static string GetLogsDirectory() => LoggerService.LogsDirectory;
+
+    public static string BuildVideoFormatSelector(
+        string? formatId = null,
+        bool formatHasAudio = false,
+        int maxHeight = 1080)
+    {
+        if (!string.IsNullOrWhiteSpace(formatId))
+        {
+            var selectedFormat = formatId.Trim();
+            return formatHasAudio ? selectedFormat : $"{selectedFormat}+bestaudio/{selectedFormat}";
+        }
+
+        var targetHeight = maxHeight > 0 ? maxHeight : 1080;
+        return $"bestvideo[height<={targetHeight}]+bestaudio/best[height<={targetHeight}]/best";
+    }
+
+    public static string GetProgressState(string? line)
+    {
+        if (string.IsNullOrWhiteSpace(line))
+            return "Descargando...";
+
+        if (line.Contains("[Merger]", StringComparison.OrdinalIgnoreCase) ||
+            line.Contains("[ffmpeg]", StringComparison.OrdinalIgnoreCase) ||
+            line.Contains("[ExtractAudio]", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Procesando con FFmpeg...";
+        }
+
+        return line.Contains("[download]", StringComparison.OrdinalIgnoreCase)
+            ? "Descargando..."
+            : "Procesando...";
+    }
+
+    public static bool TryParseProgressPercentage(string? value, out double percentage)
+    {
+        return double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out percentage);
+    }
+
+    private static string ResolveAudioFormat(string? format)
+    {
+        if (string.IsNullOrWhiteSpace(format))
+            return "best";
+
+        var normalized = format.Trim().ToLowerInvariant();
+        return normalized switch
+        {
+            "webm" => "opus",
+            "m4a" => "m4a",
+            "mp3" => "mp3",
+            "aac" => "aac",
+            "opus" => "opus",
+            "flac" => "flac",
+            "wav" => "wav",
+            "best" => "best",
+            _ => normalized
+        };
+    }
 
     public string Name => "yt-dlp";
 
@@ -105,19 +173,30 @@ public class YtDlpDownloadService : IDownloadProvider
         string mediaArgs;
         if (request.MediaType == DownloadMediaType.Audio)
         {
-            var audioFormat = string.IsNullOrWhiteSpace(request.Format) ? "mp3" : request.Format.ToLowerInvariant();
-            mediaArgs = $"-x --audio-format {audioFormat} --audio-quality 0";
+            if (!string.IsNullOrWhiteSpace(request.FormatId))
+            {
+                mediaArgs = $"-f \"{request.FormatId}\"";
+            }
+            else
+            {
+                var audioFormat = ResolveAudioFormat(request.Format);
+                mediaArgs = $"-x --audio-format {audioFormat} --audio-quality 0";
+            }
         }
         else
         {
             var videoFormat = string.IsNullOrWhiteSpace(request.Format) ? "mp4" : request.Format.ToLowerInvariant();
-            mediaArgs = videoFormat == "mp4"
-                ? "-f \"bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best\""
-                : $"-f \"bestvideo+bestaudio/best\" --merge-output-format {videoFormat}";
+            var videoSelector = BuildVideoFormatSelector(request.FormatId, request.VideoFormatHasAudio);
+            mediaArgs = $"-f \"{videoSelector}\" --merge-output-format {videoFormat}";
         }
 
+        // --windows-filenames evita caracteres inválidos en Windows
+        // --no-part para evitar archivos temporales residuales en fallos
         var outputTemplate = Path.Combine(request.OutputPath, "%(title)s.%(ext)s");
-        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} -o \"{outputTemplate}\" --newline --no-playlist";
+        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} --windows-filenames -o \"{outputTemplate}\" --newline --no-playlist";
+
+        LoggerService.Write($"URL={request.Url}");
+        LoggerService.Write($"COMMAND={ytDlpPath} {arguments}");
 
         var startInfo = new ProcessStartInfo
         {
@@ -159,25 +238,65 @@ public class YtDlpDownloadService : IDownloadProvider
             }
         });
 
+        string? downloadedFilePath = null;
+        var stderrTask = process.StandardError.ReadToEndAsync(cancellationToken);
+
         string? line;
         while ((line = await process.StandardOutput.ReadLineAsync(cancellationToken)) != null)
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
 
-            var match = ProgressRegex.Match(line);
-            if (match.Success && double.TryParse(match.Groups["pct"].Value, out var pct))
+            LoggerService.Write($"STDOUT {line}");
+
+            var phase = GetProgressState(line);
+            if (phase == "Procesando con FFmpeg...")
             {
-                var speed = match.Groups["speed"].Success ? match.Groups["speed"].Value : null;
-                var eta = match.Groups["eta"].Success ? match.Groups["eta"].Value : null;
-                progress?.Report(new DownloadProgress(pct, line, speed, eta));
+                progress?.Report(new DownloadProgress(0, phase));
+            }
+
+            // Detectar ruta de destino
+            var destMatch = DestinationRegex.Match(line);
+            if (destMatch.Success)
+            {
+                downloadedFilePath = destMatch.Groups["dest"].Value.Trim();
             }
             else
             {
-                progress?.Report(new DownloadProgress(-1, line));
+                var alreadyMatch = AlreadyDownloadedRegex.Match(line);
+                if (alreadyMatch.Success)
+                {
+                    downloadedFilePath = alreadyMatch.Groups["dest"].Value.Trim();
+                }
+            }
+
+            var match = ProgressRegex.Match(line);
+            if (match.Success && TryParseProgressPercentage(match.Groups["pct"].Value, out var pct))
+            {
+                var speed = match.Groups["speed"].Success ? match.Groups["speed"].Value : null;
+                var eta = match.Groups["eta"].Success ? match.Groups["eta"].Value : null;
+                var size = match.Groups["size"].Success ? match.Groups["size"].Value : null;
+                var title = downloadedFilePath != null ? Path.GetFileNameWithoutExtension(downloadedFilePath) : null;
+
+                progress?.Report(new DownloadProgress(pct, "Descargando...", speed, eta, title, size));
+            }
+            else if (phase == "Descargando...")
+            {
+                progress?.Report(new DownloadProgress(-1, phase));
+            }
+            else if (phase == "Procesando...")
+            {
+                progress?.Report(new DownloadProgress(-1, "Procesando con FFmpeg..."));
             }
         }
 
         await process.WaitForExitAsync(cancellationToken);
+        var stderr = await stderrTask;
+        if (!string.IsNullOrWhiteSpace(stderr))
+        {
+            LoggerService.Write($"STDERR {stderr.Trim()}");
+        }
+
+        LoggerService.Write($"EXIT CODE={process.ExitCode}");
 
         if (cancellationToken.IsCancellationRequested)
         {
@@ -186,12 +305,14 @@ public class YtDlpDownloadService : IDownloadProvider
 
         if (process.ExitCode != 0)
         {
-            var error = await process.StandardError.ReadToEndAsync(cancellationToken);
-            var errorMsg = string.IsNullOrWhiteSpace(error) ? $"yt-dlp finalizó con código de error {process.ExitCode}" : error.Trim();
+            var errorMsg = string.IsNullOrWhiteSpace(stderr)
+                ? $"yt-dlp finalizó con código de error {process.ExitCode}"
+                : stderr.Trim();
+            LoggerService.Write($"ERROR {errorMsg}");
             return new DownloadResult(false, null, errorMsg);
         }
 
-        return new DownloadResult(true, request.OutputPath, null);
+        return new DownloadResult(true, downloadedFilePath ?? request.OutputPath, null);
     }
 
     /// <summary>

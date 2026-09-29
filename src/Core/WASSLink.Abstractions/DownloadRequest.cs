@@ -16,5 +16,7 @@ public record DownloadRequest(
     string Url,
     string OutputPath,
     DownloadMediaType MediaType = DownloadMediaType.Audio,
-    string Format = "mp3"
+    string Format = "mp3",
+    string? FormatId = null,
+    bool VideoFormatHasAudio = false
 );

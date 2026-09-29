@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Apps\WASSLink.Desktop\WASSLink.Desktop.csproj" />
     <ProjectReference Include="..\..\src\Core\WASSLink.Abstractions\WASSLink.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Core\WASSLink.Download\WASSLink.Download.csproj" />
   </ItemGroup>

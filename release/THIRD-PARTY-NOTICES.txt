@@ -1,0 +1,19 @@
+Third-party components bundled with WASSLink Studio Desktop Beta
+
+yt-dlp
+The yt-dlp executable is distributed under the license and notices published
+by the yt-dlp project. Source and license:
+https://github.com/yt-dlp/yt-dlp
+https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE
+
+FFmpeg
+The bundled ffmpeg.exe is an FFmpeg 8.1.2 Essentials build from Gyan.dev. Its
+configuration enables GPL components. Review the build provider's redistribution
+terms and obtain the corresponding source/build information before redistributing
+this package publicly:
+https://www.gyan.dev/ffmpeg/builds/
+https://ffmpeg.org/legal.html
+
+Avalonia and other NuGet dependencies are subject to their respective licenses.
+Their package metadata and license texts are available from NuGet and the
+corresponding upstream projects.
