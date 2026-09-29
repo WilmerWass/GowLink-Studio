@@ -1,4 +1,4 @@
-﻿# WASSLink Studio — Roadmap Oficial
+# WASSLink Studio — Roadmap Oficial
 
 ## Historial
 
@@ -73,15 +73,17 @@ NO utilizar fechas artificiales.
 
 ### B1.1 — Base e interfaz
 
+Estado: COMPLETADA.
+
 Objetivo:
 Infraestructura DI correcta + UI con barra lateral + contrato IDownloadProvider.
 
-Criterios:
+Criterios cumplidos:
 - IDownloadProvider definido en WASSLink.Abstractions.
 - YtDlpDownloadService implementa IDownloadProvider.
 - MainViewModel recibe IDownloadProvider por DI (sin new()).
-- UI con barra lateral funcional.
-- Compilación correcta.
+- UI con barra lateral funcional y secciones Próximamente.
+- Compilación y pruebas unitarias correctas (0 errores, 0 advertencias, 11 pruebas superadas).
 
 ### B1.2 — Descarga real de YouTube
 

@@ -1,23 +1,19 @@
-﻿# Changelog
+# Changelog
 
 Todos los cambios relevantes de WASSLink Studio se documentan aquí.
 
 ## Beta 1 — Download Studio (en curso)
 
-### B1.1 — Base e interfaz (en curso)
+### B1.1 — Base e interfaz (completada)
 
 #### Arquitectura
 
-- Definición de IDownloadProvider en WASSLink.Abstractions.
-- DownloadRequest y DownloadProgress como contratos de datos.
-- YtDlpDownloadService implementa IDownloadProvider.
-- MainViewModel recibe IDownloadProvider mediante DI.
-- UI renovada con barra lateral y secciones "Próximamente".
-
-#### Pendiente para B1.1
-
-- Compilación verificada con cambios de DI.
-- Tests básicos de compilación.
+- Definición de contratos en WASSLink.Abstractions: IDownloadProvider, DownloadRequest, DownloadProgress y DownloadResult.
+- Implementación de IDownloadProvider en YtDlpDownloadService con manejo asíncrono y resolución dinámica de herramientas.
+- Registro en Dependency Injection mediante AddDownloadServices() y consumo vía constructor en MainViewModel (sin new()).
+- UI moderna en WASSLink.Desktop con barra lateral (sidebar) funcional, secciones "Próximamente" para futuras betas (Búsqueda, Reproductor, Biblioteca, Archivos) e indicador de estado del motor yt-dlp/FFmpeg.
+- Resolución de advertencias de compilación (CA2024 y CS0105).
+- Suite de pruebas unitarias en WASSLink.Tests cubriendo implementación de interfaz, validación de URLs y resolución en contenedor DI (11 pruebas superadas).
 
 ### Funcionalidades implementadas (acumuladas desde Fase 1)
 

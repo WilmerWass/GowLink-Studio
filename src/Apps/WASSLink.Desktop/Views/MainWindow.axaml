@@ -6,98 +6,354 @@
         x:Class="WASSLink.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         mc:Ignorable="d"
-        d:DesignWidth="900"
-        d:DesignHeight="600"
-        Width="900"
-        Height="600"
-        MinWidth="700"
-        MinHeight="500"
-        Title="WASSLink Studio">
+        d:DesignWidth="1000"
+        d:DesignHeight="680"
+        Width="1020"
+        Height="680"
+        MinWidth="820"
+        MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="#0F1015"
+        Title="WASSLink Studio — Downloader">
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,*"
-          Margin="32">
+    <Grid ColumnDefinitions="250,*">
 
-        <!-- Header -->
-        <StackPanel Grid.Row="0"
-                    Spacing="6">
-            <TextBlock Text="WASSLink Studio"
-                       FontSize="28"
-                       FontWeight="Bold" />
+        <!-- ==================== BARRA LATERAL (SIDEBAR) ==================== -->
+        <Border Grid.Column="0"
+                Background="#161720"
+                BorderBrush="#232534"
+                BorderThickness="0,0,1,0"
+                Padding="16,24">
+            <Grid RowDefinitions="Auto,*,Auto">
 
-            <TextBlock Text="Downloader"
-                       FontSize="16"
-                       Opacity="0.7" />
-        </StackPanel>
-
-        <!-- Downloader -->
-        <Border Grid.Row="1"
-                Margin="0,32,0,0"
-                Padding="28"
-                CornerRadius="12"
-                BorderThickness="1">
-
-            <StackPanel Spacing="18">
-
-                <TextBlock Text="Nueva descarga"
-                           FontSize="22"
-                           FontWeight="SemiBold" />
-
-                <TextBlock Text="URL del contenido"
-                           FontWeight="SemiBold" />
-
-                <TextBox Text="{Binding DownloadUrl}"
-                         PlaceholderText="Pega aquí el enlace..."
-                         MinHeight="42" />
-
-                <Grid ColumnDefinitions="*,*"
-                      ColumnSpacing="16">
-
-                    <StackPanel Grid.Column="0"
-                                Spacing="6">
-                        <TextBlock Text="Tipo" />
-                        <ComboBox SelectedIndex="0"
-                                  MinHeight="40">
-                            <ComboBoxItem Content="Audio" />
-                            <ComboBoxItem Content="Video" />
-                        </ComboBox>
+                <!-- Logo y Marca -->
+                <StackPanel Grid.Row="0" Spacing="8" Margin="4,0,4,28">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Border Background="#6366F1"
+                                CornerRadius="8"
+                                Width="34"
+                                Height="34">
+                            <TextBlock Text="W"
+                                       Foreground="White"
+                                       FontWeight="Black"
+                                       FontSize="18"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="WASSLink"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       Foreground="#F3F4F6" />
+                            <TextBlock Text="STUDIO"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       LetterSpacing="2"
+                                       Foreground="#818CF8" />
+                        </StackPanel>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1"
-                                Spacing="6">
-                        <TextBlock Text="Formato" />
-                        <ComboBox SelectedIndex="0"
-                                  MinHeight="40">
-                            <ComboBoxItem Content="MP3" />
-                            <ComboBoxItem Content="MP4" />
-                        </ComboBox>
+                    <!-- Etiqueta de versión -->
+                    <Border Background="#1E202E"
+                            BorderBrush="#2F334A"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="8,4"
+                            Margin="0,6,0,0"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="Beta 1.1 — Download Studio"
+                                   FontSize="11"
+                                   Foreground="#9CA3AF" />
+                    </Border>
+                </StackPanel>
+
+                <!-- Menú de Navegación -->
+                <StackPanel Grid.Row="1" Spacing="6">
+                    <TextBlock Text="MÓDULOS"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               Foreground="#6B7280"
+                               LetterSpacing="1"
+                               Margin="8,0,0,6" />
+
+                    <!-- Downloader (Activo) -->
+                    <Button HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="#25283D"
+                            BorderBrush="#6366F1"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,10"
+                            Command="{Binding SelectSectionCommand}"
+                            CommandParameter="Downloader">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0" Text="📥" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Downloader" FontWeight="SemiBold" Foreground="#F9FAFB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2">
+                                <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
+                            </Border>
+                        </Grid>
+                    </Button>
+
+                    <!-- Search (Próximamente Beta 2) -->
+                    <Border Background="Transparent"
+                            BorderBrush="#1F2130"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,10"
+                            Opacity="0.6">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0" Text="🔍" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Búsqueda" Foreground="#D1D5DB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
+                                <TextBlock Text="Beta 2" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Player (Próximamente Beta 3) -->
+                    <Border Background="Transparent"
+                            BorderBrush="#1F2130"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,10"
+                            Opacity="0.6">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0" Text="🎵" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Reproductor" Foreground="#D1D5DB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
+                                <TextBlock Text="Beta 3" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Library (Próximamente Beta 4) -->
+                    <Border Background="Transparent"
+                            BorderBrush="#1F2130"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,10"
+                            Opacity="0.6">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0" Text="📚" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Biblioteca" Foreground="#D1D5DB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
+                                <TextBlock Text="Beta 4" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Files / Torrents (Próximamente) -->
+                    <Border Background="Transparent"
+                            BorderBrush="#1F2130"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,10"
+                            Opacity="0.6">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Grid.Column="0" Text="📦" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Archivos / Torrents" Foreground="#D1D5DB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
+                                <TextBlock Text="Beta 7+" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Pie de barra lateral: Estado del motor y Ajustes -->
+                <StackPanel Grid.Row="2" Spacing="10">
+                    <Border Background="#1A1C28"
+                            BorderBrush="#272A3C"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10,8">
+                        <StackPanel Spacing="3">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <Ellipse Width="7" Height="7" Fill="#10B981" VerticalAlignment="Center" />
+                                <TextBlock Text="Motor yt-dlp &amp; FFmpeg"
+                                           FontSize="11"
+                                           FontWeight="SemiBold"
+                                           Foreground="#E5E7EB" />
+                            </StackPanel>
+                            <TextBlock Text="Núcleo de descarga listo"
+                                       FontSize="10"
+                                       Foreground="#9CA3AF"
+                                       Margin="13,0,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="© WASSLink Studio 2026"
+                               FontSize="10"
+                               Foreground="#4B5563"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+        <ScrollViewer Grid.Column="1">
+            <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
+
+                <!-- Cabecera de Página -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="WASSLink Downloader"
+                               FontSize="26"
+                               FontWeight="Bold"
+                               Foreground="#F9FAFB" />
+
+                    <TextBlock Text="Descarga lo que quieras, cuando quieras y como quieras."
+                               FontSize="14"
+                               Foreground="#9CA3AF"
+                               FontStyle="Italic" />
+                </StackPanel>
+
+                <!-- Tarjeta Principal de Descarga -->
+                <Border Background="#161823"
+                        BorderBrush="#25283A"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="28">
+                    <StackPanel Spacing="20">
+
+                        <TextBlock Text="Nueva descarga"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="#F3F4F6" />
+
+                        <!-- Entrada de URL -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Enlace del contenido (YouTube, etc.)"
+                                       FontWeight="Medium"
+                                       FontSize="13"
+                                       Foreground="#D1D5DB" />
+
+                            <TextBox Text="{Binding DownloadUrl}"
+                                     PlaceholderText="https://www.youtube.com/watch?v=..."
+                                     MinHeight="44"
+                                     FontSize="14"
+                                     CornerRadius="8"
+                                     BorderBrush="#31354C"
+                                     Background="#1D2030"
+                                     Foreground="#F9FAFB" />
+                        </StackPanel>
+
+                        <!-- Opciones: Tipo y Formato -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <TextBlock Text="Tipo de medio"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="#D1D5DB" />
+                                <ComboBox SelectedIndex="{Binding SelectedMediaTypeIndex}"
+                                          HorizontalAlignment="Stretch"
+                                          MinHeight="40"
+                                          CornerRadius="8">
+                                    <ComboBoxItem Content="Audio (Extracción)" />
+                                    <ComboBoxItem Content="Vídeo (Completo)" />
+                                </ComboBox>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="Formato de salida"
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="#D1D5DB" />
+                                <ComboBox SelectedIndex="{Binding SelectedFormatIndex}"
+                                          HorizontalAlignment="Stretch"
+                                          MinHeight="40"
+                                          CornerRadius="8">
+                                    <ComboBoxItem Content="Predeterminado (MP3 / MP4)" />
+                                    <ComboBoxItem Content="Original disponible" />
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Carpeta de Descargas -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Destino de guardado"
+                                       FontSize="12"
+                                       Foreground="#9CA3AF" />
+                            <Border Background="#1B1D2B"
+                                    BorderBrush="#2B2F44"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="10,6">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <TextBlock Grid.Column="0" Text="📁 " FontSize="12" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding OutputPath}"
+                                               FontSize="12"
+                                               Foreground="#9CA3AF"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Botones de Acción -->
+                        <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+                            <Button Content="Descargar ahora"
+                                    Command="{Binding DownloadCommand}"
+                                    IsEnabled="{Binding !IsDownloading}"
+                                    Background="#4F46E5"
+                                    Foreground="White"
+                                    FontWeight="SemiBold"
+                                    FontSize="14"
+                                    Padding="24,12"
+                                    CornerRadius="8"
+                                    Cursor="Hand" />
+
+                            <Button Content="Cancelar"
+                                    Command="{Binding CancelDownloadCommand}"
+                                    IsEnabled="{Binding IsDownloading}"
+                                    Background="#371E2B"
+                                    BorderBrush="#EF4444"
+                                    BorderThickness="1"
+                                    Foreground="#F87171"
+                                    FontWeight="SemiBold"
+                                    FontSize="14"
+                                    Padding="20,12"
+                                    CornerRadius="8"
+                                    Cursor="Hand" />
+                        </StackPanel>
+
+                        <!-- Separador -->
+                        <Border Height="1" Background="#242636" Margin="0,4" />
+
+                        <!-- Estado y Progreso -->
+                        <StackPanel Spacing="10">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding StatusMessage}"
+                                           FontSize="13"
+                                           Foreground="#E5E7EB"
+                                           TextWrapping="Wrap" />
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding DownloadProgress, StringFormat='{}{0:F0}%'}"
+                                           FontSize="13"
+                                           FontWeight="Bold"
+                                           Foreground="#818CF8"
+                                           Margin="8,0,0,0" />
+                            </Grid>
+
+                            <ProgressBar Minimum="0"
+                                         Maximum="100"
+                                         Value="{Binding DownloadProgress}"
+                                         Height="8"
+                                         CornerRadius="4"
+                                         Background="#23263B"
+                                         Foreground="#6366F1" />
+                        </StackPanel>
+
                     </StackPanel>
-
-                </Grid>
-                
-                <Button Content="Descargar"
-                Command="{Binding DownloadCommand}"
-                IsEnabled="{Binding !IsDownloading}"
-                HorizontalAlignment="Left"
-                Padding="24,10"
-                MinWidth="140" />
-
-                <Separator />
-
-                <TextBlock Text="{Binding StatusMessage}"
-                           FontSize="14" />
-
-                <ProgressBar Minimum="0"
-                             Maximum="100"
-                             Value="{Binding DownloadProgress}"
-                             Height="8" />
+                </Border>
 
             </StackPanel>
-
-        </Border>
+        </ScrollViewer>
 
     </Grid>
 

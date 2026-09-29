@@ -1,4 +1,4 @@
-﻿# WASSLink Studio
+# WASSLink Studio
 
 ## Identidad del proyecto
 
@@ -130,14 +130,15 @@ Beta 1 (Download Studio): en curso.
 
 Estado de Beta 1:
 
-- IMPLEMENTADO: YtDlpDownloadService (descarga mediante yt-dlp)
-- IMPLEMENTADO: WassLinkLogger
-- IMPLEMENTADO: DiagnosticReportGenerator
-- IMPLEMENTADO: UI bÃ¡sica de descarga (MainWindow, MainViewModel)
-- EN CURSO: contrato IDownloadProvider en WASSLink.Abstractions
-- EN CURSO: DI correcto en MainViewModel
-- EN CURSO: UI renovada con barra lateral
-- PLANIFICADO: progreso robusto, cancelaciÃ³n, organizaciÃ³n de archivos
+- IMPLEMENTADO: Contrato IDownloadProvider y modelos en WASSLink.Abstractions (B1.1)
+- IMPLEMENTADO: Inyección de dependencias completa sin new() en ViewModels (B1.1)
+- IMPLEMENTADO: UI moderna con barra lateral y secciones futuras (B1.1)
+- IMPLEMENTADO: YtDlpDownloadService con IDownloadProvider y cancelación limpia (B1.1)
+- IMPLEMENTADO: WassLinkLogger y DiagnosticReportGenerator
+- EN CURSO: Descarga real de YouTube y validación de flujo completo (B1.2)
+- PLANIFICADO: Progreso y cancelación robustos en descarga pesada (B1.3)
+- PLANIFICADO: Organización de archivos y carpetas configurables (B1.4)
+- PLANIFICADO: Manejo exhaustivo de errores y modo offline (B1.5)
 
 ## Principio de evoluciÃ³n
 
