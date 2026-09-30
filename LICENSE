@@ -1,98 +1,70 @@
 # WASSLink Proprietary License — WPL 1.0
 
-**Copyright © 2026 WilmerWassPC — Todos los derechos reservados.**
+**Copyright © 2026 WilmerWassPC. Todos los derechos reservados.**
 
-WASSLink Studio es software propietario desarrollado por **WilmerWassPC**. Esta versión se distribuye gratuitamente para fines personales, educativos, de evaluación y uso interno.
+Esta licencia regula los componentes originales de **WASSLink Studio** creados por WilmerWassPC (el “Software”). WASSLink Studio es software propietario. La disponibilidad de su código fuente en un repositorio público no lo convierte en software de código abierto ni concede derechos adicionales sobre él.
 
-El objetivo principal de WASSLink Studio es proporcionar al usuario herramientas para **gestionar, descargar y organizar contenido al que tenga acceso legítimo**, facilitando el acceso y manejo de información disponible a través de Internet.
+## 1. Permisos concedidos
 
----
+Mientras se respeten las condiciones de esta licencia, se permite:
 
-## ✅ Uso permitido
+- Descargar y ejecutar el Software gratuitamente.
+- Utilizarlo para fines personales, educativos, de evaluación o internos.
+- Realizar copias sin modificar para uso personal.
+- Compartir copias sin modificar, manteniendo este aviso, el copyright y los avisos de terceros incluidos.
 
-Se permite:
+Estos permisos no transfieren la propiedad intelectual del Software.
 
-- Descargar y ejecutar WASSLink Studio de forma gratuita.
-- Utilizarlo para fines personales, educativos o internos.
-- Realizar copias del software para uso personal.
-- Compartir copias **sin modificaciones** del software, siempre que se mantengan los archivos y avisos de copyright originales.
+## 2. Restricciones
 
----
+Sin autorización previa y por escrito de WilmerWassPC, no está permitido:
 
-## 🌐 Acceso a la información y contenido de terceros
+- Vender, alquilar, sublicenciar, comercializar o cobrar por el acceso al Software.
+- Incluir el Software o sus componentes originales en un producto comercial.
+- Modificar, adaptar, traducir o crear obras derivadas.
+- Redistribuir versiones modificadas.
+- Eliminar, ocultar o alterar avisos de copyright, licencia o atribución.
+- Descompilar, desensamblar o realizar ingeniería inversa, excepto en la medida en que la legislación aplicable no permita restringir dicha actividad.
 
-WASSLink Studio es una herramienta tecnológica de propósito general.
+## 3. Componentes de terceros
 
-El proyecto **no promueve, fomenta ni autoriza la piratería, la distribución ilegal de contenido, la infracción de derechos de autor ni ninguna otra actividad ilícita**.
+Esta licencia **no reemplaza ni modifica** las licencias de `yt-dlp`, FFmpeg, Avalonia, .NET ni de ninguna otra dependencia o herramienta de terceros. Dichos componentes se rigen por sus propias condiciones. Consulta [`release/THIRD-PARTY-NOTICES.txt`](release/THIRD-PARTY-NOTICES.txt) y la documentación de sus respectivos proyectos.
 
-El hecho de que WASSLink Studio permita acceder o descargar determinados recursos disponibles en Internet **no significa que el usuario tenga automáticamente autorización para copiar, almacenar, modificar, distribuir o utilizar dicho contenido**.
+## 4. Contenido de terceros y uso legal
 
-El usuario es responsable de:
+WASSLink Studio es una herramienta tecnológica de propósito general. No promueve, autoriza ni garantiza la descarga, copia o distribución no autorizada de contenido.
 
-- El contenido que descargue.
-- La finalidad con la que utilice el software.
-- Contar con las autorizaciones o derechos necesarios sobre el contenido cuando estos sean requeridos.
-- Cumplir las leyes aplicables y los términos de servicio de las plataformas o servicios utilizados.
+El usuario es el único responsable de:
+
+- El contenido que descargue, almacene, reproduzca o comparta.
+- Contar con los permisos o derechos necesarios.
+- Cumplir la legislación aplicable y los términos de servicio de las plataformas utilizadas.
 
 WASSLink Studio no concede derechos de propiedad intelectual sobre contenido perteneciente a terceros.
 
-### 🔓 Libre acceso a la información
+## 5. Estado y ausencia de garantías
 
-El proyecto reconoce la importancia del **libre acceso a la información disponible legítimamente en Internet**, así como de las herramientas que permiten a los usuarios gestionar sus propios archivos y contenido al que tienen derecho de acceso.
+El Software se encuentra en desarrollo y puede contener errores, cambios experimentales o funcionalidades incompletas. Se proporciona **“tal cual”**, sin garantías expresas o implícitas, en la máxima medida permitida por la legislación aplicable.
 
-Esta finalidad no debe interpretarse como una autorización para infringir derechos de autor, evadir restricciones legales o distribuir contenido sin autorización.
+## 6. Limitación de responsabilidad
 
----
+En la máxima medida permitida por la ley, WilmerWassPC no será responsable por daños, pérdidas, interrupciones, reclamaciones ni consecuencias derivadas del uso o la imposibilidad de uso del Software, ni por el contenido que el usuario descargue o gestione.
 
-## 🚫 Restricciones
+Nada en esta licencia pretende excluir o limitar responsabilidades que legalmente no puedan excluirse o limitarse.
 
-Sin autorización previa y por escrito de **WilmerWassPC**, no está permitido:
+## 7. Terminación
 
-- Vender, revender, alquilar, sublicenciar o comercializar WASSLink Studio o sus binarios.
-- Cobrar por el acceso o distribución del software.
-- Incluir WASSLink Studio o sus componentes propietarios dentro de productos comerciales.
-- Modificar, adaptar o crear trabajos derivados del software.
-- Redistribuir versiones modificadas.
-- Descompilar, desensamblar o realizar ingeniería inversa, salvo cuando dicha actividad no pueda ser restringida legalmente por la legislación aplicable.
-- Eliminar o alterar los avisos de copyright, licencia o atribución incluidos en el software.
+Los permisos concedidos terminan automáticamente si se incumple esta licencia. Al terminar, el usuario debe dejar de distribuir y utilizar las copias que infrinjan sus condiciones.
 
----
+## 8. Contacto y prevalencia
 
-## 📦 Código fuente
+Para solicitar autorización sobre usos no permitidos, contacta con el titular del copyright a través del repositorio oficial:
 
-La publicación del código fuente en un repositorio público **no implica que WASSLink Studio sea software de código abierto ni concede automáticamente derechos para modificar, reutilizar, redistribuir o comercializar el código**.
+https://github.com/WilmerWass/WASSLink-Studio
 
-Los derechos sobre el código fuente, diseño, nombre, logotipos, recursos y demás componentes originales permanecen reservados a **WilmerWassPC**, salvo que se indique expresamente lo contrario.
+Si una disposición de esta licencia no pudiera aplicarse, las demás continuarán vigentes. Esta licencia se interpreta conforme a la legislación aplicable.
 
 ---
 
-## ⚠️ Responsabilidad del usuario
-
-WASSLink Studio se proporciona como una herramienta de software de propósito general.
-
-**WilmerWassPC no se hace responsable del uso que terceros hagan del software ni de las consecuencias derivadas del contenido que los usuarios descarguen, almacenen, reproduzcan, compartan o utilicen mediante WASSLink Studio**, en la medida permitida por la legislación aplicable.
-
-El usuario debe utilizar el software de manera legal y respetando los derechos de terceros.
-
-Nada en esta licencia pretende excluir o limitar responsabilidades que no puedan excluirse o limitarse legalmente.
-
----
-
-## 🧪 Estado del software
-
-WASSLink Studio se encuentra actualmente en desarrollo y puede contener errores, cambios experimentales o funcionalidades incompletas.
-
-El software se proporciona **“tal cual”**, sin garantías expresas o implícitas, en la medida permitida por la legislación aplicable.
-
----
-
-## © Copyright
-
-**Copyright © 2026 WilmerWassPC**  
-**Todos los derechos reservados.**
-
----
-
-### WASSLink Studio
-
-> **No existe para promover la piratería; existe para proporcionar al usuario herramientas para gestionar y acceder al contenido que legítimamente puede utilizar.**
+**WASSLink Studio**  
+**Copyright © 2026 WilmerWassPC — Todos los derechos reservados.**
