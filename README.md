@@ -1,13 +1,15 @@
-# 🎵 GowLink Studio — Beta 1.2 "Quality Grid"
+# 🎵 GowLink Studio — Beta 1.3 "Estabilización"
 
-> Aplicación de escritorio **portable para Windows x64** que permite gestionar y descargar audio y vídeo desde fuentes compatibles, con selección de calidad, procesamiento en segundo plano y una interfaz sencilla.
+> Aplicación de escritorio **portable para Windows x64** que permite gestionar y descargar audio y vídeo desde fuentes compatibles, con selección de calidad, procesamiento en segundo plano y una interfaz intuitiva multilenguaje.
+>
+> **Descarga. Conecta. Organiza. Reproduce.**
 
-[![Release](https://img.shields.io/github/v/release/WilmerWass/WASSLink-Studio?include_prereleases&label=release)](https://github.com/WilmerWass/WASSLink-Studio/releases/tag/Beta_1.2)
+[![Release](https://img.shields.io/github/v/release/WilmerWass/GowLink-Studio?include_prereleases&label=release)](https://github.com/WilmerWass/GowLink-Studio/releases/tag/v1.3.0-beta)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 > 🧪 **Estado:** Beta  
 > 🖥️ **Plataforma:** Windows x64  
-> 📦 **Versión:** Beta 1.2 — «Quality Grid»
+> 📦 **Versión:** Beta 1.3 — «Estabilización»
 
 ## ✨ Características
 
@@ -16,38 +18,73 @@
 - 📂 **Organización automática:** guarda las descargas en la carpeta `Descargas\GowLink` por defecto.
 - 🖥️ **Aplicación portable:** no requiere instalador ni permisos administrativos.
 - 📦 **Runtime incluido:** el paquete publicado incluye el runtime de .NET; no es necesario instalarlo por separado.
-- 🔧 **Motor de descarga:** utiliza componentes de terceros como `yt-dlp` y `FFmpeg` para inspeccionar y procesar contenido compatible.
+- 🔧 **Motor de descarga:** utiliza componentes de terceros como `yt-dlp` y `FFmpeg` con soporte completo para UTF-8 en rutas y metadatos.
+- 📝 **Logs centralizados:** todos los registros se guardan en `%LOCALAPPDATA%\GowLink\Logs` para facilitar diagnósticos.
+- 🌐 **Interfaz multilenguaje:** soporte para Español, Inglés y Japonés.
 - 🎨 **Interfaz mejorada:** ajustes en navegación, estados de carga, insignias de versión y renderizado general.
 
-## 🚀 Novedades de Beta 1.2
+## 🚀 Novedades de Beta 1.3 "Estabilización"
 
-### Quality Grid
+### 🏢 Rebranding completo a GowLink Studio
 
-La nueva cuadrícula de calidad facilita comparar y elegir las opciones disponibles antes de iniciar una descarga:
+La aplicación se redenomina como **GowLink Studio** para reflejar una nueva identidad visual y corporativa:
 
-- Formato de salida.
-- Calidad de audio o vídeo.
-- Resolución disponible.
-- Opciones específicas según el contenido.
+- Nuevo nombre oficial y tagline: "Descarga. Conecta. Organiza. Reproduce."
+- Actualización de logos, iconos e identidad visual.
+- URLs actualizadas a `github.com/WilmerWass/GowLink-Studio`.
+
+### ⚙️ Estabilización del Engine
+
+El motor de descarga basado en `yt-dlp` y `FFmpeg` alcanza madurez con:
+
+- Soporte completo para UTF-8 en rutas de archivo y metadatos.
+- Manejo mejorado de caracteres especiales y nombres no latinos.
+- Compatibilidad extendida con formatos y plataformas.
+
+### 📝 Centralización de Logs
+
+Los registros de aplicación se unifican en una ubicación estándar:
+
+- Ubicación centralizada: `%LOCALAPPDATA%\GowLink\Logs`
+- Mejor formato de registro para diagnósticos y debugging.
+- Rotación automática de archivos de log antiguos.
+
+### 🌐 Interfaz y Documentación Trilingüe
+
+Expansión del alcance lingüístico:
+
+- **Español:** interfaz y documentación completa.
+- **Inglés:** soporte para usuarios anglófonos.
+- **Japonés:** localización para mercados de Asia Oriental.
+- Badges de estado en múltiples idiomas.
 
 ### Mejoras de estabilidad
 
-- Procesamiento más fluido de las descargas.
+- Correcciones de interrupciones ocasionales al procesar determinadas URL.
 - Mejor administración de los hilos de ejecución.
 - Mejor respuesta de la interfaz durante una descarga.
-- Corrección de interrupciones ocasionales al procesar determinadas URL.
 - Correcciones menores de renderizado y estabilidad general.
 
-Consulta el [changelog del proyecto](developer/CHANGELOG.md) y las novedades de Beta 1.3 incluidas en el paquete.
+Consulta el [changelog completo de Beta 1.3](https://github.com/WilmerWass/GowLink-Studio/releases/tag/v1.3.0-beta).
 
 ## 📥 Descarga e instalación
 
-1. Descarga el ZIP de la release publicada desde [GitHub Releases](https://github.com/WilmerWass/WASSLink-Studio/releases).
-2. Extrae **todo** el contenido del ZIP en una carpeta local.
-3. Conserva la carpeta `tools` junto a `WASSLink.Desktop.exe`.
-4. Ejecuta `WASSLink.Desktop.exe`.
+### Opción 1: Descarga portable (recomendado)
 
-La aplicación es portable: no crea accesos directos, asociaciones de archivos ni actualizaciones automáticas. Windows puede mostrar una advertencia de SmartScreen porque esta versión beta no está firmada digitalmente.
+1. Descarga [`GowLink-Desktop-win-B1.3.zip`](https://github.com/WilmerWass/GowLink-Studio/releases/tag/v1.3.0-beta) desde la release (≈106 MB).
+2. Extrae **todo** el contenido del ZIP en una carpeta local.
+3. Conserva la carpeta `tools` junto a `GowLink.Desktop.exe`.
+4. Ejecuta `GowLink.Desktop.exe`.
+
+### Opción 2: Desde el repositorio (para desarrolladores)
+
+```bash
+git clone https://github.com/WilmerWass/GowLink-Studio.git
+cd GowLink-Studio
+# Sigue las instrucciones en CONTRIBUTING.md para compilar
+```
+
+La aplicación es portable: no crea accesos directos, asociaciones de archivos ni actualizaciones automáticas. Windows puede mostrar una advertencia de SmartScreen porque esta versión beta no es certificada; puedes ignorarla si descargas desde el repositorio oficial.
 
 > 🌐 Se requiere conexión a Internet para inspeccionar y descargar contenido.
 
@@ -71,13 +108,19 @@ organizados en español, inglés y japonés.
 Las descargas se guardan por defecto en:
 
 ```text
-%USERPROFILE%\Downloads\GowLink
+%LOCALAPPDATA%\GowLink\Descargas
+```
+
+Los logs se guardan en:
+
+```text
+%LOCALAPPDATA%\GowLink\Logs
 ```
 
 ## 🔒 Seguridad y confiabilidad
 
 ✅ **Fuente oficial:**  
-Descarga siempre desde https://github.com/WilmerWass/WASSLink-Studio/releases
+Descarga siempre desde https://github.com/WilmerWass/GowLink-Studio/releases
 
 ⚠️ **Advertencia:**  
 Descargas de sitios de terceros no verificados pueden incluir virus o modificaciones maliciosas. Verifica la integridad del archivo descargado.
@@ -113,7 +156,7 @@ Consulta [`release/THIRD-PARTY-NOTICES.txt`](release/THIRD-PARTY-NOTICES.txt) pa
 
 ## 🐛 Comentarios y errores
 
-Esta es una versión beta y puede incluir errores o cambios incompletos. Si encuentras un problema, abre un [issue](https://github.com/WilmerWass/WASSLink-Studio/issues) incluyendo:
+Esta es una versión beta y puede incluir errores o cambios incompletos. Si encuentras un problema, abre un [issue](https://github.com/WilmerWass/GowLink-Studio/issues) incluyendo:
 
 - Versión de Windows.
 - Pasos para reproducirlo.
@@ -122,5 +165,5 @@ Esta es una versión beta y puede incluir errores o cambios incompletos. Si encu
 
 ---
 
-**GowLink Studio** © 2026 WilmerWassPC
+**GowLink Studio** © 2026 WilmerWassPC  
 Distribuido bajo [GPL-3.0](LICENSE)
