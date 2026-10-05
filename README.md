@@ -65,13 +65,13 @@ Expansión del alcance lingüístico:
 - Mejor respuesta de la interfaz durante una descarga.
 - Correcciones menores de renderizado y estabilidad general.
 
-Consulta el [changelog completo de Beta 1.3](https://github.com/WilmerWass/GowLink-Studio/releases/tag/v1.3.0-beta).
+Consulta el [changelog completo de Beta 1.3](https://github.com/WilmerWass/GowLink-Studio/releases/tag/Beta_1.3).
 
 ## 📥 Descarga e instalación
 
 ### Opción 1: Descarga portable (recomendado)
 
-1. Descarga [`GowLink-Desktop-win-B1.3.zip`](https://github.com/WilmerWass/GowLink-Studio/releases/tag/v1.3.0-beta) desde la release (≈106 MB).
+1. Descarga [`GowLink-Desktop-win-B1.3.zip`](https://github.com/WilmerWass/GowLink-Studio/releases/download/Beta_1.3/GowLink-Desktop-win-B1.3.zip) o desde la release (≈106 MB).
 2. Extrae **todo** el contenido del ZIP en una carpeta local.
 3. Conserva la carpeta `tools` junto a `GowLink.Desktop.exe`.
 4. Ejecuta `GowLink.Desktop.exe`.
