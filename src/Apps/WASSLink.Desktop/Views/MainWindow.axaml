@@ -340,24 +340,63 @@
                             </StackPanel>
 
                             <!-- Carpeta de Descargas -->
-                            <StackPanel Spacing="4">
+                            <StackPanel Spacing="6">
                                 <TextBlock Text="Destino de guardado"
-                                           FontSize="12"
-                                           Foreground="#9CA3AF" />
-                                <Border Background="#1B1D2B"
-                                        BorderBrush="#2B2F44"
-                                        BorderThickness="1"
-                                        CornerRadius="6"
-                                        Padding="10,6">
-                                    <Grid ColumnDefinitions="Auto,*">
-                                        <TextBlock Grid.Column="0" Text="📁 " FontSize="12" VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding OutputPath}"
-                                                   FontSize="12"
-                                                   Foreground="#9CA3AF"
-                                                   VerticalAlignment="Center" />
-                                    </Grid>
-                                </Border>
+                                           FontSize="13"
+                                           FontWeight="Medium"
+                                           Foreground="#D1D5DB" />
+
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                    <Border Grid.Column="0"
+                                            Background="#1B1D2B"
+                                            BorderBrush="#2B2F44"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="10,9">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBlock Grid.Column="0" Text="📁 " FontSize="12" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding OutputPath}"
+                                                       FontSize="12"
+                                                       Foreground="#9CA3AF"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Botón Examinar -->
+                                    <Button Grid.Column="1"
+                                            Command="{Binding BrowseFolderCommand}"
+                                            IsEnabled="{Binding !IsDownloading}"
+                                            Background="#25283D"
+                                            BorderBrush="#4F46E5"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="14,9"
+                                            ToolTip.Tip="Elegir carpeta de destino"
+                                            Cursor="Hand">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <TextBlock Text="📂" FontSize="13" VerticalAlignment="Center" />
+                                            <TextBlock Text="Examinar" FontSize="12" FontWeight="SemiBold" Foreground="#E0E7FF" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <!-- Botón Abrir carpeta -->
+                                    <Button Grid.Column="2"
+                                            Command="{Binding OpenOutputFolderCommand}"
+                                            IsEnabled="{Binding !IsDownloading}"
+                                            Background="#1B1D2B"
+                                            BorderBrush="#374151"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Width="40"
+                                            Height="38"
+                                            ToolTip.Tip="Abrir carpeta en el explorador"
+                                            Cursor="Hand">
+                                        <TextBlock Text="↗" FontSize="15" FontWeight="Bold" Foreground="#6B7280"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Button>
+                                </Grid>
                             </StackPanel>
 
                             <!-- Botones de Acción -->
@@ -404,19 +443,51 @@
                                                FontSize="13"
                                                FontWeight="Bold"
                                                Foreground="#818CF8"
-                                               Margin="8,0,0,0" />
+                                               Margin="8,0,0,0"
+                                               IsVisible="{Binding IsPhaseDownloading}" />
                                 </Grid>
 
+                                <!-- Barra normal (descargando %) -->
                                 <ProgressBar Minimum="0"
                                              Maximum="100"
                                              Value="{Binding DownloadProgress}"
                                              Height="8"
                                              CornerRadius="4"
                                              Background="#23263B"
-                                             Foreground="#6366F1" />
+                                             Foreground="#6366F1"
+                                             IsVisible="{Binding !IsPhaseProcessing}" />
+
+                                <!-- Barra indeterminada (fase FFmpeg / muxing) -->
+                                <ProgressBar IsIndeterminate="True"
+                                             Height="8"
+                                             CornerRadius="4"
+                                             Background="#23263B"
+                                             Foreground="#F59E0B"
+                                             IsVisible="{Binding IsPhaseProcessing}" />
+
+                                <!-- Etiqueta animada de fase FFmpeg -->
+                                <Border Background="#1F1A0D"
+                                        BorderBrush="#78350F"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="10,6"
+                                        IsVisible="{Binding IsPhaseProcessing}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="⚙"
+                                                   FontSize="13"
+                                                   Foreground="#F59E0B"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="Procesando con FFmpeg — esto puede tardar unos segundos..."
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#FDE68A"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
 
                                 <!-- Telemetría en vivo -->
-                                <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0"
+                                      IsVisible="{Binding IsPhaseDownloading}">
                                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
                                         <Border Background="#1F2335"
                                                 BorderBrush="#2C324D"
@@ -806,6 +877,66 @@
                 </Border>
             </Border>
             <!-- ==================== FIN MODAL ==================== -->
+
+            <!-- ==================== TOAST DE COMPLETADO ==================== -->
+            <Border IsVisible="{Binding IsToastVisible}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,24,24"
+                    MaxWidth="380"
+                    Background="#0F2E1E"
+                    BorderBrush="#166534"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16,14">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+                    <!-- Icono check -->
+                    <Border Grid.Column="0"
+                            Background="#14532D"
+                            CornerRadius="20"
+                            Width="40"
+                            Height="40">
+                        <TextBlock Text="✓"
+                                   FontSize="20"
+                                   FontWeight="Black"
+                                   Foreground="#4ADE80"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+
+                    <!-- Texto -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="¡Descarga completada!"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   Foreground="#BBF7D0" />
+                        <TextBlock Text="{Binding ToastTitle}"
+                                   FontSize="12"
+                                   Foreground="#86EFAC"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxWidth="220" />
+                        <TextBlock Text="{Binding ToastSubtitle}"
+                                   FontSize="11"
+                                   Foreground="#4B5563"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxWidth="220" />
+                    </StackPanel>
+
+                    <!-- Cerrar -->
+                    <Button Grid.Column="2"
+                            Command="{Binding DismissToastCommand}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="#4B5563"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            VerticalAlignment="Top"
+                            Cursor="Hand"
+                            Content="✕" />
+                </Grid>
+            </Border>
+            <!-- ==================== FIN TOAST ==================== -->
 
         </Panel>
 

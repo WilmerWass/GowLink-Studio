@@ -11,6 +11,7 @@ public static class DesktopServiceCollectionExtensions
         this IServiceCollection services)
     {
         services.AddSingleton<IClipboardService, AvaloniaClipboardService>();
+        services.AddSingleton<IFolderPickerService, AvaloniaFolderPickerService>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
 
