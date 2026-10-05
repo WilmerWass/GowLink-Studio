@@ -324,8 +324,8 @@ El cambio de marca en la UI y ciertos datos de ejecución ya está iniciado. La 
 
 Estado documental: Beta 1.3 — estabilización en curso.
 
-La suite de pruebas registra 19 pruebas aprobadas. La validación automatizada no sustituye una prueba manual de descarga real extremo a extremo.
+La suite de pruebas registra 20 pruebas aprobadas. Una validación runtime confirmó una descarga de audio M4A y vídeo MP4 1080p, incluyendo progreso, FFmpeg y ruta final Unicode registrada en `app.log`; la suite automatizada no sustituye esta prueba ni cubre todos los fallos de producción.
 
-Los logs del logger compartido y los informes de diagnóstico usan `%LOCALAPPDATA%\GowLink\Logs`, con fallback a `%LOCALAPPDATA%\WASSLink\Logs` si existe y no existe la ruta nueva. El logger interno de descargas aún utiliza `%APPDATA%\GowLink\logs` y fallback a `%APPDATA%\WASSLink\logs`; unificarlo es pendiente.
+El logger compartido, el logger interno de descargas y los informes de diagnóstico usan `%LOCALAPPDATA%\GowLink\Logs`. Los loggers crean el directorio si no existe. Los archivos históricos que permanezcan bajo `%LOCALAPPDATA%\WASSLink\Logs` se conservan; no se migran ni se eliminan automáticamente.
 
 Fase 1: completada. Beta 1: en estabilización.

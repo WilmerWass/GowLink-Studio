@@ -10,19 +10,10 @@ public sealed class DiagnosticReportGenerator
 
     public DiagnosticReportGenerator()
     {
-        var preferred = Path.Combine(
+        _logDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "GowLink",
             "Logs");
-
-        var legacy = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "WASSLink",
-            "Logs");
-
-        _logDirectory = Directory.Exists(legacy) && !Directory.Exists(preferred)
-            ? legacy
-            : preferred;
     }
 
     public string GenerateReport()

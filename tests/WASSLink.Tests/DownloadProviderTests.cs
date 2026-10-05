@@ -165,6 +165,26 @@ public class DownloadProviderTests
     }
 
     [Fact]
+    public void YtDlpOutputPath_UsesMergedFileInsteadOfLastIntermediate()
+    {
+        var method = typeof(YtDlpDownloadService).GetMethod(
+            "TryParseOutputPath",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.NotNull(method);
+
+        object?[] args =
+        [
+            "[Merger] Merging formats into \"C:\\Downloads\\media ｜ adoración.mp4\"",
+            null
+        ];
+
+        var success = method.Invoke(null, args);
+
+        Assert.Equal(true, success);
+        Assert.Equal("C:\\Downloads\\media ｜ adoración.mp4", args[1]);
+    }
+
+    [Fact]
     public void YtDlpProgressPercentage_UsesInvariantCulture()
     {
         var previousCulture = CultureInfo.CurrentCulture;

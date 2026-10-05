@@ -85,16 +85,17 @@ Criterios cumplidos:
 - YtDlpDownloadService implementa IDownloadProvider.
 - MainViewModel recibe IDownloadProvider por DI (sin new()).
 - UI con barra lateral funcional y secciones Próximamente.
-- Validación inicial: compilación y 11 pruebas; la suite actual alcanza 19 pruebas aprobadas (Beta 1.3).
+- Validación inicial: compilación y 11 pruebas; la suite actual alcanza 20 pruebas aprobadas (Beta 1.3).
 
 ### B1.2 — Quality Grid y selección de formatos
 
-Estado: IMPLEMENTADO; validación real extremo a extremo pendiente.
+Estado: IMPLEMENTADO Y VALIDADO EN RUNTIME (2026-10-05).
 
 - Inspección asíncrona de metadatos y formatos con yt-dlp.
 - Presentación y selección de opciones de audio/vídeo.
 - Inicio de descarga con la selección.
 - Pruebas unitarias de parsing y selector de formatos.
+- La URL de prueba produjo 7 formatos (3 de audio, 4 de vídeo); la extracción devolvió título y duración 5:11. La Quality Grid muestra los formatos, pero todavía no presenta título ni duración.
 
 ### B1.3 — Estabilización de Beta 1 y transición GowLink
 
@@ -103,13 +104,15 @@ Estado: EN CURSO.
 Objetivo: validar la experiencia implementada, cerrar discrepancias operativas y dejar documentada la transición de marca sin adelantar Beta 2.
 
 Criterios pendientes:
-- Validar manualmente un flujo completo de descarga con una URL/contenido que el usuario tenga derecho a descargar.
-- Confirmar progreso, finalización y cancelación contra el proceso externo durante ejecución real; ampliar pruebas automatizadas donde sea posible.
-- Unificar las rutas de logs: `GowLinkLogger` y diagnósticos usan `%LOCALAPPDATA%\GowLink\Logs` con fallback a `%LOCALAPPDATA%\WASSLink\Logs`; `LoggerService` todavía usa `%APPDATA%\GowLink\logs` con fallback a `%APPDATA%\WASSLink\logs`.
+- Ampliar la cobertura de ejecución real para cancelación contra el proceso externo, errores y otros formatos; audio M4A y vídeo MP4 1080p ya se completaron con progreso y FFmpeg.
 - Revisar manejo visible de URL no soportada, herramienta externa ausente, fallos de yt-dlp/FFmpeg y errores de escritura.
 - Mantener los nombres visibles GowLink y documentar las referencias técnicas heredadas `WASSLink.*`.
 - Planificar como cambio coordinado la migración de namespaces/proyectos/ensamblados; completar esa migración solo con referencias, XAML, build, tests y publicación validados.
-- Mantener `dotnet test WASSLink-Studio.slnx` verde; la última ejecución registrada pasó 19/19. Esta suite no acredita prueba real end-to-end.
+- Mantener `dotnet test WASSLink-Studio.slnx` verde; la última ejecución pasó 20/20. Esta suite no sustituye la prueba real end-to-end.
+
+Criterio completado en B1.3:
+- `GowLinkLogger`, `LoggerService` y diagnósticos escriben en `%LOCALAPPDATA%\GowLink\Logs`; runtime creó y actualizó `app.log` y `gowlink-2026-10-05.log`. Los datos históricos bajo `%LOCALAPPDATA%\WASSLink\Logs` se conservan sin migración ni borrado.
+- Audio M4A y vídeo MP4 1080p recomendados se descargaron a `Downloads\WASSLink` (fallback legado existente), se decodificaron con FFmpeg y el MP4 se registró con ruta Unicode exacta en `app.log`.
 
 ### B1.4 — Organización
 

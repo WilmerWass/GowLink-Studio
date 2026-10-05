@@ -11,13 +11,8 @@ public static class LoggerService
 
     private static string ResolveLogsDirectory()
     {
-        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var preferred = Path.Combine(appData, "GowLink", "logs");
-        var legacy = Path.Combine(appData, "WASSLink", "logs");
-
-        return Directory.Exists(legacy) && !Directory.Exists(preferred)
-            ? legacy
-            : preferred;
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        return Path.Combine(localAppData, "GowLink", "Logs");
     }
 
     public static void Write(string message)

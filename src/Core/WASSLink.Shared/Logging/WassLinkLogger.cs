@@ -10,7 +10,10 @@ public class GowLinkLogger
 
     public GowLinkLogger()
     {
-        _logDirectory = GetPreferredLogDirectory();
+        _logDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "GowLink",
+            "Logs");
         Directory.CreateDirectory(_logDirectory);
 
         _logFilePath = Path.Combine(
@@ -33,23 +36,6 @@ public class GowLinkLogger
             : $"{message}{Environment.NewLine}{exception}";
 
         Write("ERROR", details);
-    }
-
-    private string GetPreferredLogDirectory()
-    {
-        var preferred = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "GowLink",
-            "Logs");
-
-        var legacy = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "WASSLink",
-            "Logs");
-
-        return Directory.Exists(legacy) && !Directory.Exists(preferred)
-            ? legacy
-            : preferred;
     }
 
     private void Write(string level, string message)

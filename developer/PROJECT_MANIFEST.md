@@ -126,7 +126,7 @@ La Fase 1 estableciÃ³:
 - Infraestructura inicial de Dependency Injection.
 - CompilaciÃ³n completa de la soluciÃ³n.
 
-Beta 1 (GowLink Downloader): estabilización en curso. Quality Grid, selección de formatos, progreso/cancelación y UI principal están implementados; los 19 tests actuales pasan. Esto no confirma una descarga real extremo a extremo.
+Beta 1 (GowLink Downloader): estabilización en curso. Quality Grid, selección de formatos, progreso/cancelación y UI principal están implementados; los 20 tests actuales pasan. Una ejecución runtime verificó la descarga recomendada de audio M4A y vídeo MP4 1080p, con progreso, postprocesamiento FFmpeg y archivo de salida. La validación no cierra el trabajo de estabilización ni cubre todos los fallos de producción.
 
 Estado y pendientes:
 
@@ -136,9 +136,10 @@ Estado y pendientes:
 - IMPLEMENTADO: YtDlpDownloadService con IDownloadProvider y cancelación limpia (B1.1)
 - IMPLEMENTADO: Quality Grid, inspección de metadatos y selección de formato (B1.2)
 - IMPLEMENTADO: `GowLinkLogger` y generación de informes de diagnóstico; `WassLinkLogger` se conserva como alias
-- EN CURSO: Estabilización Beta 1.3; validar manualmente una descarga real, errores, cancelación y coherencia de rutas
-- EN CURSO: Unificar `LoggerService`, que todavía usa `%APPDATA%\GowLink\logs`, con `%LOCALAPPDATA%\GowLink\Logs`
+- EN CURSO: Estabilización Beta 1.3; ampliar la validación de errores y cancelación y completar el rebranding técnico de forma coordinada
+- IMPLEMENTADO Y VALIDADO EN RUNTIME: `LoggerService`, logger compartido e informes de diagnóstico en `%LOCALAPPDATA%\GowLink\Logs`; Desktop creó `app.log` y `gowlink-2026-10-05.log`.
 - PENDIENTE: Migración técnica coordinada de solución, proyectos y namespaces `WASSLink.*`; no se ha realizado un cambio parcial
+- VALIDADO EN RUNTIME: Inspección de la URL autorizada `https://www.youtube.com/watch?v=7Ne9cbREOnk`: título “Si te tengo a ti, lo tengo todo - Marcos Brunet ｜ Adoración”, duración 5:11 y 7 formatos. Audio M4A y vídeo MP4 1080p se descargaron y decodificaron correctamente; `app.log` registró la ruta final exacta.
 - PLANIFICADO: Carpeta de salida configurable y organización adicional (B1.4)
 - PLANIFICADO: Robustez ampliada de errores y comportamiento offline (B1.5)
 

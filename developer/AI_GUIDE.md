@@ -102,7 +102,7 @@ El proyecto se desarrolla incrementalmente. El estado actual es Beta 1.3, en est
 
 NO implementar betas futuras hasta que la beta actual tenga una base sólida y funcional.
 
-Quality Grid y selección de formatos están implementados. El progreso, la cancelación, la interfaz Desktop/CLI y las rutas de logging tienen implementación; la suite actual cuenta con 19 pruebas. Esto no equivale a validar una descarga real extremo a extremo ni a certificar todos los fallos de producción. Una sub-beta solo se marca completa cuando sus criterios funcionales están integrados y probados.
+Quality Grid y selección de formatos están implementados. El progreso, la cancelación, la interfaz Desktop/CLI y las rutas de logging tienen implementación; la suite actual cuenta con 20 pruebas aprobadas. Se validó en runtime una descarga autorizada de audio M4A y otra de vídeo MP4 1080p, con progreso, FFmpeg y salida registrada. Esto no equivale a certificar todos los fallos de producción ni a dar por cerrada Beta 1. Una sub-beta solo se marca completa cuando sus criterios funcionales están integrados y probados.
 
 ## Plugins
 
@@ -130,7 +130,7 @@ Y cuando existan pruebas:
 
 dotnet test WASSLink-Studio.slnx
 
-La última ejecución registrada para Beta 1.3 pasó las 19 pruebas. Repetir ambos comandos tras cambios estructurales o de código.
+La última ejecución registrada para Beta 1.3 pasó las 20 pruebas. Repetir ambos comandos tras cambios estructurales o de código.
 
 ## Git
 

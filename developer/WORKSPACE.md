@@ -93,7 +93,17 @@ Probar:
 
 dotnet test WASSLink-Studio.slnx
 
-Última ejecución registrada: 19/19 tests superados. No confundir los tests automatizados con una validación de descarga real extremo a extremo.
+Última ejecución registrada: 20/20 tests superados. La suite automatizada no sustituye la validación de descarga real extremo a extremo.
+
+Ejecutar Desktop:
+
+dotnet run --project src\Apps\WASSLink.Desktop\WASSLink.Desktop.csproj
+
+Ejecutar CLI:
+
+dotnet run --project src\Apps\WASSLink.CLI\WASSLink.CLI.csproj
+
+Nomenclatura de ejecución: GowLink Studio es el producto; GowLink Desktop, GowLink CLI y GowLink Downloader son los nombres visibles. Los proyectos, namespaces y ensamblados `WASSLink.*` son identificadores técnicos heredados hasta una migración coordinada.
 
 Ver estado:
 

@@ -67,7 +67,7 @@
                             Padding="8,4"
                             Margin="0,6,0,0"
                             HorizontalAlignment="Left">
-                        <TextBlock Text="Beta 1.2 — Quality Grid"
+                        <TextBlock Text="Beta 1.3 — Estabilización"
                                    FontSize="11"
                                    Foreground="#9CA3AF" />
                     </Border>
