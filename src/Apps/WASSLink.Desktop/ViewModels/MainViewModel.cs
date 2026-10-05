@@ -18,14 +18,20 @@ public partial class MainViewModel : ViewModelBase
 {
     private readonly IDownloadProvider _downloadProvider;
     private readonly IClipboardService _clipboardService;
+    private readonly IFolderPickerService? _folderPickerService;
     private readonly MediaMetadataService _metadataService;
     private CancellationTokenSource? _cts;
     private CancellationTokenSource? _metadataCts;
+    private CancellationTokenSource? _toastCts;
 
-    public MainViewModel(IDownloadProvider downloadProvider, IClipboardService clipboardService)
+    public MainViewModel(
+        IDownloadProvider downloadProvider,
+        IClipboardService clipboardService,
+        IFolderPickerService? folderPickerService = null)
     {
         _downloadProvider = downloadProvider ?? throw new ArgumentNullException(nameof(downloadProvider));
         _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
+        _folderPickerService = folderPickerService;
         _metadataService = new MediaMetadataService();
 
         OutputPath = Path.Combine(
@@ -79,6 +85,42 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private string lastDownloadedFile = string.Empty;
 
+    // ─── Fases de progreso (para animaciones) ────────────────────────────────────
+
+    /// <summary>
+    /// True durante la descarga pura (yt-dlp descargando segmentos).
+    /// </summary>
+    [ObservableProperty]
+    private bool isPhaseDownloading;
+
+    /// <summary>
+    /// True durante el procesamiento FFmpeg (muxing / conversión de audio).
+    /// La barra pasa a modo indeterminado en la UI.
+    /// </summary>
+    [ObservableProperty]
+    private bool isPhaseProcessing;
+
+    // ─── Toast de completado ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// True cuando se debe mostrar el toast de descarga completada.
+    /// Se oculta automáticamente tras 4 segundos.
+    /// </summary>
+    [ObservableProperty]
+    private bool isToastVisible;
+
+    /// <summary>
+    /// Texto de la primera línea del toast (nombre del archivo).
+    /// </summary>
+    [ObservableProperty]
+    private string toastTitle = string.Empty;
+
+    /// <summary>
+    /// Texto de la segunda línea del toast (ruta de destino).
+    /// </summary>
+    [ObservableProperty]
+    private string toastSubtitle = string.Empty;
+
     // ─── Quality Grid / Modal de Formatos ────────────────────────────────────────
 
     [ObservableProperty]
@@ -116,6 +158,57 @@ public partial class MainViewModel : ViewModelBase
 
     [RelayCommand]
     private void SelectSection(string section) => SelectedSection = section;
+
+    /// <summary>
+    /// Abre el diálogo de selección de carpeta y actualiza OutputPath.
+    /// </summary>
+    [RelayCommand]
+    private async Task BrowseFolderAsync()
+    {
+        if (_folderPickerService is null) return;
+
+        var chosen = await _folderPickerService.PickFolderAsync(OutputPath);
+        if (!string.IsNullOrWhiteSpace(chosen))
+        {
+            OutputPath = chosen;
+            StatusMessage = $"Carpeta de destino: {chosen}";
+        }
+    }
+
+    /// <summary>
+    /// Abre la carpeta de destino actual en el explorador de archivos.
+    /// </summary>
+    [RelayCommand]
+    private void OpenOutputFolder()
+    {
+        var path = OutputPath;
+        if (string.IsNullOrWhiteSpace(path)) return;
+
+        try
+        {
+            Directory.CreateDirectory(path);
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"\"{path}\"",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"No se pudo abrir la carpeta: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Cierra el toast manualmente.
+    /// </summary>
+    [RelayCommand]
+    private void DismissToast()
+    {
+        _toastCts?.Cancel();
+        IsToastVisible = false;
+    }
 
     [RelayCommand]
     private void ClearDownloadUrl()
@@ -274,9 +367,14 @@ public partial class MainViewModel : ViewModelBase
         }
 
         IsDownloading = true;
+        IsPhaseDownloading = false;
+        IsPhaseProcessing = false;
+        IsToastVisible = false;
         DownloadProgress = 0;
         CurrentSpeed = string.Empty;
         CurrentEta = string.Empty;
+        CurrentTitle = string.Empty;
+        CurrentSize = string.Empty;
         StatusMessage = "Iniciando descarga...";
         _cts = new CancellationTokenSource();
 
@@ -296,17 +394,24 @@ public partial class MainViewModel : ViewModelBase
 
         var progress = new Progress<DownloadProgress>(p =>
         {
-            if (p.StatusMessage != null && p.StatusMessage.Contains("FFmpeg", StringComparison.OrdinalIgnoreCase))
+            var isProcessingPhase = p.StatusMessage != null &&
+                p.StatusMessage.Contains("FFmpeg", StringComparison.OrdinalIgnoreCase);
+
+            if (isProcessingPhase)
             {
+                IsPhaseDownloading = false;
+                IsPhaseProcessing = true;
                 DownloadProgress = 0;
                 CurrentSpeed = string.Empty;
                 CurrentEta = string.Empty;
-                StatusMessage = p.StatusMessage;
+                StatusMessage = p.StatusMessage!;
                 return;
             }
 
             if (p.Percentage >= 0)
             {
+                IsPhaseDownloading = true;
+                IsPhaseProcessing = false;
                 DownloadProgress = p.Percentage;
                 if (!string.IsNullOrEmpty(p.Speed)) CurrentSpeed = p.Speed;
                 if (!string.IsNullOrEmpty(p.Eta)) CurrentEta = p.Eta;
@@ -319,6 +424,8 @@ public partial class MainViewModel : ViewModelBase
             }
             else if (!string.IsNullOrWhiteSpace(p.StatusMessage))
             {
+                IsPhaseDownloading = true;
+                IsPhaseProcessing = false;
                 StatusMessage = p.StatusMessage;
             }
         });
@@ -331,11 +438,13 @@ public partial class MainViewModel : ViewModelBase
             {
                 LastDownloadedFile = result.OutputPath ?? OutputPath;
                 var fileName = Path.GetFileName(LastDownloadedFile);
-                StatusMessage = string.IsNullOrWhiteSpace(fileName)
-                    ? $"¡Descarga completada! Guardado en: {OutputPath}"
-                    : $"¡Completado!: {fileName}";
+                var displayName = string.IsNullOrWhiteSpace(fileName) ? "Archivo descargado" : fileName;
 
+                StatusMessage = $"¡Completado!: {displayName}";
                 DownloadProgress = 100;
+
+                // Mostrar toast de completado
+                await ShowToastAsync(displayName, OutputPath);
             }
             else
             {
@@ -353,8 +462,34 @@ public partial class MainViewModel : ViewModelBase
         finally
         {
             IsDownloading = false;
+            IsPhaseDownloading = false;
+            IsPhaseProcessing = false;
             _cts?.Dispose();
             _cts = null;
+        }
+    }
+
+    /// <summary>
+    /// Muestra el toast de completado y lo oculta automáticamente tras 4 segundos.
+    /// </summary>
+    private async Task ShowToastAsync(string title, string subtitle)
+    {
+        _toastCts?.Cancel();
+        _toastCts?.Dispose();
+        _toastCts = new CancellationTokenSource();
+
+        ToastTitle = title;
+        ToastSubtitle = subtitle;
+        IsToastVisible = true;
+
+        try
+        {
+            await Task.Delay(4000, _toastCts.Token);
+            IsToastVisible = false;
+        }
+        catch (OperationCanceledException)
+        {
+            // Descartado manualmente — no hacer nada
         }
     }
 
