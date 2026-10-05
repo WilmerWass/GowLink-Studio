@@ -38,7 +38,7 @@ La nueva cuadrícula de calidad facilita comparar y elegir las opciones disponib
 - Corrección de interrupciones ocasionales al procesar determinadas URL.
 - Correcciones menores de renderizado y estabilidad general.
 
-Consulta el [changelog completo de Beta 1.2](https://github.com/WilmerWass/WASSLink-Studio/releases/tag/Beta_1.2).
+Consulta el [changelog del proyecto](developer/CHANGELOG.md) y las novedades de Beta 1.3 incluidas en el paquete.
 
 ## 📥 Descarga e instalación
 
@@ -54,16 +54,19 @@ La aplicación es portable: no crea accesos directos, asociaciones de archivos n
 ## 📁 Estructura del paquete publicado
 
 ```text
-GowLink-Desktop-win/
+GowLink-Desktop-win-B1.3/
 ├── WASSLink.Desktop.exe       # Ejecutable; nombre técnico heredado
-├── LEEME.txt                  # Instrucciones portables
+├── LEEME_README.txt           # Instrucciones portables (ES / EN / JA)
 ├── THIRD-PARTY-NOTICES.txt    # Avisos y licencias de terceros
+├── NOVEDADES_NEWS.txt         # Novedades de Beta 1.3 (ES / EN / JA)
 └── tools/
     ├── ffmpeg/ffmpeg.exe
     └── yt-dlp/yt-dlp.exe
 ```
 
-El artefacto portable de Windows x64 se genera como `GowLink-Desktop-win.zip`.
+El artefacto portable de Windows x64 se genera como
+`GowLink-Desktop-win-B1.3.zip`. Los tres documentos de texto de la raíz están
+organizados en español, inglés y japonés.
 
 Las descargas se guardan por defecto en:
 

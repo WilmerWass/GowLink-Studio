@@ -5,15 +5,16 @@ $desktopProject = Join-Path $root 'src\Apps\WASSLink.Desktop\WASSLink.Desktop.cs
 $profile = Join-Path $root 'src\Apps\WASSLink.Desktop\Properties\PublishProfiles\Win64-SingleFile.pubxml'
 $ytDlpSource = Join-Path $root 'tools\yt-dlp\yt-dlp.exe'
 $ffmpegSource = Join-Path $root 'tools\ffmpeg\ffmpeg.exe'
-$instructionsSource = Join-Path $root 'release\WASSLink-Desktop-README.txt'
+$instructionsSource = Join-Path $root 'release\LEEME_README.txt'
 $noticesSource = Join-Path $root 'release\THIRD-PARTY-NOTICES.txt'
+$newsSource = Join-Path $root 'release\NOVEDADES_NEWS.txt'
 $betaRoot = Join-Path $root 'artifacts\beta'
-$packageName = 'GowLink-Desktop-win'
+$packageName = 'GowLink-Desktop-win-B1.3'
 $packageDir = Join-Path $betaRoot $packageName
 $stagingDir = Join-Path $betaRoot "$packageName-staging"
 $archivePath = Join-Path $betaRoot "$packageName.zip"
 
-foreach ($requiredFile in @($desktopProject, $profile, $ytDlpSource, $ffmpegSource, $instructionsSource, $noticesSource)) {
+foreach ($requiredFile in @($desktopProject, $profile, $ytDlpSource, $ffmpegSource, $instructionsSource, $noticesSource, $newsSource)) {
 	if (-not (Test-Path $requiredFile -PathType Leaf)) {
 		throw "Required release file not found: $requiredFile"
 	}
@@ -43,8 +44,15 @@ $ffmpegTarget = Join-Path $stagingDir 'tools\ffmpeg'
 New-Item -ItemType Directory -Path $ytDlpTarget, $ffmpegTarget -Force | Out-Null
 Copy-Item $ytDlpSource (Join-Path $ytDlpTarget 'yt-dlp.exe')
 Copy-Item $ffmpegSource (Join-Path $ffmpegTarget 'ffmpeg.exe')
-Copy-Item $instructionsSource (Join-Path $stagingDir 'LEEME.txt')
+Copy-Item $instructionsSource (Join-Path $stagingDir 'LEEME_README.txt')
 Copy-Item $noticesSource (Join-Path $stagingDir 'THIRD-PARTY-NOTICES.txt')
+Copy-Item $newsSource (Join-Path $stagingDir 'NOVEDADES_NEWS.txt')
+
+foreach ($requiredDocument in @('LEEME_README.txt', 'THIRD-PARTY-NOTICES.txt', 'NOVEDADES_NEWS.txt')) {
+	if (-not (Test-Path (Join-Path $stagingDir $requiredDocument) -PathType Leaf)) {
+		throw "Required release document not found in package root: $requiredDocument"
+	}
+}
 
 if (Test-Path $packageDir) {
 	Remove-Item $packageDir -Recurse -Force
