@@ -108,8 +108,9 @@ organizados en español, inglés y japonés.
 Las descargas se guardan por defecto en:
 
 ```text
-%LOCALAPPDATA%\GowLink\Descargas
+%LOCALAPPDATA%\Downloads\WASSLink
 ```
+Para cambiar la ruta donde se guardaras tus archivos descargados dale click donde dice examinar y seleciona o crea una nueva carpeta
 
 Los logs se guardan en:
 
