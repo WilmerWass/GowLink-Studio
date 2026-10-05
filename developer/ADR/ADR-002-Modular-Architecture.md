@@ -8,7 +8,7 @@ Fecha: 2026-08-03
 
 # Contexto
 
-WASSLink está concebido como una plataforma multimedia que crecerá durante muchos años. Para garantizar su mantenibilidad, escalabilidad y facilidad de pruebas, la solución debe dividirse en módulos con responsabilidades bien definidas.
+GowLink Studio está concebido como una plataforma multimedia modular. Para garantizar su mantenibilidad, escalabilidad y facilidad de pruebas, la solución debe dividirse en módulos con responsabilidades bien definidas.
 
 ---
 
@@ -24,17 +24,19 @@ La interfaz gráfica, la consola y las futuras aplicaciones móviles reutilizar�
 
 # Arquitectura Inicial
 
-- WASSLink.Abstractions
-- WASSLink.Shared
-- WASSLink.Configuration
-- WASSLink.Download
-- WASSLink.Library
-- WASSLink.Player
-- WASSLink.Search
-- WASSLink.Plugins
-- WASSLink.Studio
-- WASSLink.CLI
-- WASSLink.Tests
+- `WASSLink.Abstractions` (nombre técnico actual)
+- `WASSLink.Shared` (nombre técnico actual)
+- `WASSLink.Configuration` (nombre técnico actual)
+- `WASSLink.Download` (nombre técnico actual)
+- `WASSLink.Library` (nombre técnico actual)
+- `WASSLink.Player` (nombre técnico actual)
+- `WASSLink.Search` (nombre técnico actual)
+- `WASSLink.Plugins` (nombre técnico actual)
+- `WASSLink.Studio` (nombre técnico histórico/previsto)
+- `WASSLink.CLI` (nombre técnico actual)
+- `WASSLink.Tests` (nombre técnico actual)
+
+La marca de producto vigente es GowLink Studio. Esta ADR conserva los identificadores que describen la solución técnica actual; su rebranding requiere una migración coordinada posterior.
 
 ---
 

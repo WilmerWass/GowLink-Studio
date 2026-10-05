@@ -2,24 +2,23 @@ using System.Text;
 
 namespace WASSLink.Shared.Logging;
 
-public sealed class WassLinkLogger
+public class GowLinkLogger
 {
     private readonly string _logDirectory;
     private readonly string _logFilePath;
     private readonly object _lock = new();
 
-    public WassLinkLogger()
+    public GowLinkLogger()
     {
         _logDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "WASSLink",
+            "GowLink",
             "Logs");
-
         Directory.CreateDirectory(_logDirectory);
 
         _logFilePath = Path.Combine(
             _logDirectory,
-            $"wasslink-{DateTime.Now:yyyy-MM-dd}.log");
+            $"gowlink-{DateTime.Now:yyyy-MM-dd}.log");
     }
 
     public string LogFilePath => _logFilePath;
@@ -57,4 +56,8 @@ public sealed class WassLinkLogger
             File.AppendAllText(_logFilePath, entry);
         }
     }
+}
+
+public sealed class WassLinkLogger : GowLinkLogger
+{
 }

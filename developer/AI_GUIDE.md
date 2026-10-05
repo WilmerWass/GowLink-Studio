@@ -1,20 +1,22 @@
-# WASSLink Studio — AI Development Guide
+# GowLink Studio — Guía de desarrollo con IA
 
 ## Objetivo
 
-Este documento define las reglas para utilizar herramientas de IA durante el desarrollo de WASSLink Studio.
+Este documento define las reglas para utilizar herramientas de IA durante el desarrollo de GowLink Studio.
 
 ## Identidad del producto
 
-El producto principal en desarrollo activo se llama:
+La marca oficial actual es **GowLink Studio**. El producto de escritorio activo se presenta como:
 
-**WASSLink Downloader**
+**GowLink Downloader**
+
+Las aplicaciones se presentan como GowLink Desktop y GowLink CLI. Los nombres de solución, carpetas, proyectos, ensamblados y namespaces `WASSLink.*` todavía son identificadores técnicos existentes; no deben renombrarse parcialmente. Su migración requiere un cambio coordinado y validado que aún está pendiente.
 
 Lema oficial:
 
 "Descarga lo que quieras, cuando quieras y como quieras."
 
-WASSLink Studio es el nombre del ecosistema completo.
+GowLink Studio es el nombre de la suite completa.
 
 El lema representa libertad de uso, NO una promesa técnica absoluta ni autorización para evadir restricciones técnicas, DRM o legales.
 
@@ -74,7 +76,7 @@ Los proveedores se registran mediante DI.
 
 ## Reproductor
 
-El reproductor es una capacidad principal de WASSLink Studio (Beta 3).
+El reproductor es una capacidad futura de GowLink Studio (Beta 3).
 
 No debe eliminarse del roadmap simplemente para convertir el proyecto en un gestor de descargas.
 
@@ -84,9 +86,9 @@ Descarga → Biblioteca → Reproducción.
 
 ## Betas
 
-El proyecto se desarrolla por betas:
+El proyecto se desarrolla incrementalmente. El estado actual es Beta 1.3, en estabilización; no avanzar a Beta 2 hasta completar y validar Beta 1:
 
-- Beta 1 — Download Studio (en curso)
+- Beta 1 — Downloader (en estabilización)
 - Beta 2 — Search Studio
 - Beta 3 — Media Player
 - Beta 4 — Library Studio
@@ -96,15 +98,15 @@ El proyecto se desarrolla por betas:
 - Beta 8 — Torrent Studio
 - Beta 9 — Linux Edition
 - Beta 10 — Mobile / Android
-- V2 — WASSLink Media Studio
+- V2 — GowLink Media Studio
 
 NO implementar betas futuras hasta que la beta actual tenga una base sólida y funcional.
 
-Una sub-beta (B1.1, B1.2, etc.) se crea únicamente cuando una funcionalidad concreta está terminada y probada.
+Quality Grid y selección de formatos están implementados. El progreso, la cancelación, la interfaz Desktop/CLI y las rutas de logging tienen implementación; la suite actual cuenta con 20 pruebas aprobadas. Se validó en runtime una descarga autorizada de audio M4A y otra de vídeo MP4 1080p, con progreso, FFmpeg y salida registrada. Esto no equivale a certificar todos los fallos de producción ni a dar por cerrada Beta 1. Una sub-beta solo se marca completa cuando sus criterios funcionales están integrados y probados.
 
 ## Plugins
 
-Las extensiones deben utilizar contratos definidos en WASSLink.Abstractions.
+Las extensiones deben utilizar los contratos existentes en el proyecto técnico `WASSLink.Abstractions` hasta que se apruebe y ejecute la migración de identificadores.
 
 ## Cambios
 
@@ -127,6 +129,8 @@ dotnet build WASSLink-Studio.slnx
 Y cuando existan pruebas:
 
 dotnet test WASSLink-Studio.slnx
+
+La última ejecución registrada para Beta 1.3 pasó las 20 pruebas. Repetir ambos comandos tras cambios estructurales o de código.
 
 ## Git
 

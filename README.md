@@ -15,7 +15,7 @@
 
 - 🎚️ **Quality Grid:** selector organizado de formato, calidad, resolución y opciones disponibles según el contenido.
 - ⚡ **Descargas en segundo plano:** mejor gestión de hilos y una interfaz más fluida mientras se procesa una descarga.
-- 📂 **Organización automática:** guarda las descargas en la carpeta `%LOCALAPPDATA%\GowLink\Descargas` por defecto.
+- 📂 **Organización automática:** guarda las descargas en la carpeta `Descargas\GowLink` por defecto.
 - 🖥️ **Aplicación portable:** no requiere instalador ni permisos administrativos.
 - 📦 **Runtime incluido:** el paquete publicado incluye el runtime de .NET; no es necesario instalarlo por separado.
 - 🔧 **Motor de descarga:** utiliza componentes de terceros como `yt-dlp` y `FFmpeg` con soporte completo para UTF-8 en rutas y metadatos.
@@ -92,14 +92,18 @@ La aplicación es portable: no crea accesos directos, asociaciones de archivos n
 
 ```text
 GowLink-Desktop-win-B1.3/
-├── GowLink.Desktop.exe       # Aplicación principal
-├── tools/                    # Herramientas auxiliares y motores incluidos
-│   ├── yt-dlp.exe
-│   ├── ffmpeg.exe
-│   └── [otros binarios]
-├── GowLink-Desktop-README.txt
-└── THIRD-PARTY-NOTICES.txt   # Avisos y licencias de terceros
+├── WASSLink.Desktop.exe       # Ejecutable; nombre técnico heredado
+├── LEEME_README.txt           # Instrucciones portables (ES / EN / JA)
+├── THIRD-PARTY-NOTICES.txt    # Avisos y licencias de terceros
+├── NOVEDADES_NEWS.txt         # Novedades de Beta 1.3 (ES / EN / JA)
+└── tools/
+    ├── ffmpeg/ffmpeg.exe
+    └── yt-dlp/yt-dlp.exe
 ```
+
+El artefacto portable de Windows x64 se genera como
+`GowLink-Desktop-win-B1.3.zip`. Los tres documentos de texto de la raíz están
+organizados en español, inglés y japonés.
 
 Las descargas se guardan por defecto en:
 

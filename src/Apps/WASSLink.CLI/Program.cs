@@ -20,6 +20,6 @@ builder.Services
 
 var app = builder.Build();
 
-Console.WriteLine("WASSLink CLI iniciado.");
+Console.WriteLine("GowLink CLI iniciado.");
 
 await app.RunAsync();

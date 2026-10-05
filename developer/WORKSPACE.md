@@ -1,8 +1,12 @@
-﻿# WASSLink Studio Workspace
+﻿# GowLink Studio — Workspace
 
 ## Repositorio
 
-WASSLink-Studio
+`WilmerWass/WASSLink-Studio` (slug histórico del repositorio).
+
+Nombre oficial del producto: GowLink Studio.
+
+Los nombres técnicos de solución, proyectos y namespaces siguen usando `WASSLink.*`; su migración está pendiente.
 
 ## Estructura
 
@@ -29,11 +33,11 @@ developer/
 
 ## Aplicaciones
 
-### WASSLink.Desktop
+### GowLink Desktop (`WASSLink.Desktop`)
 
 AplicaciÃ³n grÃ¡fica basada en Avalonia.
 
-### WASSLink.CLI
+### GowLink CLI (`WASSLink.CLI`)
 
 AplicaciÃ³n de lÃ­nea de comandos.
 
@@ -61,7 +65,7 @@ ReproducciÃ³n
 
 ## Estado
 
-Fase 1 completada.
+Fase 1 completada. Beta 1.3 está en estabilización; no iniciar Beta 2 todavía.
 
 La soluciÃ³n compila correctamente:
 
@@ -88,6 +92,18 @@ dotnet build WASSLink-Studio.slnx
 Probar:
 
 dotnet test WASSLink-Studio.slnx
+
+Última ejecución registrada: 20/20 tests superados. La suite automatizada no sustituye la validación de descarga real extremo a extremo.
+
+Ejecutar Desktop:
+
+dotnet run --project src\Apps\WASSLink.Desktop\WASSLink.Desktop.csproj
+
+Ejecutar CLI:
+
+dotnet run --project src\Apps\WASSLink.CLI\WASSLink.CLI.csproj
+
+Nomenclatura de ejecución: GowLink Studio es el producto; GowLink Desktop, GowLink CLI y GowLink Downloader son los nombres visibles. Los proyectos, namespaces y ensamblados `WASSLink.*` son identificadores técnicos heredados hasta una migración coordinada.
 
 Ver estado:
 

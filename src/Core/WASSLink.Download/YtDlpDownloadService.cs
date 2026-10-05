@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +26,10 @@ public class YtDlpDownloadService : IDownloadProvider
 
     private static readonly Regex AlreadyDownloadedRegex = new(
         @"\[download\]\s+(?<dest>.+)\s+has already been downloaded",
+        RegexOptions.Compiled);
+
+    private static readonly Regex MergedDestinationRegex = new(
+        @"\[Merger\]\s+Merging formats into\s+""(?<dest>.+)""",
         RegexOptions.Compiled);
 
     public static string GetLogsDirectory() => LoggerService.LogsDirectory;
@@ -193,7 +198,7 @@ public class YtDlpDownloadService : IDownloadProvider
         // --windows-filenames evita caracteres inválidos en Windows
         // --no-part para evitar archivos temporales residuales en fallos
         var outputTemplate = Path.Combine(request.OutputPath, "%(title)s.%(ext)s");
-        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} --windows-filenames -o \"{outputTemplate}\" --newline --no-playlist";
+        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} --windows-filenames --encoding UTF-8 -o \"{outputTemplate}\" --newline --no-playlist";
 
         LoggerService.Write($"URL={request.Url}");
         LoggerService.Write($"COMMAND={ytDlpPath} {arguments}");
@@ -204,6 +209,8 @@ public class YtDlpDownloadService : IDownloadProvider
             Arguments = arguments,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
             UseShellExecute = false,
             CreateNoWindow = true
         };
@@ -254,20 +261,8 @@ public class YtDlpDownloadService : IDownloadProvider
                 progress?.Report(new DownloadProgress(0, phase));
             }
 
-            // Detectar ruta de destino
-            var destMatch = DestinationRegex.Match(line);
-            if (destMatch.Success)
-            {
-                downloadedFilePath = destMatch.Groups["dest"].Value.Trim();
-            }
-            else
-            {
-                var alreadyMatch = AlreadyDownloadedRegex.Match(line);
-                if (alreadyMatch.Success)
-                {
-                    downloadedFilePath = alreadyMatch.Groups["dest"].Value.Trim();
-                }
-            }
+            if (TryParseOutputPath(line, out var outputPath))
+                downloadedFilePath = outputPath;
 
             var match = ProgressRegex.Match(line);
             if (match.Success && TryParseProgressPercentage(match.Groups["pct"].Value, out var pct))
@@ -312,7 +307,36 @@ public class YtDlpDownloadService : IDownloadProvider
             return new DownloadResult(false, null, errorMsg);
         }
 
-        return new DownloadResult(true, downloadedFilePath ?? request.OutputPath, null);
+        var finalOutputPath = downloadedFilePath ?? request.OutputPath;
+        LoggerService.Write($"DOWNLOAD COMPLETED OutputPath=\"{finalOutputPath}\"");
+        return new DownloadResult(true, finalOutputPath, null);
+    }
+
+    private static bool TryParseOutputPath(string line, out string? outputPath)
+    {
+        var mergedMatch = MergedDestinationRegex.Match(line);
+        if (mergedMatch.Success)
+        {
+            outputPath = mergedMatch.Groups["dest"].Value.Trim();
+            return true;
+        }
+
+        var destinationMatch = DestinationRegex.Match(line);
+        if (destinationMatch.Success)
+        {
+            outputPath = destinationMatch.Groups["dest"].Value.Trim();
+            return true;
+        }
+
+        var alreadyDownloadedMatch = AlreadyDownloadedRegex.Match(line);
+        if (alreadyDownloadedMatch.Success)
+        {
+            outputPath = alreadyDownloadedMatch.Groups["dest"].Value.Trim();
+            return true;
+        }
+
+        outputPath = null;
+        return false;
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-# ADR-001 - Filosofía Portable First
+# ADR-001 - GowLink Studio: filosofía Portable First
 
 Estado: ✅ Aprobado
 
@@ -8,15 +8,15 @@ Fecha: 2026-08-02
 
 # Contexto
 
-Uno de los principales objetivos de WASSLink es ofrecer la mayor libertad posible al usuario.
+Uno de los principales objetivos de GowLink Studio es ofrecer la mayor libertad posible al usuario.
 
-Durante el diseño del proyecto surgió la necesidad de decidir si WASSLink sería únicamente una aplicación portable o una aplicación instalable.
+Durante el diseño del proyecto surgió la necesidad de decidir si GowLink sería únicamente una aplicación portable o una aplicación instalable.
 
 ---
 
 # Decisión
 
-WASSLink adopta oficialmente la filosofía **Portable First**.
+GowLink adopta oficialmente la filosofía **Portable First**.
 
 Esto significa que el modo de funcionamiento principal será Portable, permitiendo ejecutar la aplicación sin instalación.
 
