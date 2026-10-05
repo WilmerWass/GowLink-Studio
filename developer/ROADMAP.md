@@ -1,4 +1,4 @@
-# WASSLink Studio — Roadmap Oficial
+# GowLink Studio — Roadmap oficial
 
 ## Historial
 
@@ -24,8 +24,7 @@ Objetivos alcanzados:
 - Crear solución .NET 10.
 - Crear estructura Apps/Core/Tests.
 - Crear proyectos Core.
-- Crear WASSLink.Desktop.
-- Crear WASSLink.CLI.
+- Crear los proyectos técnicos `WASSLink.Desktop` y `WASSLink.CLI` (marcas actuales: GowLink Desktop y GowLink CLI).
 - Crear proyecto de Tests.
 - Definir referencias entre proyectos.
 - Validar mapa de dependencias.
@@ -44,13 +43,13 @@ Resultado:
 
 ---
 
-# Beta 1 — Download Studio
+# Beta 1 — GowLink Downloader
 
-Estado: EN CURSO.
+Estado: EN ESTABILIZACIÓN (Beta 1.3).
 
 Objetivo:
 
-Crear un descargador multimedia funcional.
+Completar y estabilizar el descargador multimedia antes de iniciar Beta 2.
 
 Proveedor inicial: YouTube (yt-dlp).
 
@@ -64,6 +63,9 @@ Capacidades de Beta 1:
 - Organización básica de archivos descargados.
 - Logs y diagnóstico.
 - Interfaz moderna con barra lateral.
+- Quality Grid e inspección/selección de formatos (implementados en B1.2).
+- Rebranding visible de Desktop y CLI a GowLink (implementado).
+- Migración coordinada de namespaces y proyectos `WASSLink.*` (pendiente; no hacer cambios parciales).
 
 ## Sub-betas de Beta 1
 
@@ -83,28 +85,35 @@ Criterios cumplidos:
 - YtDlpDownloadService implementa IDownloadProvider.
 - MainViewModel recibe IDownloadProvider por DI (sin new()).
 - UI con barra lateral funcional y secciones Próximamente.
-- Compilación y pruebas unitarias correctas (0 errores, 0 advertencias, 11 pruebas superadas).
+- Validación inicial: compilación y 11 pruebas; la suite actual alcanza 19 pruebas aprobadas (Beta 1.3).
 
-### B1.2 — Descarga real de YouTube
+### B1.2 — Quality Grid y selección de formatos
 
-Objetivo:
-Descarga de audio y vídeo desde YouTube.
+Estado: IMPLEMENTADO; validación real extremo a extremo pendiente.
 
-Criterios:
-- URL de YouTube → descarga → archivo en carpeta de salida.
-- Sin errores inesperados en flujo normal.
+- Inspección asíncrona de metadatos y formatos con yt-dlp.
+- Presentación y selección de opciones de audio/vídeo.
+- Inicio de descarga con la selección.
+- Pruebas unitarias de parsing y selector de formatos.
 
-### B1.3 — Progreso y cancelación robustos
+### B1.3 — Estabilización de Beta 1 y transición GowLink
 
-Objetivo:
-Progreso en tiempo real, cancelación limpia.
+Estado: EN CURSO.
 
-Criterios:
-- Barra de progreso actualizada durante descarga.
-- Cancelación detiene el proceso de yt-dlp correctamente.
-- Estado visual claro (descargando / completado / cancelado / error).
+Objetivo: validar la experiencia implementada, cerrar discrepancias operativas y dejar documentada la transición de marca sin adelantar Beta 2.
+
+Criterios pendientes:
+- Validar manualmente un flujo completo de descarga con una URL/contenido que el usuario tenga derecho a descargar.
+- Confirmar progreso, finalización y cancelación contra el proceso externo durante ejecución real; ampliar pruebas automatizadas donde sea posible.
+- Unificar las rutas de logs: `GowLinkLogger` y diagnósticos usan `%LOCALAPPDATA%\GowLink\Logs` con fallback a `%LOCALAPPDATA%\WASSLink\Logs`; `LoggerService` todavía usa `%APPDATA%\GowLink\logs` con fallback a `%APPDATA%\WASSLink\logs`.
+- Revisar manejo visible de URL no soportada, herramienta externa ausente, fallos de yt-dlp/FFmpeg y errores de escritura.
+- Mantener los nombres visibles GowLink y documentar las referencias técnicas heredadas `WASSLink.*`.
+- Planificar como cambio coordinado la migración de namespaces/proyectos/ensamblados; completar esa migración solo con referencias, XAML, build, tests y publicación validados.
+- Mantener `dotnet test WASSLink-Studio.slnx` verde; la última ejecución registrada pasó 19/19. Esta suite no acredita prueba real end-to-end.
 
 ### B1.4 — Organización
+
+Estado: PLANIFICADO; no iniciar antes de cerrar la estabilización B1.3.
 
 Objetivo:
 Organización automática de archivos descargados.
@@ -163,7 +172,7 @@ Implementar:
 - Siguiente / anterior.
 - Integración con biblioteca.
 
-El reproductor permanece como componente central de WASSLink Studio.
+El reproductor permanece como componente central futuro de GowLink Studio.
 
 ---
 
@@ -300,7 +309,7 @@ Usar plugins/adaptadores cuando las restricciones de plataforma lo requieran.
 
 ---
 
-# V2 — WASSLink Media Studio
+# V2 — GowLink Media Studio
 
 Estado: futura.
 
@@ -329,4 +338,4 @@ Una sub-beta solamente se crea cuando una funcionalidad concreta está terminada
 
 NO implementar todas las funcionalidades simultáneamente.
 
-Prioridad actual: Beta 1 funcional y sólida antes de avanzar a Beta 2.
+Prioridad actual: terminar y validar la estabilización de Beta 1.3. No comenzar Beta 2 antes de cumplir B1.1–B1.5 y B1 FINAL.

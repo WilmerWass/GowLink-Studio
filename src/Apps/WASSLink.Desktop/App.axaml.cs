@@ -10,11 +10,11 @@ namespace WASSLink.Desktop;
 
 public partial class App : Application
 {
-    private readonly WassLinkLogger _logger = new();
+    private readonly GowLinkLogger _logger = new();
 
     public override void Initialize()
     {
-        _logger.Info("WASSLink Studio initializing.");
+        _logger.Info("GowLink Studio initializing.");
 
         AvaloniaXamlLoader.Load(this);
     }
@@ -37,6 +37,6 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
 
-        _logger.Info("WASSLink Studio started successfully.");
+        _logger.Info("GowLink Studio started successfully.");
     }
 }

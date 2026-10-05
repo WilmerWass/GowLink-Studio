@@ -1,4 +1,4 @@
-# 🎵 WASSLink Studio — Beta 1.2 "Quality Grid"
+# 🎵 GowLink Studio — Beta 1.2 "Quality Grid"
 
 > Aplicación de escritorio **portable para Windows x64** que permite gestionar y descargar audio y vídeo desde fuentes compatibles, con selección de calidad, procesamiento en segundo plano y una interfaz sencilla.
 
@@ -13,7 +13,7 @@
 
 - 🎚️ **Quality Grid:** selector organizado de formato, calidad, resolución y opciones disponibles según el contenido.
 - ⚡ **Descargas en segundo plano:** mejor gestión de hilos y una interfaz más fluida mientras se procesa una descarga.
-- 📂 **Organización automática:** guarda las descargas en la carpeta `Descargas\WASSLink` por defecto.
+- 📂 **Organización automática:** guarda las descargas en la carpeta `Descargas\GowLink` por defecto.
 - 🖥️ **Aplicación portable:** no requiere instalador ni permisos administrativos.
 - 📦 **Runtime incluido:** el paquete publicado incluye el runtime de .NET; no es necesario instalarlo por separado.
 - 🔧 **Motor de descarga:** utiliza componentes de terceros como `yt-dlp` y `FFmpeg` para inspeccionar y procesar contenido compatible.
@@ -54,17 +54,17 @@ La aplicación es portable: no crea accesos directos, asociaciones de archivos n
 ## 📁 Estructura del paquete publicado
 
 ```text
-WASSLink-Desktop-win-x64/
-├── WASSLink.Desktop.exe       # Aplicación principal
+GowLink-Desktop-win-x64/
+├── GowLink.Desktop.exe       # Aplicación principal
 ├── tools/                     # Herramientas auxiliares y motores incluidos
-├── WASSLink-Desktop-README.txt
+├── GowLink-Desktop-README.txt
 └── THIRD-PARTY-NOTICES.txt    # Avisos y licencias de terceros
 ```
 
 Las descargas se guardan por defecto en:
 
 ```text
-%USERPROFILE%\Downloads\WASSLink
+%USERPROFILE%\Downloads\GowLink
 ```
 
 ## 🔒 Seguridad y confiabilidad
@@ -81,7 +81,7 @@ Descargas de sitios de terceros no verificados pueden incluir virus o modificaci
 
 ## ⚖️ Uso legal y responsabilidad
 
-WASSLink Studio es una herramienta tecnológica de propósito general. No promueve, autoriza ni garantiza la descarga, copia o distribución no autorizada de contenido.
+GowLink Studio es una herramienta tecnológica de propósito general. No promueve, autoriza ni garantiza la descarga, copia o distribución no autorizada de contenido.
 
 El usuario es el único responsable de:
 
@@ -89,11 +89,11 @@ El usuario es el único responsable de:
 - Contar con los permisos o derechos necesarios.
 - Cumplir la legislación aplicable y los términos de servicio de las plataformas utilizadas.
 
-WASSLink Studio no concede derechos de propiedad intelectual sobre contenido perteneciente a terceros.
+GowLink Studio no concede derechos de propiedad intelectual sobre contenido perteneciente a terceros.
 
 ## 📄 Licencia
 
-WASSLink Studio se distribuye bajo la **[Licencia Pública General GNU v3.0 (GPL-3.0)](LICENSE)**.
+GowLink Studio se distribuye bajo la **[Licencia Pública General GNU v3.0 (GPL-3.0)](LICENSE)**.
 
 **Resumido:**
 - ✅ Eres libre de usar, modificar y distribuir el software.
@@ -115,5 +115,5 @@ Esta es una versión beta y puede incluir errores o cambios incompletos. Si encu
 
 ---
 
-**WASSLink Studio** © 2026 WilmerWassPC  
+**GowLink Studio** © 2026 WilmerWassPC
 Distribuido bajo [GPL-3.0](LICENSE)

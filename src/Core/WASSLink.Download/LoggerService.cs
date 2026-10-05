@@ -5,12 +5,20 @@ namespace WASSLink.Download;
 
 public static class LoggerService
 {
-    public static string LogsDirectory { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "WASSLink",
-        "logs");
+    public static string LogsDirectory { get; } = ResolveLogsDirectory();
 
     public static string LogFilePath => Path.Combine(LogsDirectory, "app.log");
+
+    private static string ResolveLogsDirectory()
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        var preferred = Path.Combine(appData, "GowLink", "logs");
+        var legacy = Path.Combine(appData, "WASSLink", "logs");
+
+        return Directory.Exists(legacy) && !Directory.Exists(preferred)
+            ? legacy
+            : preferred;
+    }
 
     public static void Write(string message)
     {

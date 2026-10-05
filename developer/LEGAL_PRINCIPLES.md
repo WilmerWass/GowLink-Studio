@@ -1,12 +1,12 @@
-﻿# WASSLink Studio â€” Legal Principles
+﻿# GowLink Studio — Principios legales
 
 ## PropÃ³sito
 
-WASSLink Studio es un software destinado a gestionar contenido multimedia y proporcionar herramientas tÃ©cnicas para bÃºsqueda, descarga, organizaciÃ³n y reproducciÃ³n.
+GowLink Studio es un software destinado a gestionar contenido multimedia y proporcionar herramientas técnicas para búsqueda, descarga, organización y reproducción.
 
 ## Responsabilidad del usuario
 
-El usuario es responsable de utilizar WASSLink Studio de acuerdo con:
+El usuario es responsable de utilizar GowLink Studio de acuerdo con:
 
 - LegislaciÃ³n aplicable.
 - Derechos de autor.
@@ -18,7 +18,7 @@ El usuario es responsable de utilizar WASSLink Studio de acuerdo con:
 
 La existencia de una capacidad tÃ©cnica para descargar contenido no implica autorizaciÃ³n legal para descargar cualquier contenido.
 
-WASSLink Studio no debe presentar una capacidad tÃ©cnica como permiso legal.
+GowLink Studio no debe presentar una capacidad técnica como permiso legal.
 
 ## Torrents
 
@@ -32,7 +32,7 @@ El usuario debe asegurarse de poseer los derechos necesarios o contar con autori
 
 ## Servicios externos
 
-WASSLink puede utilizar servicios y herramientas externas.
+GowLink Studio puede utilizar servicios y herramientas externas.
 
 Su utilizaciÃ³n debe respetar las licencias correspondientes y los tÃ©rminos aplicables.
 
@@ -51,7 +51,7 @@ El sistema de plugins no convierte automÃ¡ticamente sus componentes en parte d
 
 ## Principio de neutralidad tecnolÃ³gica
 
-WASSLink Studio proporciona infraestructura tÃ©cnica.
+GowLink Studio proporciona infraestructura técnica.
 
 La responsabilidad sobre el contenido utilizado mediante dicha infraestructura corresponde al usuario y al contexto legal aplicable.
 

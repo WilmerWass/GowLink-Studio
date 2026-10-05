@@ -1,10 +1,10 @@
-﻿# WASSLink Architecture
+﻿# GowLink Studio — Arquitectura
 
 > Documento oficial de arquitectura del proyecto.
 
 ## Arquitectura general
 
-WASSLink Studio utiliza una arquitectura modular basada en capas.
+GowLink Studio utiliza una arquitectura modular basada en capas. La marca de producto ya cambió; los nombres reales de solución, proyectos, carpetas y namespaces siguen siendo `WASSLink.*` y se conservarán hasta completar una migración técnica coordinada.
 
 La solución se divide en:
 
@@ -20,8 +20,8 @@ Las Apps contienen los puntos de entrada de usuario.
 
 Proyectos actuales:
 
-- WASSLink.Desktop (Avalonia UI)
-- WASSLink.CLI (consola)
+- `WASSLink.Desktop` (Avalonia UI; nombre de producto: GowLink Desktop)
+- `WASSLink.CLI` (consola; nombre de producto: GowLink CLI)
 
 Proyecto futuro:
 
@@ -71,7 +71,7 @@ Responsabilidad:
 - Utilidades comunes.
 - Extensiones.
 - Modelos base.
-- Logging (WassLinkLogger).
+- Logging (`GowLinkLogger`; `WassLinkLogger` se conserva como alias de compatibilidad).
 - Diagnósticos (DiagnosticReportGenerator).
 
 Dependencias:
@@ -113,7 +113,9 @@ Dependencias:
 
 Implementaciones actuales (Beta 1):
 
-- YtDlpDownloadService — implementa IDownloadProvider.
+- `YtDlpDownloadService` — implementa `IDownloadProvider`; inspecciona formatos y reporta progreso.
+- La cancelación de descarga intenta detener el proceso de yt-dlp y su árbol de procesos.
+- Quality Grid permite inspeccionar y seleccionar formatos disponibles.
 
 Capacidades futuras contempladas:
 
@@ -230,7 +232,7 @@ Core → implementaciones externas concretas cuando exista una abstracción adec
 
 Usuario
 ↓
-WASSLink.Desktop (App)
+GowLink Desktop (`WASSLink.Desktop`, App)
 ↓
 MainViewModel (IDownloadProvider via DI)
 ↓
@@ -277,7 +279,7 @@ La arquitectura no obliga a implementar todas las capacidades desde el principio
 
 # Descarga segmentada (futuro — Beta 7)
 
-Para archivos grandes, WASSLink debe detectar las capacidades del servidor:
+Para archivos grandes, GowLink debe detectar las capacidades del servidor:
 
 URL
 ↓
@@ -314,16 +316,16 @@ El Core define QUÉ debe hacerse.
 
 Las implementaciones externas definen CÓMO se realiza.
 
-Esto permite evolucionar WASSLink Studio sin reconstruir la arquitectura alrededor de una tecnología específica.
+El cambio de marca en la UI y ciertos datos de ejecución ya está iniciado. La migración de namespaces y nombres de proyecto todavía no se realizó y deberá abordarse en un cambio separado, coordinando referencias, XAML, ensamblados, solución, pruebas y distribución.
 
 ---
 
 # Estado
 
-Version: 1.2
+Estado documental: Beta 1.3 — estabilización en curso.
 
-Fecha: 2026-08-21
+La suite de pruebas registra 19 pruebas aprobadas. La validación automatizada no sustituye una prueba manual de descarga real extremo a extremo.
 
-Fase 1: completada.
+Los logs del logger compartido y los informes de diagnóstico usan `%LOCALAPPDATA%\GowLink\Logs`, con fallback a `%LOCALAPPDATA%\WASSLink\Logs` si existe y no existe la ruta nueva. El logger interno de descargas aún utiliza `%APPDATA%\GowLink\logs` y fallback a `%APPDATA%\WASSLink\logs`; unificarlo es pendiente.
 
-Beta 1: en curso.
+Fase 1: completada. Beta 1: en estabilización.

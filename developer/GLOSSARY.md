@@ -1,4 +1,12 @@
-﻿# WASSLink Studio Glossary
+﻿# GowLink Studio — Glosario
+
+## GowLink Studio
+
+Nombre oficial actual de la suite. WASSLink Studio es el nombre histórico.
+
+## Nombres técnicos heredados
+
+Los identificadores `WASSLink.*` todavía se usan en la solución, proyectos, namespaces y algunas rutas de publicación. No implican que la marca actual sea WASSLink; su cambio técnico está pendiente de una migración coordinada.
 
 ## App
 
@@ -6,8 +14,8 @@ Aplicación final utilizada por el usuario.
 
 Ejemplos:
 
-- WASSLink.Desktop
-- WASSLink.CLI
+- GowLink Desktop (proyecto técnico: `WASSLink.Desktop`)
+- GowLink CLI (proyecto técnico: `WASSLink.CLI`)
 
 ## Core
 
@@ -23,11 +31,11 @@ Puede utilizar diferentes motores y proveedores.
 
 Mecanismo de distribución de archivos basado en BitTorrent.
 
-En WASSLink Studio se considera una capacidad futura del sistema de descargas.
+En GowLink Studio se considera una capacidad futura del sistema de descargas.
 
 ## Library
 
-Biblioteca multimedia donde se organiza el contenido gestionado por WASSLink.
+Biblioteca multimedia donde se organiza el contenido gestionado por GowLink.
 
 ## Player
 
@@ -35,7 +43,7 @@ Componente encargado de reproducir contenido multimedia.
 
 ## Plugin
 
-Extensión que implementa contratos definidos por WASSLink.
+Extensión que implementa contratos definidos actualmente en `WASSLink.Abstractions`.
 
 ## Provider
 
@@ -82,7 +90,7 @@ Ejemplos:
 
 ## Media Studio
 
-Concepto de producto de WASSLink Studio.
+Concepto de producto de GowLink Studio.
 
 Representa la integraciÃ³n de:
 

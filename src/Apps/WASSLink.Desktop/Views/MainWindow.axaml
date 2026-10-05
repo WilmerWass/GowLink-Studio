@@ -15,7 +15,7 @@
         MinHeight="560"
         WindowStartupLocation="CenterScreen"
         Background="#0F1015"
-        Title="WASSLink Studio — Downloader">
+        Title="GowLink Studio — Downloader">
 
     <Design.DataContext>
         <vm:MainViewModel />
@@ -47,7 +47,7 @@
                                        VerticalAlignment="Center" />
                         </Border>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="WASSLink"
+                            <TextBlock Text="GowLink"
                                        FontSize="18"
                                        FontWeight="Bold"
                                        Foreground="#F3F4F6" />
@@ -206,7 +206,7 @@
                         </StackPanel>
                     </Button>
 
-                    <TextBlock Text="© WASSLink Studio 2026"
+                    <TextBlock Text="© GowLink Studio 2026"
                                FontSize="10"
                                Foreground="#4B5563"
                                HorizontalAlignment="Center" />
@@ -224,7 +224,7 @@
 
                     <!-- Cabecera de Página -->
                     <StackPanel Spacing="6">
-                        <TextBlock Text="WASSLink Downloader"
+                        <TextBlock Text="GowLink Downloader"
                                    FontSize="26"
                                    FontWeight="Bold"
                                    Foreground="#F9FAFB" />

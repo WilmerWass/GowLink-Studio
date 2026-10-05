@@ -28,11 +28,7 @@ public partial class MainViewModel : ViewModelBase
         _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         _metadataService = new MediaMetadataService();
 
-        OutputPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            "Downloads",
-            "WASSLink"
-        );
+        OutputPath = ResolveDefaultOutputPath();
     }
 
     /// <summary>
@@ -40,6 +36,17 @@ public partial class MainViewModel : ViewModelBase
     /// </summary>
     public MainViewModel() : this(new YtDlpDownloadService(), new AvaloniaClipboardService())
     {
+    }
+
+    private static string ResolveDefaultOutputPath()
+    {
+        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var preferred = Path.Combine(userProfile, "Downloads", "GowLink");
+        var legacy = Path.Combine(userProfile, "Downloads", "WASSLink");
+
+        return Directory.Exists(legacy) && !Directory.Exists(preferred)
+            ? legacy
+            : preferred;
     }
 
     // ─── Navegación ──────────────────────────────────────────────────────────────

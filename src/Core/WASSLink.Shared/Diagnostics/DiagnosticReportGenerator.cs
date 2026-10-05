@@ -10,10 +10,19 @@ public sealed class DiagnosticReportGenerator
 
     public DiagnosticReportGenerator()
     {
-        _logDirectory = Path.Combine(
+        var preferred = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "GowLink",
+            "Logs");
+
+        var legacy = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "WASSLink",
             "Logs");
+
+        _logDirectory = Directory.Exists(legacy) && !Directory.Exists(preferred)
+            ? legacy
+            : preferred;
     }
 
     public string GenerateReport()
@@ -23,13 +32,13 @@ public sealed class DiagnosticReportGenerator
         var timestamp = DateTime.Now;
         var reportPath = Path.Combine(
             _logDirectory,
-            $"WASSLink-Diagnostic-{timestamp:yyyy-MM-dd-HHmmss}.txt");
+            $"GowLink-Diagnostic-{timestamp:yyyy-MM-dd-HHmmss}.txt");
 
         var assembly = Assembly.GetEntryAssembly();
 
         var report = new StringBuilder();
 
-        report.AppendLine("WASSLink Studio - Diagnostic Report");
+        report.AppendLine("GowLink Studio - Diagnostic Report");
         report.AppendLine("===================================");
         report.AppendLine();
 
