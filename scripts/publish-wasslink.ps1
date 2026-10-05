@@ -8,7 +8,7 @@ $ffmpegSource = Join-Path $root 'tools\ffmpeg\ffmpeg.exe'
 $instructionsSource = Join-Path $root 'release\WASSLink-Desktop-README.txt'
 $noticesSource = Join-Path $root 'release\THIRD-PARTY-NOTICES.txt'
 $betaRoot = Join-Path $root 'artifacts\beta'
-$packageName = 'WASSLink-Desktop-win-x64'
+$packageName = 'GowLink-Desktop-win'
 $packageDir = Join-Path $betaRoot $packageName
 $stagingDir = Join-Path $betaRoot "$packageName-staging"
 $archivePath = Join-Path $betaRoot "$packageName.zip"
@@ -25,7 +25,7 @@ if (Test-Path $stagingDir) {
 }
 
 $publishOutput = $stagingDir + [IO.Path]::DirectorySeparatorChar
-Write-Host 'Publishing WASSLink Desktop for Windows x64...'
+Write-Host 'Publishing GowLink Desktop for Windows x64...'
 & dotnet publish $desktopProject -c Release -p:PublishProfile=Win64-SingleFile "-p:PublishDir=$publishOutput"
 if ($LASTEXITCODE -ne 0) {
 	throw "Desktop publish failed with exit code $LASTEXITCODE."

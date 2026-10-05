@@ -1,13 +1,14 @@
-WASSLink Studio Desktop Beta - Windows x64
+GowLink Studio Desktop Beta - Windows
 
 PORTABLE USE
-1. Extract the complete WASSLink-Desktop-win-x64 folder.
+1. Extract the complete GowLink-Desktop-win folder.
 2. Keep the tools folder beside WASSLink.Desktop.exe.
 3. Run WASSLink.Desktop.exe.
 
 This package includes the .NET runtime. No separate .NET installation is
 required. An internet connection is required to inspect and download media.
-Downloads are saved to the user's Downloads\WASSLink folder by default.
+Downloads are saved to the user's Downloads\GowLink folder by default (the
+application may use an existing legacy Downloads\WASSLink folder).
 
 This is a portable beta package, not an installer. It does not create Start
 Menu shortcuts, register file associations, or update itself automatically.

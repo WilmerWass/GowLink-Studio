@@ -42,7 +42,7 @@ Consulta el [changelog completo de Beta 1.2](https://github.com/WilmerWass/WASSL
 
 ## 📥 Descarga e instalación
 
-1. Descarga [`WASSLink-Studio-win-x64.zip`](https://github.com/WilmerWass/WASSLink-Studio/releases/tag/Beta_1.2) desde la release.
+1. Descarga el ZIP de la release publicada desde [GitHub Releases](https://github.com/WilmerWass/WASSLink-Studio/releases).
 2. Extrae **todo** el contenido del ZIP en una carpeta local.
 3. Conserva la carpeta `tools` junto a `WASSLink.Desktop.exe`.
 4. Ejecuta `WASSLink.Desktop.exe`.
@@ -54,12 +54,16 @@ La aplicación es portable: no crea accesos directos, asociaciones de archivos n
 ## 📁 Estructura del paquete publicado
 
 ```text
-GowLink-Desktop-win-x64/
-├── GowLink.Desktop.exe       # Aplicación principal
-├── tools/                     # Herramientas auxiliares y motores incluidos
-├── GowLink-Desktop-README.txt
-└── THIRD-PARTY-NOTICES.txt    # Avisos y licencias de terceros
+GowLink-Desktop-win/
+├── WASSLink.Desktop.exe       # Ejecutable; nombre técnico heredado
+├── LEEME.txt                  # Instrucciones portables
+├── THIRD-PARTY-NOTICES.txt    # Avisos y licencias de terceros
+└── tools/
+    ├── ffmpeg/ffmpeg.exe
+    └── yt-dlp/yt-dlp.exe
 ```
+
+El artefacto portable de Windows x64 se genera como `GowLink-Desktop-win.zip`.
 
 Las descargas se guardan por defecto en:
 
