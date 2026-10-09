@@ -5,6 +5,15 @@
 # -----------------------------------------
 # Configuración local
 # -----------------------------------------
+# Documentación interna privada del propietario.
+# No versionar. El historial anterior sigue existiendo hasta una
+# reescritura explícita del historial.
+/developer/
+
+# Configuración local heredada (no versionar)
+config_downloader.txt
+playlists.txt
+
 config_wasslink.json
 
 # -----------------------------------------

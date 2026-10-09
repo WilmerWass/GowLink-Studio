@@ -1,2 +1,0 @@
-﻿Destino=C:\Users\Nadia Sanchez\Music\Descargas
-AlertaDisco=11
