@@ -1,19 +1,112 @@
-Third-party components bundled with WASSLink Studio Desktop Beta
+THIRD-PARTY NOTICES — GOWLINK STUDIO BETA 1.3
+ESPAÑOL
 
-yt-dlp
-The yt-dlp executable is distributed under the license and notices published
-by the yt-dlp project. Source and license:
+Este paquete incluye componentes de terceros. Cada componente conserva sus
+propios avisos, licencias y condiciones; este resumen no sustituye los textos
+completos de sus licencias. GowLink Studio se distribuye bajo GPL-3.0; consulta
+el archivo LICENSE del proyecto.
+
+yt-dlp 2026.08.19
+El proyecto yt-dlp publica su código bajo The Unlicense. La distribución del
+ejecutable puede incluir componentes adicionales; consulta los avisos y la
+licencia correspondientes a la versión distribuida:
 https://github.com/yt-dlp/yt-dlp
 https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE
 
-FFmpeg
-The bundled ffmpeg.exe is an FFmpeg 8.1.2 Essentials build from Gyan.dev. Its
-configuration enables GPL components. Review the build provider's redistribution
-terms and obtain the corresponding source/build information before redistributing
-this package publicly:
+FFmpeg 8.1.2 Essentials (compilación de Gyan.dev)
+La configuración de esta compilación habilita componentes GPL. La redistribución
+de FFmpeg puede requerir proporcionar el código fuente correspondiente y cumplir
+las condiciones aplicables. Revisa la configuración exacta, las instrucciones
+de Gyan.dev y la información legal de FFmpeg antes de redistribuir públicamente:
 https://www.gyan.dev/ffmpeg/builds/
 https://ffmpeg.org/legal.html
 
-Avalonia and other NuGet dependencies are subject to their respective licenses.
-Their package metadata and license texts are available from NuGet and the
-corresponding upstream projects.
+Avalonia UI 12.1.1
+Los paquetes Avalonia usados por la aplicación se distribuyen bajo MIT. Avalonia
+DiagnosticsSupport 2.2.3 no se incluye en esta publicación Release.
+https://github.com/AvaloniaUI/Avalonia
+
+.NET 10 y dependencias NuGet
+El runtime de .NET está incluido en la publicación self-contained. Microsoft
+.Extensions.Hosting 10.0.10 y CommunityToolkit.Mvvm 8.4.2 tienen sus propios
+avisos y metadatos de licencia. Consulta los avisos incluidos por los proyectos
+upstream y los metadatos de cada paquete NuGet:
+https://github.com/dotnet/runtime
+https://github.com/dotnet/extensions
+https://github.com/CommunityToolkit/dotnet
+
+---------------------------------------------------------------------------
+THIRD-PARTY NOTICES — GOWLINK STUDIO BETA 1.3
+ENGLISH
+
+This package includes third-party components. Each component retains its own
+notices, licenses, and terms; this summary does not replace the complete license
+texts. GowLink Studio is distributed under GPL-3.0; see the project's LICENSE
+file.
+
+yt-dlp 2026.08.19
+The yt-dlp project releases its code under The Unlicense. The distributed
+executable may include additional components; consult the notices and license
+that apply to the distributed version:
+https://github.com/yt-dlp/yt-dlp
+https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE
+
+FFmpeg 8.1.2 Essentials (Gyan.dev build)
+This build configuration enables GPL components. FFmpeg redistribution may
+require providing the corresponding source code and complying with applicable
+terms. Review the exact build configuration, Gyan.dev instructions, and FFmpeg
+legal information before public redistribution:
+https://www.gyan.dev/ffmpeg/builds/
+https://ffmpeg.org/legal.html
+
+Avalonia UI 12.1.1
+The Avalonia packages used by the application are distributed under MIT.
+Avalonia DiagnosticsSupport 2.2.3 is not included in this Release publish.
+https://github.com/AvaloniaUI/Avalonia
+
+.NET 10 and NuGet dependencies
+The .NET runtime is included in this self-contained publish. Microsoft.Extensions
+.Hosting 10.0.10 and CommunityToolkit.Mvvm 8.4.2 have their own notices and
+license metadata. Consult notices provided by upstream projects and the
+metadata for each NuGet package:
+https://github.com/dotnet/runtime
+https://github.com/dotnet/extensions
+https://github.com/CommunityToolkit/dotnet
+
+---------------------------------------------------------------------------
+第三者ソフトウェアに関する通知 — GOWLINK STUDIO ベータ 1.3
+日本語
+
+本パッケージには第三者コンポーネントが含まれます。各コンポーネントには
+それぞれの通知、ライセンスおよび利用条件が適用されます。この概要は
+完全なライセンス文書に代わるものではありません。GowLink Studio は
+GPL-3.0 の下で配布されます。プロジェクトの LICENSE をご確認ください。
+
+yt-dlp 2026.08.19
+yt-dlp プロジェクトのコードは The Unlicense の下で公開されています。
+配布される実行ファイルには追加コンポーネントが含まれる場合があります。
+配布バージョンに適用される通知とライセンスをご確認ください。
+https://github.com/yt-dlp/yt-dlp
+https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE
+
+FFmpeg 8.1.2 Essentials（Gyan.dev ビルド）
+このビルド設定では GPL コンポーネントが有効です。FFmpeg の再配布には、
+対応するソースコードの提供および適用条件の遵守が必要となる場合があります。
+公開再配布の前に、正確なビルド設定、Gyan.dev の案内および FFmpeg の
+法的情報をご確認ください。
+https://www.gyan.dev/ffmpeg/builds/
+https://ffmpeg.org/legal.html
+
+Avalonia UI 12.1.1
+アプリケーションで使用する Avalonia パッケージは MIT の下で配布されます。
+Avalonia DiagnosticsSupport 2.2.3 はこの Release 発行物に含まれていません。
+https://github.com/AvaloniaUI/Avalonia
+
+.NET 10 および NuGet 依存関係
+.NET ランタイムは self-contained 発行物に含まれています。
+Microsoft.Extensions.Hosting 10.0.10 と CommunityToolkit.Mvvm 8.4.2 には
+それぞれの通知とライセンス情報があります。上流プロジェクトの通知および
+各 NuGet パッケージのメタデータをご確認ください。
+https://github.com/dotnet/runtime
+https://github.com/dotnet/extensions
+https://github.com/CommunityToolkit/dotnet
