@@ -40,19 +40,16 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// Constructor de diseño para previewer de Avalonia.
     /// </summary>
-    public MainViewModel() : this(new YtDlpDownloadService(), new AvaloniaClipboardService())
+    public MainViewModel() : this(
+        new CompositeDownloadProvider(new DirectHttpDownloadService(), new YtDlpDownloadService()),
+        new AvaloniaClipboardService())
     {
     }
 
     private static string ResolveDefaultOutputPath()
     {
         var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        var preferred = Path.Combine(userProfile, "Downloads", "GowLink");
-        var legacy = Path.Combine(userProfile, "Downloads", "WASSLink");
-
-        return Directory.Exists(legacy) && !Directory.Exists(preferred)
-            ? legacy
-            : preferred;
+        return Path.Combine(userProfile, "Downloads", "GowLink");
     }
 
     // ─── Navegación ──────────────────────────────────────────────────────────────
@@ -60,10 +57,90 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private string selectedSection = "Downloader";
 
+    public bool IsDownloaderSelected => SelectedSection == "Downloader";
+    public bool IsSearchSelected => SelectedSection == "Buscador";
+    public bool IsDownloadsSelected => SelectedSection == "Descargas";
+    public bool IsSettingsSelected => SelectedSection == "Configuración";
+
+    partial void OnSelectedSectionChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsDownloaderSelected));
+        OnPropertyChanged(nameof(IsSearchSelected));
+        OnPropertyChanged(nameof(IsDownloadsSelected));
+        OnPropertyChanged(nameof(IsSettingsSelected));
+        OnPropertyChanged(nameof(ActiveEngineLabel));
+        OnPropertyChanged(nameof(EngineStatus));
+    }
+
+    [ObservableProperty]
+    private string searchQuery = string.Empty;
+
+    partial void OnSearchQueryChanged(string value)
+    {
+        OnPropertyChanged(nameof(ActiveEngineLabel));
+        OnPropertyChanged(nameof(EngineStatus));
+    }
+
+    [ObservableProperty]
+    private string searchResultMessage = "Ingresa un enlace para consultar el contenido y el motor compatible.";
+
+    [ObservableProperty]
+    private bool isSearching;
+
+    [ObservableProperty]
+    private ObservableCollection<DownloadHistoryItem> downloadHistory = new();
+
+    public bool HasDownloadHistory => DownloadHistory.Count > 0;
+
     // ─── Descarga principal ───────────────────────────────────────────────────────
 
     [ObservableProperty]
     private string downloadUrl = string.Empty;
+
+    public string ActiveEngineLabel
+    {
+        get
+        {
+            var url = SelectedSection == "Buscador" ? SearchQuery : DownloadUrl;
+            if (string.IsNullOrWhiteSpace(url))
+                return "Motor: esperando enlace";
+
+            var provider = GetProviderForUrl(url);
+            if (provider is null)
+                return "Motor: no compatible";
+
+            var engineName = provider.Name.Equals("yt-dlp", StringComparison.OrdinalIgnoreCase)
+                ? "yt-dlp & FFmpeg"
+                : provider.Name;
+            return $"Motor: {engineName}";
+        }
+    }
+
+    public string EngineStatus
+    {
+        get
+        {
+            var url = SelectedSection == "Buscador" ? SearchQuery : DownloadUrl;
+            return string.IsNullOrWhiteSpace(url)
+                ? "Esperando un enlace"
+                : _downloadProvider.CanHandle(url)
+                    ? "Proveedor seleccionado para este enlace"
+                    : "URL no compatible";
+        }
+    }
+
+    partial void OnDownloadUrlChanged(string value)
+    {
+        OnPropertyChanged(nameof(ActiveEngineLabel));
+        OnPropertyChanged(nameof(EngineStatus));
+    }
+
+    private IDownloadProvider? GetProviderForUrl(string url)
+    {
+        return _downloadProvider is CompositeDownloadProvider composite
+            ? composite.GetProviderForUrl(url)
+            : _downloadProvider.CanHandle(url) ? _downloadProvider : null;
+    }
 
     [ObservableProperty]
     private string outputPath;
@@ -166,6 +243,84 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void SelectSection(string section) => SelectedSection = section;
 
+    [RelayCommand]
+    private async Task SearchAsync()
+    {
+        var url = SearchQuery.Trim();
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            SearchResultMessage = "Ingresa un enlace para iniciar la consulta.";
+            return;
+        }
+
+        var selectedProvider = GetProviderForUrl(url);
+        if (selectedProvider is null)
+        {
+            SearchResultMessage = "El enlace no es válido o no está soportado.";
+            return;
+        }
+
+        DownloadUrl = url;
+        if (selectedProvider is DirectHttpDownloadService)
+        {
+            SearchResultMessage = $"Archivo directo detectado. Motor: {selectedProvider.Name}.";
+            return;
+        }
+
+        _metadataCts?.Cancel();
+        _metadataCts?.Dispose();
+        _metadataCts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        IsSearching = true;
+        SearchResultMessage = "Consultando contenido y formatos con yt-dlp...";
+
+        try
+        {
+            var formats = await _metadataService.InspectFormatsAsync(url, _metadataCts.Token);
+            AudioOptions.Clear();
+            VideoOptions.Clear();
+            foreach (var format in formats.Where(format => format.MediaType == DownloadMediaType.Audio))
+                AudioOptions.Add(format);
+            foreach (var format in formats.Where(format => format.MediaType == DownloadMediaType.Video))
+                VideoOptions.Add(format);
+
+            SelectedFormatOption = VideoOptions.FirstOrDefault(format => format.IsRecommended)
+                ?? VideoOptions.FirstOrDefault()
+                ?? AudioOptions.FirstOrDefault(format => format.IsRecommended)
+                ?? AudioOptions.FirstOrDefault();
+            OnPropertyChanged(nameof(HasFormats));
+            OnPropertyChanged(nameof(SelectedFormatLabel));
+            SearchResultMessage = $"Contenido compatible con {selectedProvider.Name}: {formats.Count} formatos disponibles.";
+        }
+        catch (OperationCanceledException)
+        {
+            SearchResultMessage = "La consulta agotó el tiempo de espera.";
+        }
+        catch (Exception ex)
+        {
+            SearchResultMessage = $"No se pudo consultar el enlace: {ex.Message}";
+        }
+        finally
+        {
+            IsSearching = false;
+        }
+    }
+
+    [RelayCommand]
+    private void DownloadSearchedLink()
+    {
+        if (GetProviderForUrl(SearchQuery) is null)
+        {
+            SearchResultMessage = "Primero ingresa y consulta un enlace compatible.";
+            return;
+        }
+
+        DownloadUrl = SearchQuery.Trim();
+        SelectedSection = "Downloader";
+    }
+
+    [RelayCommand]
+    private void OpenDownloads() => SelectedSection = "Descargas";
+
     /// <summary>
     /// Abre el diálogo de selección de carpeta y actualiza OutputPath.
     /// </summary>
@@ -243,9 +398,22 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenFormatModalAsync()
     {
-        if (string.IsNullOrWhiteSpace(DownloadUrl) || !_downloadProvider.CanHandle(DownloadUrl))
+        if (string.IsNullOrWhiteSpace(DownloadUrl))
         {
             StatusMessage = "Ingresa una URL válida antes de inspeccionar formatos.";
+            return;
+        }
+
+        var selectedProvider = GetProviderForUrl(DownloadUrl);
+        if (selectedProvider is null)
+        {
+            StatusMessage = "La URL ingresada no es válida o no está soportada.";
+            return;
+        }
+
+        if (selectedProvider is DirectHttpDownloadService)
+        {
+            StatusMessage = "Archivo directo detectado. Se descargará con HTTP Directo (Streaming).";
             return;
         }
 
@@ -367,7 +535,7 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        if (!_downloadProvider.CanHandle(DownloadUrl))
+        if (GetProviderForUrl(DownloadUrl) is null)
         {
             StatusMessage = "La URL ingresada no es válida o no está soportada.";
             return;
@@ -399,8 +567,23 @@ public partial class MainViewModel : ViewModelBase
             VideoFormatHasAudio: format?.HasAudio ?? false
         );
 
+        var selectedProvider = GetProviderForUrl(request.Url)!;
+        var historyItem = new DownloadHistoryItem
+        {
+            SourceUrl = request.Url,
+            Engine = selectedProvider.Name == "yt-dlp" ? "yt-dlp & FFmpeg" : selectedProvider.Name,
+            Status = "Iniciando",
+            Output = OutputPath
+        };
+        DownloadHistory.Insert(0, historyItem);
+        OnPropertyChanged(nameof(HasDownloadHistory));
+
         var progress = new Progress<DownloadProgress>(p =>
         {
+            historyItem.Status = p.StatusMessage ?? "Descargando";
+            if (p.Percentage >= 0)
+                historyItem.Progress = p.Percentage;
+
             var isProcessingPhase = p.StatusMessage != null &&
                 p.StatusMessage.Contains("FFmpeg", StringComparison.OrdinalIgnoreCase);
 
@@ -449,22 +632,30 @@ public partial class MainViewModel : ViewModelBase
 
                 StatusMessage = $"¡Completado!: {displayName}";
                 DownloadProgress = 100;
+                historyItem.Status = "Completada";
+                historyItem.Progress = 100;
+                historyItem.Output = LastDownloadedFile;
+                SelectedSection = "Descargas";
 
                 // Mostrar toast de completado
                 await ShowToastAsync(displayName, OutputPath);
             }
             else
             {
-                StatusMessage = $"Error: {result.ErrorMessage ?? "Fallo desconocido en la descarga."}";
+                var errorMessage = result.ErrorMessage ?? "Fallo desconocido en la descarga.";
+                StatusMessage = $"Error: {errorMessage}";
+                historyItem.Status = $"Error: {errorMessage}";
             }
         }
         catch (OperationCanceledException)
         {
             StatusMessage = "Descarga cancelada por el usuario.";
+            historyItem.Status = "Cancelada";
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error inesperado: {ex.Message}";
+            historyItem.Status = $"Error: {ex.Message}";
         }
         finally
         {

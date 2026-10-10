@@ -8,8 +8,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDownloadServices(
         this IServiceCollection services)
     {
-        services.AddSingleton<IDownloadProvider, YtDlpDownloadService>();
+        services.AddSingleton<DirectHttpDownloadService>();
         services.AddSingleton<YtDlpDownloadService>();
+        services.AddSingleton<CompositeDownloadProvider>();
+        services.AddSingleton<IDownloadProvider>(provider =>
+            provider.GetRequiredService<CompositeDownloadProvider>());
 
         return services;
     }

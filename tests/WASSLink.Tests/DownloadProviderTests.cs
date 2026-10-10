@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using WASSLink.Abstractions;
 using WASSLink.Desktop.Models;
@@ -76,7 +81,101 @@ public class DownloadProviderTests
 
         var downloadProvider = provider.GetService<IDownloadProvider>();
         Assert.NotNull(downloadProvider);
-        Assert.IsType<YtDlpDownloadService>(downloadProvider);
+        Assert.IsType<CompositeDownloadProvider>(downloadProvider);
+    }
+
+    [Theory]
+    [InlineData("https://example.com/archive.zip", "HTTP Directo (Streaming)")]
+    [InlineData("https://example.com/disk.iso?download=1", "HTTP Directo (Streaming)")]
+    [InlineData("https://www.youtube.com/watch?v=test", "yt-dlp")]
+    [InlineData("https://soundcloud.com/artist/track", "yt-dlp")]
+    public void CompositeProvider_SelectsEngineFromUrl(string url, string expectedProviderName)
+    {
+        var provider = new CompositeDownloadProvider(
+            new DirectHttpDownloadService(),
+            new YtDlpDownloadService());
+
+        Assert.Equal(expectedProviderName, provider.GetProviderForUrl(url)?.Name);
+    }
+
+    [Fact]
+    public void MainViewModel_ShowsSelectedEngineAndGowLinkDestination()
+    {
+        var viewModel = new MainViewModel();
+
+        Assert.Equal(
+            System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Downloads",
+                "GowLink"),
+            viewModel.OutputPath);
+
+        viewModel.DownloadUrl = "https://www.youtube.com/watch?v=test";
+        Assert.Equal("Motor: yt-dlp & FFmpeg", viewModel.ActiveEngineLabel);
+
+        viewModel.DownloadUrl = "https://example.com/archive.zip?download=1";
+        Assert.Equal("Motor: HTTP Directo (Streaming)", viewModel.ActiveEngineLabel);
+    }
+
+    [Fact]
+    public void MainViewModel_NavigatesBetweenRequestedModules()
+    {
+        var viewModel = new MainViewModel();
+
+        Assert.True(viewModel.IsDownloaderSelected);
+        viewModel.SelectSectionCommand.Execute("Buscador");
+        Assert.True(viewModel.IsSearchSelected);
+        viewModel.SearchQuery = "https://example.com/archive.zip";
+        Assert.Equal("Motor: HTTP Directo (Streaming)", viewModel.ActiveEngineLabel);
+
+        viewModel.SelectSectionCommand.Execute("Descargas");
+        Assert.True(viewModel.IsDownloadsSelected);
+        viewModel.SelectSectionCommand.Execute("Configuración");
+        Assert.True(viewModel.IsSettingsSelected);
+    }
+
+    [Fact]
+    public async Task DirectHttpProvider_StreamsFileToDestination()
+    {
+        var outputPath = Path.Combine(Path.GetTempPath(), $"GowLink.Tests.{Guid.NewGuid():N}");
+        var payload = new byte[] { 1, 2, 3, 4 };
+        using var httpClient = new HttpClient(new StubHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(payload)
+            };
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = "archive.zip"
+            };
+            return Task.FromResult(response);
+        }));
+        var service = new DirectHttpDownloadService(httpClient);
+
+        try
+        {
+            var result = await service.DownloadAsync(new DownloadRequest(
+                "https://example.com/archive.zip?download=1",
+                outputPath));
+
+            Assert.True(result.Success, result.ErrorMessage);
+            Assert.Equal(Path.Combine(outputPath, "archive.zip"), result.OutputPath);
+            Assert.Equal(payload, await File.ReadAllBytesAsync(result.OutputPath!));
+        }
+        finally
+        {
+            if (Directory.Exists(outputPath))
+                Directory.Delete(outputPath, recursive: true);
+        }
+    }
+
+    private sealed class StubHttpMessageHandler(
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sendAsync) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken) => sendAsync(request, cancellationToken);
     }
 
     [Fact]

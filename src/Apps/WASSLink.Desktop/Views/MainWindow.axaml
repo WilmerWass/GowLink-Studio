@@ -39,7 +39,7 @@
                                 CornerRadius="8"
                                 Width="34"
                                 Height="34">
-                            <TextBlock Text="W"
+                            <TextBlock Text="G"
                                        Foreground="White"
                                        FontWeight="Black"
                                        FontSize="18"
@@ -67,7 +67,7 @@
                             Padding="8,4"
                             Margin="0,6,0,0"
                             HorizontalAlignment="Left">
-                        <TextBlock Text="Beta 1.3 — Estabilización"
+                        <TextBlock Text="Beta 1.4 — Universal Download Engine"
                                    FontSize="11"
                                    Foreground="#9CA3AF" />
                     </Border>
@@ -95,75 +95,69 @@
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Grid.Column="0" Text="📥" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1" Text="Downloader" FontWeight="SemiBold" Foreground="#F9FAFB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2">
+                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                                    IsVisible="{Binding IsDownloaderSelected}">
                                 <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
                         </Grid>
                     </Button>
 
-                    <!-- Search (Próximamente Beta 2) -->
-                    <Border Background="Transparent"
+                    <Button HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="Transparent"
                             BorderBrush="#1F2130"
                             BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
-                            Opacity="0.6">
+                            Command="{Binding SelectSectionCommand}"
+                            CommandParameter="Buscador">
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Grid.Column="0" Text="🔍" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="Búsqueda" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
-                                <TextBlock Text="Beta 2" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
+                            <TextBlock Grid.Column="1" Text="Buscador" Foreground="#D1D5DB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                                    IsVisible="{Binding IsSearchSelected}">
+                                <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
                         </Grid>
-                    </Border>
+                    </Button>
 
-                    <!-- Player -->
-                    <Border Background="Transparent"
+                    <Button HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="Transparent"
                             BorderBrush="#1F2130"
                             BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
-                            Opacity="0.6">
+                            Command="{Binding SelectSectionCommand}"
+                            CommandParameter="Descargas">
                         <Grid ColumnDefinitions="Auto,*,Auto">
-                            <TextBlock Grid.Column="0" Text="🎵" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="Reproductor" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
-                                <TextBlock Text="Beta 3" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
+                            <TextBlock Grid.Column="0" Text="📋" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Lista de Descargas" Foreground="#D1D5DB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                                    IsVisible="{Binding IsDownloadsSelected}">
+                                <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
                         </Grid>
-                    </Border>
+                    </Button>
 
-                    <!-- Library -->
-                    <Border Background="Transparent"
+                    <Button HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="Transparent"
                             BorderBrush="#1F2130"
                             BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
-                            Opacity="0.6">
+                            Command="{Binding SelectSectionCommand}"
+                            CommandParameter="Configuración">
                         <Grid ColumnDefinitions="Auto,*,Auto">
-                            <TextBlock Grid.Column="0" Text="📚" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="Biblioteca" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
-                                <TextBlock Text="Beta 4" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
+                            <TextBlock Grid.Column="0" Text="⚙" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Configuración" Foreground="#D1D5DB" VerticalAlignment="Center" />
+                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                                    IsVisible="{Binding IsSettingsSelected}">
+                                <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
                         </Grid>
-                    </Border>
-
-                    <!-- Files / Torrents -->
-                    <Border Background="Transparent"
-                            BorderBrush="#1F2130"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="12,10"
-                            Opacity="0.6">
-                        <Grid ColumnDefinitions="Auto,*,Auto">
-                            <TextBlock Grid.Column="0" Text="📦" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="Archivos / Torrents" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#23263B" CornerRadius="4" Padding="5,2">
-                                <TextBlock Text="Beta 7+" FontSize="9" FontWeight="SemiBold" Foreground="#9CA3AF" />
-                            </Border>
-                        </Grid>
-                    </Border>
+                    </Button>
                 </StackPanel>
 
                 <!-- Pie de barra lateral -->
@@ -176,12 +170,12 @@
                         <StackPanel Spacing="3">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <Ellipse Width="7" Height="7" Fill="#10B981" VerticalAlignment="Center" />
-                                <TextBlock Text="Motor yt-dlp &amp; FFmpeg"
+                                <TextBlock Text="{Binding ActiveEngineLabel}"
                                            FontSize="11"
                                            FontWeight="SemiBold"
                                            Foreground="#E5E7EB" />
                             </StackPanel>
-                            <TextBlock Text="Núcleo de descarga listo"
+                            <TextBlock Text="{Binding EngineStatus}"
                                        FontSize="10"
                                        Foreground="#9CA3AF"
                                        Margin="13,0,0,0" />
@@ -219,7 +213,7 @@
         <Panel Grid.Column="1">
 
             <!-- Contenido scrollable principal -->
-            <ScrollViewer>
+            <ScrollViewer IsVisible="{Binding IsDownloaderSelected}">
                 <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
 
                     <!-- Cabecera de Página -->
@@ -331,7 +325,7 @@
                                                    Foreground="#E0E7FF"
                                                    VerticalAlignment="Center" />
                                         <TextBlock Grid.Column="2"
-                                                   Text="Inspeccionar →"
+                                                   Text="Analizar 🔍"
                                                    FontSize="12"
                                                    Foreground="#6366F1"
                                                    VerticalAlignment="Center" />
@@ -532,6 +526,229 @@
                         </StackPanel>
                     </Border>
 
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer IsVisible="{Binding IsSearchSelected}">
+                <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Buscador"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#F9FAFB" />
+                        <TextBlock Text="Consulta un enlace multimedia o detecta archivos HTTP/HTTPS directos."
+                                   FontSize="14"
+                                   Foreground="#9CA3AF" />
+                    </StackPanel>
+
+                    <Border Background="#161823"
+                            BorderBrush="#25283A"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="28">
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Buscar o consultar un enlace"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F3F4F6" />
+                            <TextBox Text="{Binding SearchQuery}"
+                                     PlaceholderText="Pega una URL de YouTube o un enlace directo a un archivo"
+                                     MinHeight="44"
+                                     FontSize="14"
+                                     CornerRadius="8"
+                                     BorderBrush="#31354C"
+                                     Background="#1D2030"
+                                     Foreground="#F9FAFB" />
+                            <Button Content="Consultar enlace"
+                                    Command="{Binding SearchCommand}"
+                                    IsEnabled="{Binding !IsSearching}"
+                                    Background="#4F46E5"
+                                    Foreground="White"
+                                    FontWeight="SemiBold"
+                                    Padding="20,12"
+                                    CornerRadius="8"
+                                    HorizontalAlignment="Left" />
+                            <ProgressBar IsIndeterminate="True"
+                                         IsVisible="{Binding IsSearching}"
+                                         Height="5"
+                                         Foreground="#6366F1"
+                                         Background="#23263B" />
+                            <Border Background="#1B1D2B"
+                                    BorderBrush="#2B2F44"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="14">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="{Binding SearchResultMessage}"
+                                               Foreground="#E5E7EB"
+                                               FontSize="13"
+                                               TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding ActiveEngineLabel}"
+                                               Foreground="#818CF8"
+                                               FontSize="12"
+                                               FontWeight="SemiBold" />
+                                    <Button Content="Abrir en Downloader"
+                                            Command="{Binding DownloadSearchedLinkCommand}"
+                                            HorizontalAlignment="Left"
+                                            Background="#25283D"
+                                            BorderBrush="#4F46E5"
+                                            BorderThickness="1"
+                                            Foreground="#E0E7FF"
+                                            Padding="14,8"
+                                            CornerRadius="7" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer IsVisible="{Binding IsDownloadsSelected}">
+                <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Lista de Descargas"
+                                       FontSize="26"
+                                       FontWeight="Bold"
+                                       Foreground="#F9FAFB" />
+                            <TextBlock Text="Progreso, motor y resultado de las descargas de esta sesión."
+                                       FontSize="14"
+                                       Foreground="#9CA3AF" />
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Content="Nueva descarga"
+                                Command="{Binding SelectSectionCommand}"
+                                CommandParameter="Downloader"
+                                Background="#4F46E5"
+                                Foreground="White"
+                                Padding="16,10"
+                                CornerRadius="8" />
+                    </Grid>
+
+                    <StackPanel Spacing="12"
+                                IsVisible="{Binding HasDownloadHistory}">
+                        <ItemsControl ItemsSource="{Binding DownloadHistory}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:DownloadHistoryItem">
+                                    <Border Background="#161823"
+                                            BorderBrush="#25283A"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Padding="16"
+                                            Margin="0,0,0,10">
+                                        <StackPanel Spacing="8">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock Text="{Binding SourceUrl}"
+                                                           Foreground="#E5E7EB"
+                                                           FontSize="13"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Progress, StringFormat='{}{0:F0}%'}"
+                                                           Foreground="#818CF8"
+                                                           FontWeight="Bold" />
+                                            </Grid>
+                                            <ProgressBar Minimum="0"
+                                                         Maximum="100"
+                                                         Value="{Binding Progress}"
+                                                         Height="6"
+                                                         Foreground="#6366F1"
+                                                         Background="#23263B" />
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock Text="{Binding Engine}"
+                                                           Foreground="#9CA3AF"
+                                                           FontSize="11" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Status}"
+                                                           Foreground="#A5B4FC"
+                                                           FontSize="11" />
+                                            </Grid>
+                                            <TextBlock Text="{Binding Output}"
+                                                       Foreground="#6B7280"
+                                                       FontSize="11"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <Border IsVisible="{Binding !HasDownloadHistory}"
+                            Background="#161823"
+                            BorderBrush="#25283A"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="28">
+                        <StackPanel Spacing="8" HorizontalAlignment="Center">
+                            <TextBlock Text="Todavía no hay descargas en esta sesión."
+                                       Foreground="#D1D5DB"
+                                       FontSize="14" />
+                            <Button Content="Iniciar una descarga"
+                                    Command="{Binding SelectSectionCommand}"
+                                    CommandParameter="Downloader"
+                                    HorizontalAlignment="Center"
+                                    Background="#4F46E5"
+                                    Foreground="White"
+                                    Padding="16,9"
+                                    CornerRadius="8" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer IsVisible="{Binding IsSettingsSelected}">
+                <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Configuración"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#F9FAFB" />
+                        <TextBlock Text="Preferencias de la aplicación y rutas de descarga."
+                                   FontSize="14"
+                                   Foreground="#9CA3AF" />
+                    </StackPanel>
+
+                    <Border Background="#161823"
+                            BorderBrush="#25283A"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="24">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="Carpeta de destino"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F3F4F6" />
+                            <TextBlock Text="Las nuevas descargas se guardarán en esta ubicación. La carpeta predeterminada es Downloads\\GowLink."
+                                       FontSize="13"
+                                       Foreground="#9CA3AF"
+                                       TextWrapping="Wrap" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding OutputPath}"
+                                         MinHeight="42"
+                                         VerticalContentAlignment="Center"
+                                         Background="#1D2030"
+                                         Foreground="#F9FAFB"
+                                         BorderBrush="#31354C" />
+                                <Button Grid.Column="1"
+                                        Content="Examinar"
+                                        Command="{Binding BrowseFolderCommand}"
+                                        Background="#25283D"
+                                        BorderBrush="#4F46E5"
+                                        BorderThickness="1"
+                                        Foreground="#E0E7FF"
+                                        Padding="16,9"
+                                        CornerRadius="8" />
+                            </Grid>
+                            <TextBlock Text="Motor activo para el enlace actual"
+                                       Foreground="#9CA3AF"
+                                       FontSize="12" />
+                            <TextBlock Text="{Binding ActiveEngineLabel}"
+                                       Foreground="#818CF8"
+                                       FontSize="13"
+                                       FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </ScrollViewer>
 
