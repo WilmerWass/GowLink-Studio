@@ -331,7 +331,7 @@
                                                    Foreground="#E0E7FF"
                                                    VerticalAlignment="Center" />
                                         <TextBlock Grid.Column="2"
-                                                   Text="Inspeccionar →"
+                                                   Text="Analizar 🔍"
                                                    FontSize="12"
                                                    Foreground="#6366F1"
                                                    VerticalAlignment="Center" />
