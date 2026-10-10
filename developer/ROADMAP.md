@@ -1,222 +1,312 @@
 # GowLink Studio — Roadmap oficial
 
-## Historial
+## 1. Alcance y criterio de la documentación
+
+Este documento es la fuente oficial de planificación del proyecto.
+
+Su objetivo es distinguir claramente entre:
+
+- funcionalidad ya verificada
+- funcionalidad implementada con alcance parcial o pendiente de confirmación
+- funcionalidad futura o experimental
+- mejoras de estabilidad y consolidación
+- criterios de aceptación por hito
+
+No se tratarán como equivalentes una mejora real de producto, una etapa de consolidación y un módulo nuevo.
+
+## 2. Estado actual y clasificación
+
+### Estado actual verificado del proyecto
+
+El proyecto está en la etapa denominada:
+
+**GowLink Studio — Beta 1.4: Universal Download Engine**
+
+Se consideran confirmadas las siguientes capacidades, como mínimo en el estado reportado por la sesión de trabajo reciente:
+
+- branding actualizado a GowLink Studio
+- ruta predeterminada de descargas en `Downloads\GowLink`
+- navegación entre Downloader, Biblioteca, Buscador, Lista de Descargas y Configuración
+- selección dinámica del motor activo para HTTP directo o yt-dlp
+- manejo de pausa HTTP sin bloquear la interfaz
+- compilación correcta con `dotnet build -c Debug`
+- pruebas unitarias correctas con `dotnet test tests\WASSLink.Tests\WASSLink.Tests.csproj -c Debug --no-restore`
+
+Estas evidencias deben entenderse como estado verificado por la sesión actual, no como promesa de compatibilidad universal ni como cierre completo de todas las capacidades futuras.
+
+### Clasificación del trabajo
+
+- Implementación real: nuevas capacidades funcionales con integración y validación
+- Mejora y consolidación: estabilidad, UX, configuración, diagnósticos, cola, manejo de errores
+- Visión futura: capacidades aún no implementadas o sin validación real
+
+## 3. Convención de versiones
+
+Se recomienda mantener esta convención:
+
+- `1.4.1` para una release de consolidación o corrección dentro de la serie 1.4
+- `1.5.0-beta.1`, `1.5.0-beta.2` para versiones preliminares
+- `1.5.0` para la release final de una etapa
+- `1.5.1`, `1.5.2` para correcciones posteriores
+
+La etiqueta humana “Beta 1.5” debe distinguirse del identificador formal del paquete o de la release. No se asume que un número mayor automáticamente significa una versión pública ya publicada.
+
+## 4. Roadmap oficial
+
+### 1.4.1 — Consolidation Release
+
+Tipo: mejora y consolidación.
+
+Objetivo:
+
+Consolidar la arquitectura y la experiencia actuales antes de cerrar la siguiente etapa de crecimiento funcional.
+
+Prioridades:
+
+- estabilidad del motor HTTP directo y del motor yt-dlp
+- navegación coherente entre módulos
+- multidescargas y cola fiable
+- configuración persistente
+- manejo de errores, pausa y cancelación
+- validación del paquete portable
+- pruebas de regresión y documentación de limitaciones
+
+Dependencias:
+
+- motor dual validado
+- diseño de navegación establecido
+- flujo de descargas centralizado
+- default path y configuración visible
+
+Riesgos:
+
+- doble modelo de flujo (HTTP + yt-dlp) sin una cola común bien definida
+- comportamiento inconsistente entre módulos
+- falencias de UX ocultas tras una pantalla funcional
+- estado incompleto de configuración persistente
+
+Exclusiones:
+
+- no se declaran nuevas plataformas ni proveedores externos no probados
+- no se introducen módulos de reproducción, biblioteca profunda o torrents como parte de esta release
+
+Criterios de aceptación:
+
+- la UI principal funciona con navegación coherente y sin contradicciones funcionales
+- los motores seleccionados se reflejan dinámicamente según la URL
+- el default path de descarga es funcional y consistente
+- la cola y la gestión de errores son estables bajo uso normal
+- la compilación y las pruebas principales se mantienen verdes
+
+### 1.5 — Search & Providers
+
+Tipo: implementación nueva.
+
+Objetivo:
+
+Formalizar la detección de proveedores y la resolución del contenido.
+
+Alcance previsto:
+
+- URL Analyzer
+- identificación de proveedor y recurso
+- metadatos y capacidades del contenido
+- integración del primer proveedor prioritario
+- videos individuales y playlists cuando sean compatibles
+- selección de elementos y formatos
+- preparación para ampliar proveedores
+
+Dependencias:
+
+- 1.4.1 consolidado
+- un modelo de entrada URL claro
+- un contrato común de contenido y capacidades
+
+Riesgos:
+
+- compatibilidad superficial con plataformas externas
+- diferencia entre “es detectable” y “es compatible de forma fiable”
+- sobreprometer la soportabilidad de providers sin pruebas documentadas
+
+Exclusiones:
+
+- no se promete compatibilidad universal con plataformas externas
+- la reproducción en línea o la visualización avanzada no forman parte de este hitos
+
+Criterios de aceptación:
+
+- la URL puede resolverse sin ambigüedad en al menos un conjunto probado
+- la detección de contenido se presenta con metadatos útiles
+- las decisiones de proveedor se documentan y validan
+- la selección de formato se integra con la cola de descargas
+
+### 1.6 — Media Studio
+
+Tipo: implementación nueva.
+
+Objetivo:
+
+Desarrollar la base funcional del entorno multimedia de GowLink.
+
+Alcance previsto:
+
+- biblioteca local de medios
+- reproducción de audio y vídeo
+- controles básicos de reproducción
+- gestión de recursos y metadatos
+- integración con el flujo de descargas
+
+Dependencias:
+
+- 1.5 resuelto con proveedores y metadatos
+- librería y organización de archivos definida
+
+Riesgos:
+
+- compatibilidad de formatos no validada
+- reproducción con dependencias externas no testadas
+- mezcla de contenido descargado con contenido remoto o fraccionado
+
+Criterios de aceptación:
+
+- la reproducción básica funciona con formatos admitidos
+- la UI de reproducción presenta controles reales y estables
+- los archivos descargados se integran con una biblioteca funcional
+
+### 1.7 — File Studio
+
+Tipo: implementación nueva.
+
+Objetivo:
+
+Ampliar las capacidades del motor HTTP y del manejo de archivos.
+
+Alcance previsto:
+
+- reanudación de descargas
+- Range Requests
+- descarga segmentada compatible con servidor
+- integridad de archivo
+- gestión de archivos grandes
+- organización y verificación del almacenamiento
+
+Dependencias:
+
+- motor HTTP directo ya consolidado
+- cola de descargas con control de estado
+
+Riesgos:
+
+- servidores incompatibles con rangos parciales
+- corrupción o archivos incompletos si la reanudación no está bien validada
+- complejidad añadida en la cola
+
+Criterios de aceptación:
+
+- reanudación funcional bajo pruebas controladas
+- manejo correcto de errores por red y de integridad
+- validación de archivos grandes con comprobación de tamaño y finalización
+
+### 1.8 — Torrent Studio
+
+Tipo: implementación nueva.
+
+Objetivo:
+
+Introducir un motor de torrents independiente del motor HTTP.
+
+Alcance previsto:
+
+- metadata de torrent
+- magnet links y enlaces de torrent
+- selección de archivos del torrent
+- progreso y paralelismo
+- integración con la cola general
+
+Dependencias:
+
+- módulo de descarga general bien definido
+- gestión de destinos y trabajo en cola
+
+Riesgos:
+
+- complejidad operativa superior al HTTP directo
+- consumo de ancho de banda y tiempo de sincronización
+- dependencia de librerías externas no verificadas
+
+Criterios de aceptación:
+
+- un torrent concreto puede añadirse y gestionarse sin romper la cola principal
+- el progreso y la selección del contenido son visibles y consistentes
+- fallos específicos del torrent no bloquean el resto del sistema
+
+### 1.9 — Integration Studio
+
+Tipo: integración y consolidación.
+
+Objetivo:
+
+Consolidar los componentes de la plataforma y su experiencia integrada.
+
+Alcance previsto:
+
+- interoperabilidad de motores
+- pruebas de regresión
+- rendimiento y estabilidad
+- configuración central
+- biblioteca, reproductor y cola integrados
+- interoperabilidad con plugins y proveedores
+
+Dependencias:
+
+- 1.5–1.8 con hitos funcionales mínimos
+- controles de calidad y documentación de limitaciones
+
+Riesgos:
+
+- integración prematura de componentes aún no estabilizados
+- experiencia de usuario inconsistente entre motores
+- regresiones que no queden cubiertas por pruebas
+
+Criterios de aceptación:
+
+- la plataforma funciona como un conjunto integrado
+- los motores especializados cooperan con la cola general
+- la regresión crítica queda cubierta por pruebas
+- la documentación y la experiencia de uso están alineadas con lo verificado
+
+## 5. Hitos históricos relevantes
 
 ### Fase 0 — Preparación
 
-Estado: completada.
-
-Objetivos cumplidos:
-
-- Definir identidad del proyecto.
-- Establecer documentación inicial.
-- Preparar repositorio.
-- Definir principios de desarrollo.
-
----
+Estado: documentado como base del proyecto.
 
 ### Fase 1 — Arquitectura y estructura
 
-Estado: COMPLETADA.
+Estado: completada como base del repositorio y de la solución.
 
-Objetivos alcanzados:
+### 1.4.1 — Consolidation Release
 
-- Crear solución .NET 10.
-- Crear estructura Apps/Core/Tests.
-- Crear proyectos Core.
-- Crear los proyectos técnicos `WASSLink.Desktop` y `WASSLink.CLI` (marcas actuales: GowLink Desktop y GowLink CLI).
-- Crear proyecto de Tests.
-- Definir referencias entre proyectos.
-- Validar mapa de dependencias.
-- Crear infraestructura inicial de Dependency Injection.
-- Integrar Avalonia.
-- Validar compilación completa.
+Estado: etapa actual de consolidación y mejora.
 
-Resultado:
+### 1.5 onwards
 
-    dotnet build WASSLink-Studio.slnx
-    // Compilación realizada correctamente.
+Estado: planificado como implementación de nuevas capacidades, no como una simple continuación visual de 1.4.1.
 
----
+## 6. Política de planificación
 
-## Roadmap actual
+- no se promociona una versión como “lista” sin criterios de aceptación definidos
+- no se convierten mejoras puntuales en “nueva beta” sin justificación funcional
+- no se declaran plataformas compatibles sin pruebas reales
+- no se mezclan requisitos de producto con capacidades experimentales
 
----
+## 7. Resumen ejecutivo
 
-# Beta 1 — GowLink Downloader
+La estrategia correcta para GowLink Studio es separar la consolidación actual de la expansión funcional.
 
-Estado: EN ESTABILIZACIÓN (Beta 1.3).
-
-Objetivo:
-
-Completar y estabilizar el descargador multimedia antes de iniciar Beta 2.
-
-Proveedor inicial: YouTube (yt-dlp).
-
-Capacidades de Beta 1:
-
-- Descarga de audio (MP3) y vídeo (MP4).
-- Entrada por URL.
-- Progreso de descarga en tiempo real.
-- Cancelación de descarga.
-- Manejo básico de errores.
-- Organización básica de archivos descargados.
-- Logs y diagnóstico.
-- Interfaz moderna con barra lateral.
-- Quality Grid e inspección/selección de formatos (implementados en B1.2).
-- Rebranding visible de Desktop y CLI a GowLink (implementado).
-- Migración coordinada de namespaces y proyectos `WASSLink.*` (pendiente; no hacer cambios parciales).
-
-## Sub-betas de Beta 1
-
-Las sub-betas se crean únicamente cuando una funcionalidad concreta está terminada y probada.
-
-NO utilizar fechas artificiales.
-
-### B1.1 — Base e interfaz
-
-Estado: COMPLETADA.
-
-Objetivo:
-Infraestructura DI correcta + UI con barra lateral + contrato IDownloadProvider.
-
-Criterios cumplidos:
-- IDownloadProvider definido en WASSLink.Abstractions.
-- YtDlpDownloadService implementa IDownloadProvider.
-- MainViewModel recibe IDownloadProvider por DI (sin new()).
-- UI con barra lateral funcional y secciones Próximamente.
-- Validación inicial: compilación y 11 pruebas; la suite actual alcanza 20 pruebas aprobadas (Beta 1.3).
-
-### B1.2 — Quality Grid y selección de formatos
-
-Estado: IMPLEMENTADO Y VALIDADO EN RUNTIME (2026-10-05).
-
-- Inspección asíncrona de metadatos y formatos con yt-dlp.
-- Presentación y selección de opciones de audio/vídeo.
-- Inicio de descarga con la selección.
-- Pruebas unitarias de parsing y selector de formatos.
-- La URL de prueba produjo 7 formatos (3 de audio, 4 de vídeo); la extracción devolvió título y duración 5:11. La Quality Grid muestra los formatos, pero todavía no presenta título ni duración.
-
-### B1.3 — Estabilización de Beta 1 y transición GowLink
-
-Estado: EN CURSO.
-
-Objetivo: validar la experiencia implementada, cerrar discrepancias operativas y dejar documentada la transición de marca sin adelantar Beta 2.
-
-Criterios pendientes:
-- Ampliar la cobertura de ejecución real para cancelación contra el proceso externo, errores y otros formatos; audio M4A y vídeo MP4 1080p ya se completaron con progreso y FFmpeg.
-- Revisar manejo visible de URL no soportada, herramienta externa ausente, fallos de yt-dlp/FFmpeg y errores de escritura.
-- Mantener los nombres visibles GowLink y documentar las referencias técnicas heredadas `WASSLink.*`.
-- Planificar como cambio coordinado la migración de namespaces/proyectos/ensamblados; completar esa migración solo con referencias, XAML, build, tests y publicación validados.
-- Mantener `dotnet test WASSLink-Studio.slnx` verde; la última ejecución pasó 20/20. Esta suite no sustituye la prueba real end-to-end.
-
-Criterio completado en B1.3:
-- `GowLinkLogger`, `LoggerService` y diagnósticos escriben en `%LOCALAPPDATA%\GowLink\Logs`; runtime creó y actualizó `app.log` y `gowlink-2026-10-05.log`. Los datos históricos bajo `%LOCALAPPDATA%\WASSLink\Logs` se conservan sin migración ni borrado.
-- Audio M4A y vídeo MP4 1080p recomendados se descargaron a `Downloads\WASSLink` (fallback legado existente), se decodificaron con FFmpeg y el MP4 se registró con ruta Unicode exacta en `app.log`.
-
-### B1.4 — Organización
-
-Estado: PLANIFICADO; no iniciar antes de cerrar la estabilización B1.3.
-
-Objetivo:
-Organización automática de archivos descargados.
-
-Criterios:
-- Carpeta de destino configurable.
-- Subcarpetas por plataforma/creador cuando sea posible.
-
-### B1.5 — Robustez y errores
-
-Objetivo:
-Manejo de casos de error comunes.
-
-Criterios:
-- URL inválida → mensaje claro.
-- yt-dlp no encontrado → mensaje claro con instrucciones.
-- Descarga fallida → mensaje de error legible.
-
-### B1 FINAL — Primera beta pública
-
-Objetivo:
-Beta 1 completa, funcional y documentada.
-
-Criterios:
-- Todos los objetivos de B1.1 a B1.5 cumplidos.
-- Changelog actualizado.
-- Release en GitHub.
-- Documentación actualizada.
-
----
-
-# Beta 2 — Search Studio
-
-Estado: planificada.
-
-Implementar:
-
-- Búsqueda integrada de contenido.
-- Resultados de búsqueda.
-- Selección de resultado para descarga.
-- Conexión: búsqueda → descarga.
-
----
-
-# Beta 3 — Media Player
-
-Estado: planificada.
-
-Implementar:
-
-- Reproducción de audio.
-- Reproducción de vídeo.
-- Controles: play, pause, stop, seek.
-- Volumen.
-- Duración y posición.
-- Siguiente / anterior.
-- Integración con biblioteca.
-
-El reproductor permanece como componente central futuro de GowLink Studio.
-
----
-
-# Beta 4 — Library Studio
-
-Estado: planificada.
-
-Implementar:
-
-- Biblioteca local de contenido descargado.
-- Detección e importación.
-- Organización.
-- Metadatos.
-- Búsqueda local.
-- Filtros.
-- Historial.
-- Favoritos.
-
----
-
-# Beta 5 — Multi-Platform Providers
-
-Estado: planificada.
-
-Objetivo:
-Incorporar proveedores de descarga adicionales.
-
-Proveedores experimentales candidatos:
-
-- MediaFire
-- MEGA
-- Servidores HTTP/HTTPS directos
-- Otros proveedores según compatibilidad real
-
-IMPORTANTE:
-No afirmar compatibilidad con ningún proveedor hasta probarlo.
-La compatibilidad depende de las capacidades y restricciones de cada plataforma.
-
----
-
-# Beta 6 — Plugin System
+- 1.4.1 es una fase de estabilización y maduración
+- 1.5 a 1.9 representan etapas funcionales concretas y distintas
+- la documentación interna debe mantener esa distinción para evitar promesas innecesarias o confusión entre ingeniería y estrategia
 
 Estado: planificada.
 

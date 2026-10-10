@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -59,17 +61,23 @@ public partial class MainViewModel : ViewModelBase
 
     public bool IsDownloaderSelected => SelectedSection == "Downloader";
     public bool IsSearchSelected => SelectedSection == "Buscador";
+    public bool IsLibrarySelected => SelectedSection == "Biblioteca";
     public bool IsDownloadsSelected => SelectedSection == "Descargas";
     public bool IsSettingsSelected => SelectedSection == "Configuración";
+    public bool IsDownloaderFormVisible => IsDownloaderSelected && !IsDownloadConfirmation;
 
     partial void OnSelectedSectionChanged(string value)
     {
         OnPropertyChanged(nameof(IsDownloaderSelected));
         OnPropertyChanged(nameof(IsSearchSelected));
+        OnPropertyChanged(nameof(IsLibrarySelected));
         OnPropertyChanged(nameof(IsDownloadsSelected));
         OnPropertyChanged(nameof(IsSettingsSelected));
+        OnPropertyChanged(nameof(IsDownloaderFormVisible));
         OnPropertyChanged(nameof(ActiveEngineLabel));
         OnPropertyChanged(nameof(EngineStatus));
+        if (value == "Biblioteca")
+            RefreshLibrary();
     }
 
     [ObservableProperty]
@@ -90,7 +98,99 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private ObservableCollection<DownloadHistoryItem> downloadHistory = new();
 
+    [ObservableProperty]
+    private ObservableCollection<DownloadHistoryItem> filteredDownloadHistory = new();
+
+    [ObservableProperty]
+    private string downloadTypeFilter = "Todos";
+
+    [ObservableProperty]
+    private string downloadDateFilter = "Todas";
+
+    [ObservableProperty]
+    private int downloadSpeedLimitKbps;
+
+    [ObservableProperty]
+    private string accentColor = "#4F46E5";
+
+    [ObservableProperty]
+    private string libraryStatus = "Contenido físico de la carpeta de descargas.";
+
+    [ObservableProperty]
+    private ObservableCollection<LocalFileItem> libraryFiles = new();
+
+    [ObservableProperty]
+    private ObservableCollection<LocalFileItem> localSearchResults = new();
+
+    [ObservableProperty]
+    private bool searchImages;
+
+    [ObservableProperty]
+    private bool searchAudio;
+
+    [ObservableProperty]
+    private bool searchVideo;
+
+    [ObservableProperty]
+    private bool searchCompressed;
+
+    [ObservableProperty]
+    private bool searchIso;
+
+    [ObservableProperty]
+    private bool isAnalyzing;
+
+    [ObservableProperty]
+    private bool isDownloadConfirmation;
+
+    [ObservableProperty]
+    private string confirmationTitle = string.Empty;
+
+    [ObservableProperty]
+    private string confirmationDetails = string.Empty;
+
+    [ObservableProperty]
+    private string confirmationOutput = string.Empty;
+
+    [ObservableProperty]
+    private string settingsMessage = string.Empty;
+
     public bool HasDownloadHistory => DownloadHistory.Count > 0;
+    public bool ShowNoFilteredDownloads => HasDownloadHistory && !HasFilteredDownloads;
+    public bool HasLibraryFiles => LibraryFiles.Count > 0;
+    public bool HasSearchResults => LocalSearchResults.Count > 0;
+    public int SelectedDownloadCount => DownloadHistory.Count(item => item.IsSelected);
+    public bool HasSelectedDownloads => SelectedDownloadCount > 0;
+    public bool HasFilteredDownloads => FilteredDownloadHistory.Count > 0;
+    public bool CanPauseSelectedDownloads => DownloadHistory.Any(item =>
+        item.IsSelected && item.Engine == "HTTP Directo (Streaming)" &&
+        (item.IsPaused || item.Status == "Iniciando" || item.Status == "Descargando por HTTP Directo..."));
+    public IReadOnlyList<string> DownloadTypeFilters { get; } = ["Todos", "Multimedia", "Archivos"];
+    public IReadOnlyList<string> DownloadDateFilters { get; } = ["Todas", "Hoy", "Últimos 7 días"];
+    public IReadOnlyList<string> AccentColorOptions { get; } = ["#4F46E5", "#0891B2", "#059669", "#D97706"];
+
+    partial void OnDownloadTypeFilterChanged(string value) => RefreshFilteredDownloads();
+    partial void OnDownloadDateFilterChanged(string value) => RefreshFilteredDownloads();
+    partial void OnDownloadHistoryChanged(ObservableCollection<DownloadHistoryItem> value)
+    {
+        RefreshFilteredDownloads();
+        OnPropertyChanged(nameof(HasDownloadHistory));
+        OnPropertyChanged(nameof(ShowNoFilteredDownloads));
+    }
+    partial void OnIsDownloadConfirmationChanged(bool value) =>
+        OnPropertyChanged(nameof(IsDownloaderFormVisible));
+    partial void OnSearchImagesChanged(bool value) => RefreshLocalSearchResults();
+    partial void OnSearchAudioChanged(bool value) => RefreshLocalSearchResults();
+    partial void OnSearchVideoChanged(bool value) => RefreshLocalSearchResults();
+    partial void OnSearchCompressedChanged(bool value) => RefreshLocalSearchResults();
+    partial void OnSearchIsoChanged(bool value) => RefreshLocalSearchResults();
+    partial void OnDownloadSpeedLimitKbpsChanged(int value)
+    {
+        if (value < 0)
+            DownloadSpeedLimitKbps = 0;
+        else if (value > 1_000_000)
+            DownloadSpeedLimitKbps = 1_000_000;
+    }
 
     // ─── Descarga principal ───────────────────────────────────────────────────────
 
@@ -133,6 +233,16 @@ public partial class MainViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(ActiveEngineLabel));
         OnPropertyChanged(nameof(EngineStatus));
+    }
+
+    private void OnDownloadHistoryItemPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(DownloadHistoryItem.IsSelected))
+        {
+            OnPropertyChanged(nameof(SelectedDownloadCount));
+            OnPropertyChanged(nameof(HasSelectedDownloads));
+            OnPropertyChanged(nameof(CanPauseSelectedDownloads));
+        }
     }
 
     private IDownloadProvider? GetProviderForUrl(string url)
@@ -244,12 +354,268 @@ public partial class MainViewModel : ViewModelBase
     private void SelectSection(string section) => SelectedSection = section;
 
     [RelayCommand]
+    private void OpenLibrary() => SelectedSection = "Biblioteca";
+
+    [RelayCommand]
+    private void RefreshLibrary()
+    {
+        try
+        {
+            Directory.CreateDirectory(OutputPath);
+            LibraryFiles = new ObservableCollection<LocalFileItem>(
+                Directory.EnumerateFiles(OutputPath, "*", SearchOption.TopDirectoryOnly)
+                    .Select(CreateLocalFileItem)
+                    .OrderByDescending(file => file.Modified));
+            LibraryStatus = $"{LibraryFiles.Count} archivo(s) en {OutputPath}";
+            OnPropertyChanged(nameof(HasLibraryFiles));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            LibraryStatus = $"No se pudo leer la biblioteca: {ex.Message}";
+            LibraryFiles.Clear();
+            OnPropertyChanged(nameof(HasLibraryFiles));
+        }
+    }
+
+    [RelayCommand]
+    private void SearchLocalFiles()
+    {
+        var term = SearchQuery.Trim();
+        try
+        {
+            Directory.CreateDirectory(OutputPath);
+            var files = Directory.EnumerateFiles(OutputPath, "*", SearchOption.TopDirectoryOnly)
+                .Select(CreateLocalFileItem)
+                .Where(file => string.IsNullOrWhiteSpace(term) ||
+                               file.Name.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Where(MatchesSelectedCategories)
+                .OrderByDescending(file => file.Modified);
+            LocalSearchResults = new ObservableCollection<LocalFileItem>(files);
+            SearchResultMessage = $"{LocalSearchResults.Count} archivo(s) encontrados en la carpeta local.";
+            OnPropertyChanged(nameof(HasSearchResults));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            SearchResultMessage = $"No se pudo buscar en la biblioteca: {ex.Message}";
+            LocalSearchResults.Clear();
+            OnPropertyChanged(nameof(HasSearchResults));
+        }
+    }
+
+    private bool MatchesSelectedCategories(LocalFileItem file)
+    {
+        if (!(SearchImages || SearchAudio || SearchVideo || SearchCompressed || SearchIso))
+            return true;
+
+        return file.Category switch
+        {
+            "Imagen" => SearchImages,
+            "Audio" => SearchAudio,
+            "Vídeo" => SearchVideo,
+            "Archivo comprimido" => SearchCompressed,
+            "ISO" => SearchIso,
+            _ => false
+        };
+    }
+
+    private static LocalFileItem CreateLocalFileItem(string path)
+    {
+        var info = new FileInfo(path);
+        var category = GetFileCategory(info.Extension);
+        return new LocalFileItem
+        {
+            Name = info.Name,
+            Path = info.FullName,
+            Category = category,
+            Size = FormatFileSize(info.Length),
+            Modified = info.LastWriteTime
+        };
+    }
+
+    private static string GetFileCategory(string extension) => extension.ToLowerInvariant() switch
+    {
+        ".png" or ".jpg" or ".jpeg" or ".gif" or ".webp" or ".bmp" => "Imagen",
+        ".mp3" or ".m4a" or ".wav" or ".flac" or ".aac" or ".opus" => "Audio",
+        ".mp4" or ".mkv" or ".avi" or ".mov" or ".webm" => "Vídeo",
+        ".zip" or ".rar" or ".7z" or ".tar" or ".gz" => "Archivo comprimido",
+        ".iso" => "ISO",
+        _ => "Archivo"
+    };
+
+    private static string FormatFileSize(long size)
+    {
+        string[] units = ["B", "KB", "MB", "GB"];
+        var value = (double)size;
+        var unit = 0;
+        while (value >= 1024 && unit < units.Length - 1)
+        {
+            value /= 1024;
+            unit++;
+        }
+        return $"{value:0.##} {units[unit]}";
+    }
+
+    private void RefreshLocalSearchResults()
+    {
+        if (!Uri.TryCreate(SearchQuery, UriKind.Absolute, out _))
+            SearchLocalFiles();
+    }
+
+    private void RefreshFilteredDownloads()
+    {
+        var now = DateTime.Now;
+        FilteredDownloadHistory = new ObservableCollection<DownloadHistoryItem>(
+            DownloadHistory.Where(item =>
+            {
+                var extension = Path.GetExtension(item.Output).ToLowerInvariant();
+                var isMultimedia = extension is ".mp3" or ".m4a" or ".wav" or ".flac" or
+                    ".aac" or ".opus" or ".mp4" or ".mkv" or ".webm" or ".avi" or ".mov";
+                var typeMatches = DownloadTypeFilter == "Todos" ||
+                                  (DownloadTypeFilter == "Multimedia" ? isMultimedia : !isMultimedia);
+                var dateMatches = DownloadDateFilter switch
+                {
+                    "Hoy" => item.CreatedAt.Date == now.Date,
+                    "Últimos 7 días" => item.CreatedAt >= now.AddDays(-7),
+                    _ => true
+                };
+                return typeMatches && dateMatches;
+            }));
+        OnPropertyChanged(nameof(HasFilteredDownloads));
+        OnPropertyChanged(nameof(ShowNoFilteredDownloads));
+    }
+
+    [RelayCommand]
+    private void DeleteSelectedDownloads()
+    {
+        foreach (var item in DownloadHistory.Where(item => item.IsSelected &&
+                     !item.Status.Equals("Iniciando", StringComparison.OrdinalIgnoreCase) &&
+                     !item.Status.StartsWith("Descargando", StringComparison.OrdinalIgnoreCase) &&
+                     item.Status != "Procesando con FFmpeg...").ToList())
+        {
+            item.PropertyChanged -= OnDownloadHistoryItemPropertyChanged;
+            DownloadHistory.Remove(item);
+        }
+
+        RefreshFilteredDownloads();
+        OnPropertyChanged(nameof(HasDownloadHistory));
+        OnPropertyChanged(nameof(ShowNoFilteredDownloads));
+        OnPropertyChanged(nameof(SelectedDownloadCount));
+        OnPropertyChanged(nameof(HasSelectedDownloads));
+    }
+
+    [RelayCommand]
+    private void PauseSelectedDownloads()
+    {
+        var pausable = DownloadHistory.Where(item => item.IsSelected &&
+            item.Engine == "HTTP Directo (Streaming)" &&
+            (item.IsPaused || item.Status == "Iniciando" || item.Status == "Descargando por HTTP Directo...")).ToList();
+        foreach (var item in pausable)
+            item.IsPaused = !item.IsPaused;
+
+        StatusMessage = pausable.Count > 0
+            ? "Se alternó la pausa de las descargas HTTP seleccionadas. yt-dlp no admite pausa por lote."
+            : "No hay descargas HTTP activas seleccionadas que puedan pausarse.";
+        OnPropertyChanged(nameof(CanPauseSelectedDownloads));
+    }
+
+    [RelayCommand]
+    private void OpenDownloadedLocation(DownloadHistoryItem item)
+    {
+        var path = File.Exists(item.Output) ? Path.GetDirectoryName(item.Output) : item.Output;
+        if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+        {
+            StatusMessage = "La ubicación de este elemento ya no existe.";
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"No se pudo abrir la ubicación: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void OpenDownloadedWith(DownloadHistoryItem item)
+    {
+        if (!File.Exists(item.Output))
+        {
+            StatusMessage = "El archivo descargado no está disponible.";
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "rundll32.exe",
+                Arguments = $"shell32.dll,OpenAs_RunDLL \"{item.Output}\"",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"No se pudo abrir el selector de aplicaciones: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void OpenLocalFile(LocalFileItem file)
+    {
+        if (!File.Exists(file.Path))
+        {
+            LibraryStatus = "El archivo ya no existe.";
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = file.Path, UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            LibraryStatus = $"No se pudo abrir el archivo: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void SaveSettings()
+    {
+        if (string.IsNullOrWhiteSpace(OutputPath))
+            SettingsMessage = "La carpeta de destino no puede estar vacía.";
+        else if (!Path.IsPathFullyQualified(OutputPath))
+            SettingsMessage = "La carpeta de destino debe ser una ruta absoluta.";
+        else
+            SettingsMessage = DownloadSpeedLimitKbps <= 0
+                ? "Preferencias aplicadas. Límite de velocidad: sin límite."
+                : $"Preferencias aplicadas. Límite: {DownloadSpeedLimitKbps} KB/s.";
+    }
+
+    [RelayCommand]
+    private void PasteAnotherLink()
+    {
+        DownloadUrl = string.Empty;
+        SelectedFormatOption = null;
+        IsDownloadConfirmation = false;
+        SelectedSection = "Downloader";
+    }
+
+    [RelayCommand]
     private async Task SearchAsync()
     {
         var url = SearchQuery.Trim();
         if (string.IsNullOrWhiteSpace(url))
         {
             SearchResultMessage = "Ingresa un enlace para iniciar la consulta.";
+            return;
+        }
+
+        if (!Uri.TryCreate(url, UriKind.Absolute, out _))
+        {
+            SearchLocalFiles();
             return;
         }
 
@@ -404,19 +770,6 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        var selectedProvider = GetProviderForUrl(DownloadUrl);
-        if (selectedProvider is null)
-        {
-            StatusMessage = "La URL ingresada no es válida o no está soportada.";
-            return;
-        }
-
-        if (selectedProvider is DirectHttpDownloadService)
-        {
-            StatusMessage = "Archivo directo detectado. Se descargará con HTTP Directo (Streaming).";
-            return;
-        }
-
         IsFormatModalOpen = true;
         IsLoadingFormats = true;
         FormatLoadError = string.Empty;
@@ -467,6 +820,42 @@ public partial class MainViewModel : ViewModelBase
         finally
         {
             IsLoadingFormats = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task AnalyzeAsync()
+    {
+        if (string.IsNullOrWhiteSpace(DownloadUrl))
+        {
+            StatusMessage = "Ingresa una URL antes de analizar.";
+            return;
+        }
+
+        var selectedProvider = GetProviderForUrl(DownloadUrl);
+        if (selectedProvider is null)
+        {
+            StatusMessage = "La URL ingresada no es válida o no está soportada.";
+            return;
+        }
+
+        IsAnalyzing = true;
+        try
+        {
+            await Task.Delay(120);
+            if (selectedProvider is DirectHttpDownloadService)
+            {
+                SelectedFormatOption = null;
+                IsAnalyzing = false;
+                await StartDownloadWithFormatAsync(null);
+                return;
+            }
+
+            await OpenFormatModalAsync();
+        }
+        finally
+        {
+            IsAnalyzing = false;
         }
     }
 
@@ -564,7 +953,8 @@ public partial class MainViewModel : ViewModelBase
             MediaType: mediaType,
             Format: ext,
             FormatId: format?.FormatId,
-            VideoFormatHasAudio: format?.HasAudio ?? false
+            VideoFormatHasAudio: format?.HasAudio ?? false,
+            MaxSpeedBytesPerSecond: DownloadSpeedLimitKbps * 1024L
         );
 
         var selectedProvider = GetProviderForUrl(request.Url)!;
@@ -575,12 +965,37 @@ public partial class MainViewModel : ViewModelBase
             Status = "Iniciando",
             Output = OutputPath
         };
-        DownloadHistory.Insert(0, historyItem);
-        OnPropertyChanged(nameof(HasDownloadHistory));
-
-        var progress = new Progress<DownloadProgress>(p =>
+        var resumeSignal = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        resumeSignal.TrySetResult();
+        historyItem.PauseDownload = pause =>
         {
-            historyItem.Status = p.StatusMessage ?? "Descargando";
+            if (pause)
+            {
+                Interlocked.Exchange(
+                    ref resumeSignal,
+                    new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously));
+                historyItem.Status = "Pausada";
+            }
+            else
+            {
+                Volatile.Read(ref resumeSignal).TrySetResult();
+                historyItem.Status = "Descargando por HTTP Directo...";
+            }
+        };
+        request = request with
+        {
+            WaitIfPausedAsync = token => Volatile.Read(ref resumeSignal).Task.WaitAsync(token)
+        };
+        historyItem.PropertyChanged += OnDownloadHistoryItemPropertyChanged;
+        DownloadHistory.Insert(0, historyItem);
+        RefreshFilteredDownloads();
+        OnPropertyChanged(nameof(HasDownloadHistory));
+        OnPropertyChanged(nameof(ShowNoFilteredDownloads));
+
+        IProgress<DownloadProgress> progress = new Progress<DownloadProgress>(p =>
+        {
+            if (!historyItem.IsPaused)
+                historyItem.Status = p.StatusMessage ?? "Descargando";
             if (p.Percentage >= 0)
                 historyItem.Progress = p.Percentage;
 
@@ -589,6 +1004,7 @@ public partial class MainViewModel : ViewModelBase
 
             if (isProcessingPhase)
             {
+                historyItem.Status = p.StatusMessage!;
                 IsPhaseDownloading = false;
                 IsPhaseProcessing = true;
                 DownloadProgress = 0;
@@ -622,7 +1038,15 @@ public partial class MainViewModel : ViewModelBase
 
         try
         {
-            var result = await _downloadProvider.DownloadAsync(request, progress, _cts.Token);
+            var result = selectedProvider is DirectHttpDownloadService
+                ? await selectedProvider.DownloadAsync(
+                    request,
+                    new Progress<DownloadProgress>(p =>
+                    {
+                        progress.Report(p);
+                    }),
+                    _cts.Token)
+                : await selectedProvider.DownloadAsync(request, progress, _cts.Token);
 
             if (result.Success)
             {
@@ -635,10 +1059,14 @@ public partial class MainViewModel : ViewModelBase
                 historyItem.Status = "Completada";
                 historyItem.Progress = 100;
                 historyItem.Output = LastDownloadedFile;
-                SelectedSection = "Descargas";
-
-                // Mostrar toast de completado
-                await ShowToastAsync(displayName, OutputPath);
+                ConfirmationTitle = displayName;
+                ConfirmationDetails = $"Descarga completada con {historyItem.Engine}.";
+                ConfirmationOutput = LastDownloadedFile;
+                IsDownloadConfirmation = true;
+                SelectedSection = "Downloader";
+                RefreshFilteredDownloads();
+                OnPropertyChanged(nameof(HasDownloadHistory));
+                OnPropertyChanged(nameof(ShowNoFilteredDownloads));
             }
             else
             {

@@ -121,17 +121,56 @@ public class DownloadProviderTests
     public void MainViewModel_NavigatesBetweenRequestedModules()
     {
         var viewModel = new MainViewModel();
+        var libraryPath = Path.Combine(Path.GetTempPath(), $"GowLink.Library.{Guid.NewGuid():N}");
+        Directory.CreateDirectory(libraryPath);
+        viewModel.OutputPath = libraryPath;
 
-        Assert.True(viewModel.IsDownloaderSelected);
-        viewModel.SelectSectionCommand.Execute("Buscador");
-        Assert.True(viewModel.IsSearchSelected);
-        viewModel.SearchQuery = "https://example.com/archive.zip";
-        Assert.Equal("Motor: HTTP Directo (Streaming)", viewModel.ActiveEngineLabel);
+        try
+        {
+            Assert.True(viewModel.IsDownloaderSelected);
+            viewModel.SelectSectionCommand.Execute("Buscador");
+            Assert.True(viewModel.IsSearchSelected);
+            viewModel.SearchQuery = "https://example.com/archive.zip";
+            Assert.Equal("Motor: HTTP Directo (Streaming)", viewModel.ActiveEngineLabel);
 
-        viewModel.SelectSectionCommand.Execute("Descargas");
-        Assert.True(viewModel.IsDownloadsSelected);
-        viewModel.SelectSectionCommand.Execute("Configuración");
-        Assert.True(viewModel.IsSettingsSelected);
+            viewModel.SelectSectionCommand.Execute("Biblioteca");
+            Assert.True(viewModel.IsLibrarySelected);
+            viewModel.SelectSectionCommand.Execute("Descargas");
+            Assert.True(viewModel.IsDownloadsSelected);
+            viewModel.SelectSectionCommand.Execute("Configuración");
+            Assert.True(viewModel.IsSettingsSelected);
+        }
+        finally
+        {
+            Directory.Delete(libraryPath, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void MainViewModel_SearchFiltersLocalFilesByNameAndCategory()
+    {
+        var libraryPath = Path.Combine(Path.GetTempPath(), $"GowLink.Search.{Guid.NewGuid():N}");
+        Directory.CreateDirectory(libraryPath);
+        File.WriteAllText(Path.Combine(libraryPath, "logo.jpg"), "image");
+        File.WriteAllText(Path.Combine(libraryPath, "logo.zip"), "archive");
+        var viewModel = new MainViewModel { OutputPath = libraryPath, SearchQuery = "logo", SearchImages = true };
+
+        try
+        {
+            viewModel.SearchLocalFilesCommand.Execute(null);
+
+            Assert.Single(viewModel.LocalSearchResults);
+            Assert.Equal("logo.jpg", viewModel.LocalSearchResults[0].Name);
+
+            viewModel.SearchImages = false;
+            viewModel.SearchCompressed = true;
+            Assert.Single(viewModel.LocalSearchResults);
+            Assert.Equal("logo.zip", viewModel.LocalSearchResults[0].Name);
+        }
+        finally
+        {
+            Directory.Delete(libraryPath, recursive: true);
+        }
     }
 
     [Fact]
@@ -167,6 +206,54 @@ public class DownloadProviderTests
         {
             if (Directory.Exists(outputPath))
                 Directory.Delete(outputPath, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task DirectHttpProvider_WaitsForResumeBeforeReadingChunks()
+    {
+        var outputPath = Path.Combine(Path.GetTempPath(), $"GowLink.Pause.{Guid.NewGuid():N}");
+        var pauseEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var httpClient = new HttpClient(new StubHttpMessageHandler((_, _) =>
+            Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent([1, 2, 3, 4])
+            })));
+        var service = new DirectHttpDownloadService(httpClient);
+        var request = new DownloadRequest(
+            "https://example.com/archive.zip",
+            outputPath,
+            WaitIfPausedAsync: async token =>
+            {
+                pauseEntered.TrySetResult();
+                await resume.Task.WaitAsync(token);
+            });
+        var download = service.DownloadAsync(request);
+
+        try
+        {
+            await pauseEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.False(download.IsCompleted);
+
+            resume.TrySetResult();
+            var result = await download.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.True(result.Success, result.ErrorMessage);
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, await File.ReadAllBytesAsync(result.OutputPath!));
+        }
+        finally
+        {
+            resume.TrySetResult();
+            try
+            {
+                await download;
+            }
+            finally
+            {
+                if (Directory.Exists(outputPath))
+                    Directory.Delete(outputPath, recursive: true);
+            }
         }
     }
 

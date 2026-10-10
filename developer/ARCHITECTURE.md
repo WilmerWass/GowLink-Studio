@@ -1,222 +1,197 @@
-﻿# GowLink Studio — Arquitectura
+# GowLink Studio — Arquitectura
 
-> Documento oficial de arquitectura del proyecto.
+## 1. Propósito del documento
 
-## Arquitectura general
+Este documento distingue entre:
 
-GowLink Studio utiliza una arquitectura modular basada en capas. La marca de producto ya cambió; los nombres reales de solución, proyectos, carpetas y namespaces siguen siendo `WASSLink.*` y se conservarán hasta completar una migración técnica coordinada.
+- arquitectura actual verificada
+- arquitectura objetivo
+- capacidades ya implementadas
+- capacidades futuras o experimentales
 
-La solución se divide en:
+Esto es necesario porque el proyecto ya ha evolucionado más allá de la etapa de “descargador básico” y necesita separar claramente la base funcional de la visión de producto.
 
-- Apps
-- Core
-- Tests
+## 2. Arquitectura actual verificada
 
----
+La arquitectura actual del proyecto se puede resumir así:
 
-# Apps
+- Apps: entrada del usuario y composición
+- Core: contratos y lógica reutilizable
+- Tests: validación funcional
 
-Las Apps contienen los puntos de entrada de usuario.
+### Capa Apps
+
+Responsables de: UI, entrada de usuario, composición de servicios, presentación.
 
 Proyectos actuales:
 
-- `WASSLink.Desktop` (Avalonia UI; nombre de producto: GowLink Desktop)
-- `WASSLink.CLI` (consola; nombre de producto: GowLink CLI)
+- `src/Apps/WASSLink.Desktop`
+- `src/Apps/WASSLink.CLI`
 
-Proyecto futuro:
+Reglas:
 
-- WASSLink.Mobile (Android / futuro)
+- no deben contener lógica de negocio central
+- deben consumir servicios del Core mediante inyección de dependencias
+- no deben crear servicios críticos con `new()` cuando exista una abstracción
 
-Las Apps son responsables de:
+### Capa Core
 
-- Interfaz de usuario.
-- Entrada del usuario.
-- Presentación.
-- Composición de servicios.
+Responsables de: modelos compartidos, contratos, servicios reutilizables, motores, diagnóstico y lógica ejecutiva.
 
-Las Apps no deben contener lógica de negocio central.
+Proyectos principales:
 
-Las Apps inyectan dependencias del Core mediante DI. No instancian servicios Core con new().
+- `WASSLink.Abstractions`
+- `WASSLink.Shared`
+- `WASSLink.Download`
+- `WASSLink.Search`
+- `WASSLink.Library`
+- `WASSLink.Player`
+- `WASSLink.Plugins`
+- `WASSLink.Configuration`
 
----
+### Capa Tests
 
-# Core
+- validan la lógica del Core y la integración con los motores
+- no deben depender innecesariamente de la capa de UI
+- se usan como mecanismo de regresión para cambios funcionales
 
-El Core contiene la lógica reutilizable del ecosistema.
+## 3. Estado real de los módulos principales
 
-## WASSLink.Abstractions
-
-Responsabilidad:
-
-- Interfaces.
-- Contratos.
-- Definiciones compartidas.
-
-Dependencias:
-
-- Ninguna.
-
-Contratos implementados (Beta 1):
-
-- IDownloadProvider
-- DownloadRequest
-- DownloadProgress
-
----
-
-## WASSLink.Shared
+### WASSLink.Abstractions
 
 Responsabilidad:
 
-- Utilidades comunes.
-- Extensiones.
-- Modelos base.
-- Logging (`GowLinkLogger`; `WassLinkLogger` se conserva como alias de compatibilidad).
-- Diagnósticos (DiagnosticReportGenerator).
+- contratos de descarga
+- modelos compartidos
+- definición del flujo de trabajo básico
 
-Dependencias:
+Estado:
 
-- WASSLink.Abstractions
+- implementado y usado por la arquitectura actual
 
----
-
-## WASSLink.Configuration
+### WASSLink.Download
 
 Responsabilidad:
 
-- Configuración.
-- Preferencias.
-- Carga y almacenamiento de configuración.
+- resolución de proveedores
+- ejecución del motor de descarga
+- progresos y cancelación
+- enrutamiento entre motores
 
-Dependencias:
+Estado actual:
 
-- WASSLink.Abstractions
-- WASSLink.Shared
+- incluye el diseño dual basado en HTTP directo y yt-dlp
+- la lógica de proveedor y enrutamiento es parte del estado actual objetivo de la beta 1.4
 
-Estado: scaffold (Beta 2).
-
----
-
-## WASSLink.Download
+### WASSLink.Search
 
 Responsabilidad:
 
-- Gestión de descargas.
-- Abstracción de motores de descarga.
-- Integración con proveedores y motores externos.
+- búsqueda de contenidos, resultados y consulta por URL
 
-Dependencias:
+Estado:
 
-- WASSLink.Abstractions
-- WASSLink.Configuration
-- WASSLink.Shared
+- parte del desarrollo futuro y no debe tratarse como completamente integrada si no ha sido verificada como tal
 
-Implementaciones actuales (Beta 1):
-
-- `YtDlpDownloadService` — implementa `IDownloadProvider`; inspecciona formatos y reporta progreso.
-- La cancelación de descarga intenta detener el proceso de yt-dlp y su árbol de procesos.
-- Quality Grid permite inspeccionar y seleccionar formatos disponibles.
-
-Capacidades futuras contempladas:
-
-- HTTP/HTTPS (Beta 1 extendido).
-- MediaFire, MEGA (Beta 5 — experimental).
-- Torrents (Beta 8).
-
-La arquitectura no debe acoplar el módulo directamente a un motor externo concreto.
-
----
-
-## WASSLink.Library
+### WASSLink.Library
 
 Responsabilidad:
 
-- Biblioteca multimedia.
-- Organización.
-- Metadatos.
-- Gestión del contenido descargado.
+- organización, listado y consulta del contenido descargado
 
-Dependencias:
+Estado:
 
-- WASSLink.Abstractions
-- WASSLink.Shared
-- WASSLink.Configuration
+- presente como estructura y flujo de UI, pero no como módulo completamente validado en profundidad
 
-Estado: scaffold (Beta 4).
-
----
-
-## WASSLink.Player
+### WASSLink.Player
 
 Responsabilidad:
 
-- Reproducción multimedia.
-- Control del reproductor.
-- Integración con motores multimedia.
+- reproducción y control multimedia
 
-Dependencias:
+Estado:
 
-- WASSLink.Abstractions
-- WASSLink.Shared
+- futuro funcional, no cierre de implementación actual
 
-Estado: scaffold (Beta 3).
-
----
-
-## WASSLink.Search
+### WASSLink.Plugins
 
 Responsabilidad:
 
-- Búsqueda.
-- Proveedores de búsqueda.
-- Resultados.
+- extensibilidad y Providers/engines externos
 
-Dependencias:
+Estado:
 
-- WASSLink.Abstractions
-- WASSLink.Shared
-- WASSLink.Plugins
+- futuro arquitectónico, no equivalente a integración comprobada
 
-Estado: scaffold (Beta 2).
-
----
-
-## WASSLink.Plugins
+### WASSLink.Configuration
 
 Responsabilidad:
 
-- Sistema de extensiones.
-- Contratos de plugins.
-- Registro y descubrimiento de extensiones.
+- preferencias, rutas y configuración de la aplicación
 
-Dependencias:
+Estado:
 
-- WASSLink.Abstractions
-- WASSLink.Shared
+- canal de configuración identificado en la beta 1.4, pero aún sujeto a consolidación y persistencia real
 
-Estado: scaffold (Beta 6).
+## 4. Arquitectura objetivo prevista
 
----
+La arquitectura objetivo del producto debería organizarse alrededor de un flujo común:
 
-# Tests
+1. Entrada URL universal
+2. URL Analyzer
+3. Provider Resolver
+4. Content Resolver
+5. Definición de capacidades del contenido
+6. DownloadJob
+7. Cola común de descargas
+8. Motores especializados y desacoplados
+9. Biblioteca y reproductor integrados
 
-Los proyectos de Tests validan el comportamiento del Core y sus integraciones.
+Este flujo es una visión de arquitectura, no una afirmación de que todas esas capas ya existan completamente.
 
-Las pruebas no deben introducir dependencias innecesarias hacia las Apps.
+## 5. Motor dual actual
 
-Framework: xUnit.
+El proyecto actual ya presenta una separación funcional clara entre dos modos de descarga:
 
----
+- HTTP Directo (Streaming)
+  - para archivos directos y enlaces de descarga
+- yt-dlp & FFmpeg
+  - para multimedia y contenido externalizado
 
-# Regla de dependencias
+Esta separación es parte del estado actual del proyecto, pero todavía requiere consolidación en cola, configuración y manejo de fallos para alcanzar estabilidad de producto.
 
-Permitido:
+## 6. Dependencias y reglas de diseño
 
-Apps → Core
+Reglas que deben mantenerse:
 
-Core → Core inferior
+- Apps → Core
+- Core → Core inferior
+- Tests → módulo que valida
+- la capa de UI no debe absorber lógica de negocio central
+- los motores especializados deben ser reemplazables y descubiertos sin acoplar el resto del sistema a implementaciones concretas
 
-Tests → proyectos que prueban
+## 7. Deuda técnica y riesgos
+
+La arquitectura actual tiene puntos que requieren atención:
+
+- unificar la cola de trabajo para todos los motores
+- consolidar la configuración persistente
+- hacer explícitas las limitaciones por proveedor
+- definir con claridad la diferencia entre “detectable” y “compatible”
+- documentar qué partes están ya validadas y cuáles solo están planificadas
+
+## 8. Resumen arquitectónico
+
+La arquitectura correcta para GowLink Studio es modular, dual-motor y orientada al contenido, pero no debe confundirse con una implementación completa ya cerrada.
+
+La arquitectura actual tiene una base sólida para:
+
+- descargar contenido directo
+- resolver contenido multimedia
+- gestionar módulos de UI y navegación
+- preparar la expansión a búsqueda, biblioteca, reproductor y motores especializados
+
+La evolución futura debe ocurrir por etapas verificadas, no por promesas amplias de compatibilidad.
 
 No permitido:
 

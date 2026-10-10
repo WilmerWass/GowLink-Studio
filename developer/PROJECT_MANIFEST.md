@@ -1,152 +1,138 @@
-# GowLink Studio
+# GowLink Studio — Manifiesto del proyecto
 
-## Identidad del proyecto
+## 1. Identidad oficial
 
-GowLink Studio es una suite modular orientada a gestionar contenido digital. WASSLink Studio es el nombre anterior del producto.
+**Nombre oficial del producto:** GowLink Studio
 
-El producto principal en desarrollo activo es:
+**Nombre histórico del repositorio:** WASSLink-Studio
 
-**GowLink Downloader**
+**Declaración de marca:**
 
-Lema:
+La aplicación y la documentación deben referirse formalmente a GowLink Studio. Los nombres técnicos heredados `WASSLink.*` permanecen como identificadores de infraestructura o compatibilidad hasta una migración coordinada, no como nombre visible del producto.
 
-"Descarga lo que quieras, cuando quieras y como quieras."
+## 2. Propósito y usuarios objetivo
 
-El lema representa libertad de uso, no una promesa tÃ©cnica absoluta ni autorizaciÃ³n para evadir restricciones.
+GowLink Studio es un gestor de descargas universal orientado a:
 
-## Ecosistema GowLink Studio
+- descargas de archivos directos por HTTP/HTTPS
+- descargas multimedia mediante motores especializados
+- organización y consulta de archivos descargados
+- gestión centralizada de cola, progreso y configuración
 
-GowLink Studio integra progresivamente:
+El producto se orienta a usuarios que necesitan descargar contenido de forma flexible, con un flujo visible y con la posibilidad de separar motores por tipo de contenido.
 
-GowLink Studio
-â”‚
-â”œâ”€â”€ GowLink Downloader   (Beta 1 â€” estabilización)
-â”œâ”€â”€ GowLink Search       (Beta 2 â€” planificado)
-â”œâ”€â”€ GowLink Player       (Beta 3 â€” planificado)
-â”œâ”€â”€ GowLink Library      (Beta 4 â€” planificado)
-â”œâ”€â”€ GowLink Files        (Beta 7 â€” planificado)
-â”œâ”€â”€ GowLink Torrents     (Beta 8 â€” planificado)
-â””â”€â”€ GowLink Plugins      (Beta 6 â€” planificado)
+## 3. Filosofía Portable First
 
-## Flujo principal (visiÃ³n completa)
+La filosofía del proyecto es priorizar una experiencia portable, modular y adaptable, con menor dependencia de un único entorno de escritorio o una única plataforma de hosting.
 
-URL / Fuente
-â†“
-Source Detection
-â†“
-Provider
-â†“
-Download Engine
-â†“
-Processing
-â†“
-Organization
-â†“
-Library / Player
+Esto implica:
 
-## Capacidades principales
+- mantener el núcleo y las abstracciones desacopladas de la interfaz
+- favorecer la portabilidad del experimento funcional y del entorno de ejecución
+- permitir que la aplicación evolucione sin depender de una sola integración visual o de una sola plataforma soporte
 
-### Descargas (Beta 1)
+Portable First no equivale a declarar compatibilidad universal ni a asumir que una plataforma es compatible sin verificación real.
 
-La arquitectura contempla una capa de descarga extensible.
+## 4. Estado actual verificado
 
-Proveedor inicial:
+El estado verificado del proyecto se describe mejor como:
 
-- yt-dlp (YouTube â€” Beta 1, implementado)
+**GowLink Studio — Beta 1.4: Universal Download Engine**
 
-Proveedores futuros contemplados:
+Se consideran confirmadas las siguientes capacidades según el último estado de trabajo reportado:
 
-- HTTP/HTTPS directos (Beta 1 extendido)
-- MediaFire (Beta 5 â€” experimental)
-- MEGA (Beta 5 â€” experimental)
-- Torrents (Beta 8)
-- Proveedores adicionales mediante plugins (Beta 6)
+- branding actualizado a GowLink Studio
+- ruta predeterminada en `Downloads\GowLink`
+- navegación entre Downloader, Biblioteca, Buscador, Lista de Descargas y Configuración
+- selección dinámica del motor según la URL: HTTP directo o yt-dlp
+- corrección de la pausa HTTP sin bloquear la interfaz
+- compilación correcta con `dotnet build -c Debug`
+- validación de pruebas con `dotnet test tests\WASSLink.Tests\WASSLink.Tests.csproj -c Debug --no-restore`
 
-La compatibilidad con cada proveedor se considera planificada hasta que exista implementaciÃ³n funcional y pruebas.
+Estas capacidades deben reconocerse como verificado en esta fase actual, no como cierre total del producto ni como compatibilidad universal.
 
-### BÃºsqueda (Beta 2)
+## 5. Stack tecnológico real
 
-Motor de bÃºsqueda integrado.
-
-### Reproductor (Beta 3)
-
-El reproductor multimedia es una capacidad futura de GowLink Studio.
-
-Permite que el usuario reproduzca contenido gestionado por la plataforma sin depender de una aplicaciÃ³n externa.
-
-### Biblioteca (Beta 4)
-
-La biblioteca organiza el contenido descargado y sus metadatos.
-
-### Plugins (Beta 6)
-
-El sistema de plugins permite ampliar las capacidades del producto sin acoplar el Core a implementaciones concretas.
-
-## Arquitectura
-
-La soluciÃ³n utiliza una arquitectura modular:
-
-- Apps (proyectos técnicos `WASSLink.Desktop` y `WASSLink.CLI`, presentados como GowLink Desktop y GowLink CLI)
-- Core (contratos, servicios, lÃ³gica reutilizable)
-- Tests
-
-Las aplicaciones finales consumen servicios del Core mediante Dependency Injection.
-
-El Core contiene contratos, servicios y lÃ³gica reutilizable.
-
-Los mÃ³dulos Core no deben depender de implementaciones concretas cuando exista una abstracciÃ³n adecuada.
-
-## TecnologÃ­as
-
-TecnologÃ­as principales:
+Los componentes actuales y verificados del proyecto son:
 
 - .NET 10
 - C#
 - Avalonia UI
-- SQLite (futuro)
-- FFmpeg
-- yt-dlp
-- LibVLC / MPV (futuro)
 - Microsoft.Extensions.DependencyInjection
+- yt-dlp
+- FFmpeg
+- motor HTTP directo basado en `HttpClient`
+- xUnit para pruebas
 
-Las tecnologÃ­as externas pueden cambiar durante la evoluciÃ³n del proyecto.
+Tecnologías futuras o experimentales se documentan como tales y no se presentan como implementadas.
 
-## Estado actual — Beta 1.3
+## 6. Estructura y arquitectura del repositorio
 
-Fase 1: completada.
+El repositorio se organiza en tres grandes bloques:
 
-La Fase 1 estableciÃ³:
+- `src/Apps` — puntos de entrada de usuario
+- `src/Core` — lógica reutilizable y contratos
+- `tests` — validación funcional y de integración
 
-- Estructura de soluciÃ³n.
-- Proyectos Core.
-- Aplicaciones Desktop y CLI.
-- Tests.
-- Arquitectura inicial.
-- Referencias entre proyectos.
-- Infraestructura inicial de Dependency Injection.
-- CompilaciÃ³n completa de la soluciÃ³n.
+Estructura real:
 
-Beta 1 (GowLink Downloader): estabilización en curso. Quality Grid, selección de formatos, progreso/cancelación y UI principal están implementados; los 20 tests actuales pasan. Una ejecución runtime verificó la descarga recomendada de audio M4A y vídeo MP4 1080p, con progreso, postprocesamiento FFmpeg y archivo de salida. La validación no cierra el trabajo de estabilización ni cubre todos los fallos de producción.
+- `src/Apps/WASSLink.Desktop`
+- `src/Apps/WASSLink.CLI`
+- `src/Core/WASSLink.Abstractions`
+- `src/Core/WASSLink.Download`
+- `src/Core/WASSLink.Search`
+- `src/Core/WASSLink.Library`
+- `src/Core/WASSLink.Player`
+- `src/Core/WASSLink.Plugins`
+- `src/Core/WASSLink.Configuration`
+- `src/Core/WASSLink.Shared`
+- `tests/WASSLink.Tests`
 
-Estado y pendientes:
+## 7. Arquitectura general
 
-- IMPLEMENTADO: Contrato IDownloadProvider y modelos en el proyecto técnico `WASSLink.Abstractions` (B1.1)
-- IMPLEMENTADO: Inyección de dependencias completa sin new() en ViewModels (B1.1)
-- IMPLEMENTADO: UI GowLink Desktop con barra lateral y secciones futuras (B1.1)
-- IMPLEMENTADO: YtDlpDownloadService con IDownloadProvider y cancelación limpia (B1.1)
-- IMPLEMENTADO: Quality Grid, inspección de metadatos y selección de formato (B1.2)
-- IMPLEMENTADO: `GowLinkLogger` y generación de informes de diagnóstico; `WassLinkLogger` se conserva como alias
-- EN CURSO: Estabilización Beta 1.3; ampliar la validación de errores y cancelación y completar el rebranding técnico de forma coordinada
-- IMPLEMENTADO Y VALIDADO EN RUNTIME: `LoggerService`, logger compartido e informes de diagnóstico en `%LOCALAPPDATA%\GowLink\Logs`; Desktop creó `app.log` y `gowlink-2026-10-05.log`.
-- PENDIENTE: Migración técnica coordinada de solución, proyectos y namespaces `WASSLink.*`; no se ha realizado un cambio parcial
-- VALIDADO EN RUNTIME: Inspección de la URL autorizada `https://www.youtube.com/watch?v=7Ne9cbREOnk`: título “Si te tengo a ti, lo tengo todo - Marcos Brunet ｜ Adoración”, duración 5:11 y 7 formatos. Audio M4A y vídeo MP4 1080p se descargaron y decodificaron correctamente; `app.log` registró la ruta final exacta.
-- PLANIFICADO: Carpeta de salida configurable y organización adicional (B1.4)
-- PLANIFICADO: Robustez ampliada de errores y comportamiento offline (B1.5)
+La solución usa una arquitectura modular con separación entre:
 
-## Principio de evoluciÃ³n
+- capa de presentación
+- capa de contratos y servicios reutilizables
+- capa de motores especializados
+- capa de pruebas
 
-GowLink Studio se desarrolla de forma incremental, por betas.
+La lógica central debe implementarse en Core y consumirse desde Apps mediante inyección de dependencias.
 
-Una capacidad se considera implementada Ãºnicamente cuando existe cÃ³digo funcional, integraciÃ³n y validaciÃ³n.
+## 8. Estado de la versión actual
 
-La documentaciÃ³n puede describir capacidades futuras siempre que estÃ©n claramente identificadas como planificadas.
+La versión activa a documentar para este punto es:
+
+**GowLink Studio — Beta 1.4**
+
+La siguiente etapa oficial de consolidación es:
+
+**1.4.1 — Consolidation Release**
+
+Esto marca la diferencia entre:
+
+- la fase de producto ya desarrollada y verificada en ciertos aspectos
+- la fase de estabilización y mejora del producto que ya existe
+- la fase funcional futura (búsqueda, biblioteca, reproductor, torrents, integración)
+
+## 9. Limitaciones y riesgos conocidos
+
+- No se declara compatibilidad universal con proveedores externos sin verificación real.
+- No se asume que una pantalla funcional equivalga a una capacidad completamente integrada.
+- La arquitectura dual HTTP + yt-dlp requiere una cola y una capa de decisión central bien definidas.
+- La configuración persistente, la cola y la gestión de errores siguen siendo áreas de riesgo si no se validan de forma continua.
+- La biblioteca, el reproductor y los motores especializados siguen siendo objetivos funcionales, no estado actual ya cerrado.
+
+## 10. Visión a largo plazo
+
+GowLink Studio se concibe como una plataforma modular de gestión de descargas y medios, con un motor principal común y varios motores especializados:
+
+- descargas HTTP directas
+- multimedia y extracción con yt-dlp
+- biblioteca de archivos y medios
+- reproducción
+- búsqueda integrada
+- extensibilidad mediante plugins
+- motores futuros adicionales, como torrents
+
+La visión no reemplaza el estado real. La documentación debe mantener ambas capas separadas.

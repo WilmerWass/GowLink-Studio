@@ -71,10 +71,34 @@ public sealed class DirectHttpDownloadService : IDownloadProvider
 
             var buffer = new byte[8192];
             int bytesRead;
-            while ((bytesRead = await source.ReadAsync(buffer, cancellationToken)) > 0)
+            while (true)
             {
+                if (request.WaitIfPausedAsync is not null)
+                    await request.WaitIfPausedAsync(cancellationToken);
+
+                bytesRead = await source.ReadAsync(buffer, cancellationToken);
+                if (bytesRead == 0)
+                    break;
+
+                if (request.WaitIfPausedAsync is not null)
+                    await request.WaitIfPausedAsync(cancellationToken);
+
                 await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                 downloadedBytes += bytesRead;
+
+                progress?.Report(new DownloadProgress(
+                    totalBytes is > 0 ? (double)downloadedBytes / totalBytes.Value * 100 : -1,
+                    "Descargando por HTTP Directo...",
+                    Title: Path.GetFileNameWithoutExtension(outputFile)));
+
+                if (request.MaxSpeedBytesPerSecond > 0)
+                {
+                    var targetElapsed = TimeSpan.FromSeconds(
+                        (double)downloadedBytes / request.MaxSpeedBytesPerSecond);
+                    var remainingDelay = targetElapsed - stopwatch.Elapsed;
+                    if (remainingDelay > TimeSpan.Zero)
+                        await Task.Delay(remainingDelay, cancellationToken);
+                }
 
                 var percentage = totalBytes is > 0
                     ? (double)downloadedBytes / totalBytes.Value * 100
@@ -117,6 +141,7 @@ public sealed class DirectHttpDownloadService : IDownloadProvider
         else
             name = Uri.UnescapeDataString(Path.GetFileName(uri.AbsolutePath));
 
+        name = Path.GetFileName(name.Replace('\\', '/'));
         var invalidCharacters = Path.GetInvalidFileNameChars();
         var safeName = new string(name.Where(character => !invalidCharacters.Contains(character)).ToArray());
         return string.IsNullOrWhiteSpace(safeName) ? "download" : safeName;

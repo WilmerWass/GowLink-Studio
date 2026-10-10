@@ -198,7 +198,10 @@ public class YtDlpDownloadService : IDownloadProvider
         // --windows-filenames evita caracteres inválidos en Windows
         // --no-part para evitar archivos temporales residuales en fallos
         var outputTemplate = Path.Combine(request.OutputPath, "%(title)s.%(ext)s");
-        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} --windows-filenames --encoding UTF-8 -o \"{outputTemplate}\" --newline --no-playlist";
+        var speedLimitArg = request.MaxSpeedBytesPerSecond > 0
+            ? $"--limit-rate {request.MaxSpeedBytesPerSecond}"
+            : "";
+        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} {speedLimitArg} --windows-filenames --encoding UTF-8 -o \"{outputTemplate}\" --newline --no-playlist";
 
         LoggerService.Write($"URL={request.Url}");
         LoggerService.Write($"COMMAND={ytDlpPath} {arguments}");
