@@ -84,6 +84,8 @@ cd GowLink-Studio
 # Sigue las instrucciones en CONTRIBUTING.md para compilar
 ```
 
+Para publicar una rama de trabajo por primera vez, usa `git push -u origin nombre-de-tu-rama`.
+
 La aplicación es portable: no crea accesos directos, asociaciones de archivos ni actualizaciones automáticas. Windows puede mostrar una advertencia de SmartScreen porque esta versión beta no es certificada; puedes ignorarla si descargas desde el repositorio oficial.
 
 > 🌐 Se requiere conexión a Internet para inspeccionar y descargar contenido.
