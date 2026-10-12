@@ -57,12 +57,12 @@ public partial class MainViewModel : ViewModelBase
     // ─── Navegación ──────────────────────────────────────────────────────────────
 
     [ObservableProperty]
-    private string selectedSection = "Downloader";
+    private string selectedSection = "Descargar";
 
-    public bool IsDownloaderSelected => SelectedSection == "Downloader";
+    public bool IsDownloaderSelected => SelectedSection == "Descargar";
     public bool IsSearchSelected => SelectedSection == "Buscador";
     public bool IsLibrarySelected => SelectedSection == "Biblioteca";
-    public bool IsDownloadsSelected => SelectedSection == "Descargas";
+    public bool IsDownloadsSelected => SelectedSection == "Historial";
     public bool IsSettingsSelected => SelectedSection == "Configuración";
     public bool IsDownloaderFormVisible => IsDownloaderSelected && !IsDownloadConfirmation;
 
@@ -600,7 +600,7 @@ public partial class MainViewModel : ViewModelBase
         DownloadUrl = string.Empty;
         SelectedFormatOption = null;
         IsDownloadConfirmation = false;
-        SelectedSection = "Downloader";
+        SelectedSection = "Descargar";
     }
 
     [RelayCommand]
@@ -681,11 +681,11 @@ public partial class MainViewModel : ViewModelBase
         }
 
         DownloadUrl = SearchQuery.Trim();
-        SelectedSection = "Downloader";
+        SelectedSection = "Descargar";
     }
 
     [RelayCommand]
-    private void OpenDownloads() => SelectedSection = "Descargas";
+    private void OpenDownloads() => SelectedSection = "Historial";
 
     /// <summary>
     /// Abre el diálogo de selección de carpeta y actualiza OutputPath.
@@ -1063,7 +1063,7 @@ public partial class MainViewModel : ViewModelBase
                 ConfirmationDetails = $"Descarga completada con {historyItem.Engine}.";
                 ConfirmationOutput = LastDownloadedFile;
                 IsDownloadConfirmation = true;
-                SelectedSection = "Downloader";
+                SelectedSection = "Descargar";
                 RefreshFilteredDownloads();
                 OnPropertyChanged(nameof(HasDownloadHistory));
                 OnPropertyChanged(nameof(ShowNoFilteredDownloads));
