@@ -137,12 +137,58 @@ public class DownloadProviderTests
             Assert.True(viewModel.IsLibrarySelected);
             viewModel.SelectSectionCommand.Execute("Historial");
             Assert.True(viewModel.IsDownloadsSelected);
+            viewModel.SelectSectionCommand.Execute("Descargar");
+            Assert.True(viewModel.IsDownloaderSelected);
             viewModel.SelectSectionCommand.Execute("Configuración");
             Assert.True(viewModel.IsSettingsSelected);
         }
         finally
         {
             Directory.Delete(libraryPath, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void MainViewModel_AccentColorOptionsUseNamesAndUpdateAccent()
+    {
+        var viewModel = new MainViewModel();
+
+        Assert.Equal(new[] { "Violeta", "Cian", "Esmeralda", "Ámbar" }, viewModel.AccentColorOptions);
+        viewModel.AccentColorName = "Cian";
+        Assert.Equal("#0891B2", viewModel.AccentColor);
+        viewModel.AccentColorName = "Esmeralda";
+        Assert.Equal("#059669", viewModel.AccentColor);
+        viewModel.AccentColorName = "Ámbar";
+        Assert.Equal("#D97706", viewModel.AccentColor);
+    }
+
+    [Fact]
+    public void MainViewModel_OffersBingAfterLocalMissAndAppliesImageFilter()
+    {
+        var viewModel = new MainViewModel();
+        var searchPath = Path.Combine(Path.GetTempPath(), $"GowLink.Bing.{Guid.NewGuid():N}");
+        Directory.CreateDirectory(searchPath);
+        viewModel.OutputPath = searchPath;
+        viewModel.SearchQuery = "aurora lights";
+
+        try
+        {
+            viewModel.SearchLocalFilesCommand.Execute(null);
+
+            Assert.True(viewModel.CanSearchOnline);
+            Assert.Contains("carpeta local", viewModel.SearchResultMessage, StringComparison.OrdinalIgnoreCase);
+            var generalSearch = new Uri(viewModel.BingSearchUrl);
+            Assert.Equal("/search", generalSearch.AbsolutePath);
+            Assert.Contains("aurora lights", Uri.UnescapeDataString(generalSearch.Query));
+
+            viewModel.SearchImages = true;
+            var imageSearch = new Uri(viewModel.BingSearchUrl);
+            Assert.Equal("/images/search", imageSearch.AbsolutePath);
+            Assert.Contains("images", Uri.UnescapeDataString(imageSearch.Query));
+        }
+        finally
+        {
+            Directory.Delete(searchPath, recursive: true);
         }
     }
 
@@ -210,6 +256,122 @@ public class DownloadProviderTests
     }
 
     [Fact]
+    public async Task DirectHttpProvider_AnalyzesExtensionlessImageLink()
+    {
+        using var httpClient = new HttpClient(new StubHttpMessageHandler((request, _) =>
+        {
+            Assert.Equal(HttpMethod.Head, request.Method);
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent([1, 2, 3])
+            };
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+            return Task.FromResult(response);
+        }));
+        var service = new DirectHttpDownloadService(httpClient);
+
+        var result = await service.AnalyzeAsync("https://images.example.com/images?id=123");
+
+        Assert.Equal("images.jpg", result.FileName);
+        Assert.Equal("Imagen JPEG", result.FileType);
+        Assert.Equal("image/jpeg", result.ContentType);
+        Assert.Equal(3L, result.ContentLength);
+        Assert.True(result.IsDownloadable);
+    }
+
+    [Fact]
+    public async Task MainViewModel_AnalyzesDirectFileBeforeStartingDownload()
+    {
+        var outputPath = Path.Combine(Path.GetTempPath(), $"GowLink.Preview.{Guid.NewGuid():N}");
+        var payload = new byte[] { 1, 2, 3, 4 };
+        using var httpClient = new HttpClient(new StubHttpMessageHandler((request, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(payload)
+            };
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+            if (request.Method == HttpMethod.Get)
+            {
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = "photo.jpg"
+                };
+            }
+            return Task.FromResult(response);
+        }));
+        var provider = new CompositeDownloadProvider(
+            new DirectHttpDownloadService(httpClient),
+            new YtDlpDownloadService());
+        var viewModel = new MainViewModel(provider, new StubClipboardService())
+        {
+            OutputPath = outputPath,
+            DownloadUrl = "https://images.example.com/photo"
+        };
+
+        try
+        {
+            await viewModel.AnalyzeCommand.ExecuteAsync(null);
+
+            Assert.True(viewModel.IsDirectFilePreview);
+            Assert.Equal("photo.jpg", viewModel.DirectFileName);
+            Assert.Equal("Imagen JPEG", viewModel.DirectFileType);
+            Assert.False(Directory.Exists(outputPath));
+
+            await viewModel.ConfirmDirectFileDownloadCommand.ExecuteAsync(null);
+
+            Assert.False(viewModel.IsDirectFilePreview);
+            Assert.True(viewModel.IsDownloadConfirmation);
+            Assert.Equal(payload, await File.ReadAllBytesAsync(Path.Combine(outputPath, "photo.jpg")));
+        }
+        finally
+        {
+            if (Directory.Exists(outputPath))
+                Directory.Delete(outputPath, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task DirectHttpProvider_SavesDuplicateAsNumberedCopy()
+    {
+        var outputPath = Path.Combine(Path.GetTempPath(), $"GowLink.Duplicate.{Guid.NewGuid():N}");
+        Directory.CreateDirectory(outputPath);
+        var originalPath = Path.Combine(outputPath, "archive.zip");
+        await File.WriteAllBytesAsync(originalPath, [9, 9, 9]);
+        var payload = new byte[] { 1, 2, 3, 4 };
+        using var httpClient = new HttpClient(new StubHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(payload)
+            };
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/zip");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = "archive.zip"
+            };
+            return Task.FromResult(response);
+        }));
+        var service = new DirectHttpDownloadService(httpClient);
+
+        try
+        {
+            var result = await service.DownloadAsync(new DownloadRequest(
+                "https://example.com/archive.zip",
+                outputPath));
+
+            Assert.True(result.Success, result.ErrorMessage);
+            Assert.Equal(Path.Combine(outputPath, "archive (1).zip"), result.OutputPath);
+            Assert.Equal(new byte[] { 9, 9, 9 }, await File.ReadAllBytesAsync(originalPath));
+            Assert.Equal(payload, await File.ReadAllBytesAsync(result.OutputPath!));
+        }
+        finally
+        {
+            Directory.Delete(outputPath, recursive: true);
+        }
+    }
+
+    [Fact]
     public async Task DirectHttpProvider_WaitsForResumeBeforeReadingChunks()
     {
         var outputPath = Path.Combine(Path.GetTempPath(), $"GowLink.Pause.{Guid.NewGuid():N}");
@@ -262,7 +424,14 @@ public class DownloadProviderTests
     {
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
-            CancellationToken cancellationToken) => sendAsync(request, cancellationToken);
+            CancellationToken cancellationToken) => sendAsync(request,             cancellationToken);
+    }
+
+    private sealed class StubClipboardService : IClipboardService
+    {
+        public Task<string?> GetTextAsync() => Task.FromResult<string?>(null);
+
+        public Task SetTextAsync(string text) => Task.CompletedTask;
     }
 
     [Fact]

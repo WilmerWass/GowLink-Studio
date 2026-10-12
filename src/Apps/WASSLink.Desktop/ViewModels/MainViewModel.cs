@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -19,6 +20,7 @@ namespace WASSLink.Desktop.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     private readonly IDownloadProvider _downloadProvider;
+    private readonly DirectHttpDownloadService? _directHttpProvider;
     private readonly IClipboardService _clipboardService;
     private readonly IFolderPickerService? _folderPickerService;
     private readonly MediaMetadataService _metadataService;
@@ -32,6 +34,12 @@ public partial class MainViewModel : ViewModelBase
         IFolderPickerService? folderPickerService = null)
     {
         _downloadProvider = downloadProvider ?? throw new ArgumentNullException(nameof(downloadProvider));
+        _directHttpProvider = downloadProvider switch
+        {
+            CompositeDownloadProvider composite => composite.DirectHttpProvider,
+            DirectHttpDownloadService directHttpProvider => directHttpProvider,
+            _ => null
+        };
         _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         _folderPickerService = folderPickerService;
         _metadataService = new MediaMetadataService();
@@ -64,7 +72,8 @@ public partial class MainViewModel : ViewModelBase
     public bool IsLibrarySelected => SelectedSection == "Biblioteca";
     public bool IsDownloadsSelected => SelectedSection == "Historial";
     public bool IsSettingsSelected => SelectedSection == "Configuración";
-    public bool IsDownloaderFormVisible => IsDownloaderSelected && !IsDownloadConfirmation;
+    public bool IsDownloaderFormVisible =>
+        IsDownloaderSelected && !IsDownloadConfirmation && !IsDirectFilePreview;
 
     partial void OnSelectedSectionChanged(string value)
     {
@@ -87,13 +96,26 @@ public partial class MainViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(ActiveEngineLabel));
         OnPropertyChanged(nameof(EngineStatus));
+        OnPropertyChanged(nameof(CanDownloadSearchQuery));
+        OnPropertyChanged(nameof(BingSearchUrl));
+        CanSearchOnline = false;
+        LocalSearchResults.Clear();
+        OnPropertyChanged(nameof(HasSearchResults));
+        SearchResultMessage = string.IsNullOrWhiteSpace(value)
+            ? "Busca un archivo en tu carpeta de descargas."
+            : CanDownloadSearchQuery
+                ? "Enlace compatible. Pulsa «Consultar enlace» para analizarlo."
+                : "Pulsa «Buscar archivos» para consultar la carpeta local.";
     }
 
     [ObservableProperty]
-    private string searchResultMessage = "Ingresa un enlace para consultar el contenido y el motor compatible.";
+    private string searchResultMessage = "Busca un archivo en tu carpeta de descargas.";
 
     [ObservableProperty]
     private bool isSearching;
+
+    [ObservableProperty]
+    private bool canSearchOnline;
 
     [ObservableProperty]
     private ObservableCollection<DownloadHistoryItem> downloadHistory = new();
@@ -112,6 +134,9 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private string accentColor = "#4F46E5";
+
+    [ObservableProperty]
+    private string accentColorName = "Violeta";
 
     [ObservableProperty]
     private string libraryStatus = "Contenido físico de la carpeta de descargas.";
@@ -144,6 +169,24 @@ public partial class MainViewModel : ViewModelBase
     private bool isDownloadConfirmation;
 
     [ObservableProperty]
+    private bool isDirectFilePreview;
+
+    [ObservableProperty]
+    private string directFileUrl = string.Empty;
+
+    [ObservableProperty]
+    private string directFileName = string.Empty;
+
+    [ObservableProperty]
+    private string directFileType = string.Empty;
+
+    [ObservableProperty]
+    private string directFileSize = string.Empty;
+
+    [ObservableProperty]
+    private string directFileContentType = string.Empty;
+
+    [ObservableProperty]
     private string confirmationTitle = string.Empty;
 
     [ObservableProperty]
@@ -160,6 +203,7 @@ public partial class MainViewModel : ViewModelBase
     public bool HasLibraryFiles => LibraryFiles.Count > 0;
     public bool HasSearchResults => LocalSearchResults.Count > 0;
     public int SelectedDownloadCount => DownloadHistory.Count(item => item.IsSelected);
+    public bool CanDownloadSearchQuery => GetProviderForUrl(SearchQuery.Trim()) is not null;
     public bool HasSelectedDownloads => SelectedDownloadCount > 0;
     public bool HasFilteredDownloads => FilteredDownloadHistory.Count > 0;
     public bool CanPauseSelectedDownloads => DownloadHistory.Any(item =>
@@ -167,10 +211,21 @@ public partial class MainViewModel : ViewModelBase
         (item.IsPaused || item.Status == "Iniciando" || item.Status == "Descargando por HTTP Directo..."));
     public IReadOnlyList<string> DownloadTypeFilters { get; } = ["Todos", "Multimedia", "Archivos"];
     public IReadOnlyList<string> DownloadDateFilters { get; } = ["Todas", "Hoy", "Últimos 7 días"];
-    public IReadOnlyList<string> AccentColorOptions { get; } = ["#4F46E5", "#0891B2", "#059669", "#D97706"];
+    public IReadOnlyList<string> AccentColorOptions { get; } = ["Violeta", "Cian", "Esmeralda", "Ámbar"];
+    public string BingSearchUrl => BuildBingSearchUrl();
 
     partial void OnDownloadTypeFilterChanged(string value) => RefreshFilteredDownloads();
     partial void OnDownloadDateFilterChanged(string value) => RefreshFilteredDownloads();
+    partial void OnAccentColorNameChanged(string value)
+    {
+        AccentColor = value switch
+        {
+            "Cian" => "#0891B2",
+            "Esmeralda" => "#059669",
+            "Ámbar" => "#D97706",
+            _ => "#4F46E5"
+        };
+    }
     partial void OnDownloadHistoryChanged(ObservableCollection<DownloadHistoryItem> value)
     {
         RefreshFilteredDownloads();
@@ -179,11 +234,13 @@ public partial class MainViewModel : ViewModelBase
     }
     partial void OnIsDownloadConfirmationChanged(bool value) =>
         OnPropertyChanged(nameof(IsDownloaderFormVisible));
-    partial void OnSearchImagesChanged(bool value) => RefreshLocalSearchResults();
-    partial void OnSearchAudioChanged(bool value) => RefreshLocalSearchResults();
-    partial void OnSearchVideoChanged(bool value) => RefreshLocalSearchResults();
-    partial void OnSearchCompressedChanged(bool value) => RefreshLocalSearchResults();
-    partial void OnSearchIsoChanged(bool value) => RefreshLocalSearchResults();
+    partial void OnIsDirectFilePreviewChanged(bool value) =>
+        OnPropertyChanged(nameof(IsDownloaderFormVisible));
+    partial void OnSearchImagesChanged(bool value) => RefreshSearchFilters();
+    partial void OnSearchAudioChanged(bool value) => RefreshSearchFilters();
+    partial void OnSearchVideoChanged(bool value) => RefreshSearchFilters();
+    partial void OnSearchCompressedChanged(bool value) => RefreshSearchFilters();
+    partial void OnSearchIsoChanged(bool value) => RefreshSearchFilters();
     partial void OnDownloadSpeedLimitKbpsChanged(int value)
     {
         if (value < 0)
@@ -205,6 +262,9 @@ public partial class MainViewModel : ViewModelBase
             if (string.IsNullOrWhiteSpace(url))
                 return "Motor: esperando enlace";
 
+            if (url == AnalyzedDirectFileUrl && !string.IsNullOrEmpty(AnalyzedDirectFileEngine))
+                return $"Motor: {AnalyzedDirectFileEngine}";
+
             var provider = GetProviderForUrl(url);
             if (provider is null)
                 return "Motor: no compatible";
@@ -221,6 +281,8 @@ public partial class MainViewModel : ViewModelBase
         get
         {
             var url = SelectedSection == "Buscador" ? SearchQuery : DownloadUrl;
+            if (url == AnalyzedDirectFileUrl && !string.IsNullOrEmpty(AnalyzedDirectFileEngine))
+                return "Archivo directo analizado";
             return string.IsNullOrWhiteSpace(url)
                 ? "Esperando un enlace"
                 : _downloadProvider.CanHandle(url)
@@ -231,9 +293,22 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnDownloadUrlChanged(string value)
     {
+        if (!string.Equals(AnalyzedDirectFileUrl, value, StringComparison.Ordinal))
+        {
+            IsDirectFilePreview = false;
+            AnalyzedDirectFileUrl = string.Empty;
+            AnalyzedDirectFileEngine = string.Empty;
+        }
         OnPropertyChanged(nameof(ActiveEngineLabel));
         OnPropertyChanged(nameof(EngineStatus));
+        OnPropertyChanged(nameof(IsDownloaderFormVisible));
     }
+
+    [ObservableProperty]
+    private string analyzedDirectFileUrl = string.Empty;
+
+    [ObservableProperty]
+    private string analyzedDirectFileEngine = string.Empty;
 
     private void OnDownloadHistoryItemPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
@@ -251,6 +326,9 @@ public partial class MainViewModel : ViewModelBase
             ? composite.GetProviderForUrl(url)
             : _downloadProvider.CanHandle(url) ? _downloadProvider : null;
     }
+
+    private DirectHttpDownloadService GetDirectHttpProvider() =>
+        _directHttpProvider ?? throw new InvalidOperationException("El proveedor HTTP Directo no está disponible.");
 
     [ObservableProperty]
     private string outputPath;
@@ -381,6 +459,13 @@ public partial class MainViewModel : ViewModelBase
     private void SearchLocalFiles()
     {
         var term = SearchQuery.Trim();
+        CanSearchOnline = false;
+        if (CanDownloadSearchQuery)
+        {
+            SearchResultMessage = "Este enlace es compatible. Pulsa «Consultar enlace» para analizarlo.";
+            return;
+        }
+
         try
         {
             Directory.CreateDirectory(OutputPath);
@@ -391,15 +476,60 @@ public partial class MainViewModel : ViewModelBase
                 .Where(MatchesSelectedCategories)
                 .OrderByDescending(file => file.Modified);
             LocalSearchResults = new ObservableCollection<LocalFileItem>(files);
-            SearchResultMessage = $"{LocalSearchResults.Count} archivo(s) encontrados en la carpeta local.";
+            if (LocalSearchResults.Count > 0)
+            {
+                CanSearchOnline = false;
+                SearchResultMessage = $"{LocalSearchResults.Count} archivo(s) encontrados en la carpeta local.";
+            }
+            else if (!string.IsNullOrWhiteSpace(term) || HasSelectedSearchCategories)
+            {
+                CanSearchOnline = true;
+                SearchResultMessage = "No encontré archivos parecidos en tu carpeta local. ¿Quieres abrir Bing y buscar en línea?";
+            }
+            else
+            {
+                CanSearchOnline = false;
+                SearchResultMessage = "Tu carpeta de descargas todavía no contiene archivos.";
+            }
+
             OnPropertyChanged(nameof(HasSearchResults));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             SearchResultMessage = $"No se pudo buscar en la biblioteca: {ex.Message}";
             LocalSearchResults.Clear();
+            CanSearchOnline = false;
             OnPropertyChanged(nameof(HasSearchResults));
         }
+    }
+
+    private bool HasSelectedSearchCategories =>
+        SearchImages || SearchAudio || SearchVideo || SearchCompressed || SearchIso;
+
+    private string BuildBingSearchUrl()
+    {
+        var query = SearchQuery.Trim();
+        var categories = new List<string>();
+
+        if (SearchImages)
+            categories.AddRange(["images", "photos", "pictures"]);
+        if (SearchAudio)
+            categories.AddRange(["audio", "music", "MP3", "FLAC"]);
+        if (SearchVideo)
+            categories.AddRange(["video", "MP4", "MKV"]);
+        if (SearchCompressed)
+            categories.AddRange(["archive", "ZIP", "RAR", "7z"]);
+        if (SearchIso)
+            categories.AddRange(["ISO", "disk image"]);
+
+        if (categories.Count > 0)
+            query = string.IsNullOrWhiteSpace(query)
+                ? $"({string.Join(" OR ", categories)})"
+                : $"{query} ({string.Join(" OR ", categories)})";
+
+        var imageOnly = SearchImages && !(SearchAudio || SearchVideo || SearchCompressed || SearchIso);
+        var searchPath = imageOnly ? "images/search" : "search";
+        return $"https://www.bing.com/{searchPath}?q={Uri.EscapeDataString(query)}";
     }
 
     private bool MatchesSelectedCategories(LocalFileItem file)
@@ -459,6 +589,45 @@ public partial class MainViewModel : ViewModelBase
     {
         if (!Uri.TryCreate(SearchQuery, UriKind.Absolute, out _))
             SearchLocalFiles();
+    }
+
+    private void RefreshSearchFilters()
+    {
+        OnPropertyChanged(nameof(BingSearchUrl));
+        RefreshLocalSearchResults();
+    }
+
+    [RelayCommand]
+    private void SearchOnline()
+    {
+        if (!CanSearchOnline || (string.IsNullOrWhiteSpace(SearchQuery) && !HasSelectedSearchCategories))
+        {
+            SearchResultMessage = "Escribe qué quieres buscar o selecciona una categoría.";
+            CanSearchOnline = false;
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = BingSearchUrl,
+                UseShellExecute = true
+            });
+            CanSearchOnline = false;
+            SearchResultMessage = "Bing se abrió en tu navegador predeterminado.";
+        }
+        catch (Exception ex)
+        {
+            SearchResultMessage = $"No se pudo abrir Bing: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void DismissOnlineSearch()
+    {
+        CanSearchOnline = false;
+        SearchResultMessage = "No se encontraron archivos locales. Puedes cambiar el término o los filtros.";
     }
 
     private void RefreshFilteredDownloads()
@@ -599,6 +768,7 @@ public partial class MainViewModel : ViewModelBase
     {
         DownloadUrl = string.Empty;
         SelectedFormatOption = null;
+        IsDirectFilePreview = false;
         IsDownloadConfirmation = false;
         SelectedSection = "Descargar";
     }
@@ -613,62 +783,17 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        if (!Uri.TryCreate(url, UriKind.Absolute, out _))
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
         {
             SearchLocalFiles();
             return;
         }
 
-        var selectedProvider = GetProviderForUrl(url);
-        if (selectedProvider is null)
-        {
-            SearchResultMessage = "El enlace no es válido o no está soportado.";
-            return;
-        }
-
         DownloadUrl = url;
-        if (selectedProvider is DirectHttpDownloadService)
-        {
-            SearchResultMessage = $"Archivo directo detectado. Motor: {selectedProvider.Name}.";
-            return;
-        }
-
-        _metadataCts?.Cancel();
-        _metadataCts?.Dispose();
-        _metadataCts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-        IsSearching = true;
-        SearchResultMessage = "Consultando contenido y formatos con yt-dlp...";
-
-        try
-        {
-            var formats = await _metadataService.InspectFormatsAsync(url, _metadataCts.Token);
-            AudioOptions.Clear();
-            VideoOptions.Clear();
-            foreach (var format in formats.Where(format => format.MediaType == DownloadMediaType.Audio))
-                AudioOptions.Add(format);
-            foreach (var format in formats.Where(format => format.MediaType == DownloadMediaType.Video))
-                VideoOptions.Add(format);
-
-            SelectedFormatOption = VideoOptions.FirstOrDefault(format => format.IsRecommended)
-                ?? VideoOptions.FirstOrDefault()
-                ?? AudioOptions.FirstOrDefault(format => format.IsRecommended)
-                ?? AudioOptions.FirstOrDefault();
-            OnPropertyChanged(nameof(HasFormats));
-            OnPropertyChanged(nameof(SelectedFormatLabel));
-            SearchResultMessage = $"Contenido compatible con {selectedProvider.Name}: {formats.Count} formatos disponibles.";
-        }
-        catch (OperationCanceledException)
-        {
-            SearchResultMessage = "La consulta agotó el tiempo de espera.";
-        }
-        catch (Exception ex)
-        {
-            SearchResultMessage = $"No se pudo consultar el enlace: {ex.Message}";
-        }
-        finally
-        {
-            IsSearching = false;
-        }
+        SelectedSection = "Descargar";
+        await AnalyzeAsync();
+        SearchResultMessage = StatusMessage;
     }
 
     [RelayCommand]
@@ -746,6 +871,8 @@ public partial class MainViewModel : ViewModelBase
         _metadataCts = null;
 
         DownloadUrl = string.Empty;
+        IsDirectFilePreview = false;
+        DirectFileUrl = string.Empty;
         AudioOptions.Clear();
         VideoOptions.Clear();
         SelectedFormatOption = null;
@@ -806,16 +933,22 @@ public partial class MainViewModel : ViewModelBase
             OnPropertyChanged(nameof(HasFormats));
             OnPropertyChanged(nameof(SelectedFormatLabel));
             StatusMessage = $"Se encontraron {formats.Count} formatos disponibles.";
+            if (SelectedFormatOption is not null)
+                LoggerService.Write(
+                    $"MEDIA FORMAT SELECTED URL=\"{DownloadUrl}\" ID=\"{SelectedFormatOption.FormatId}\" " +
+                    $"TYPE=\"{SelectedFormatOption.MediaType}\" LABEL=\"{SelectedFormatOption.QualityLabel}\"");
         }
         catch (OperationCanceledException)
         {
             FormatLoadError = "Tiempo de espera agotado al obtener los metadatos.";
             StatusMessage = "Análisis cancelado.";
+            LoggerService.Write($"MEDIA ANALYZE CANCELLED URL=\"{DownloadUrl}\"");
         }
         catch (Exception ex)
         {
             FormatLoadError = $"Error al analizar: {ex.Message}";
             StatusMessage = "No se pudieron obtener los formatos.";
+            LoggerService.WriteException(ex, $"MEDIA ANALYZE FAILED URL=\"{DownloadUrl}\"");
         }
         finally
         {
@@ -826,36 +959,120 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private async Task AnalyzeAsync()
     {
-        if (string.IsNullOrWhiteSpace(DownloadUrl))
+        var url = DownloadUrl.Trim();
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
         {
-            StatusMessage = "Ingresa una URL antes de analizar.";
+            StatusMessage = "Ingresa un enlace HTTP o HTTPS válido (por ejemplo, https://sitio.com/archivo.zip).";
+            LoggerService.Write($"ANALYZE REJECTED URL=\"{DownloadUrl}\" REASON=\"Invalid HTTP/HTTPS URL\"");
             return;
         }
 
-        var selectedProvider = GetProviderForUrl(DownloadUrl);
-        if (selectedProvider is null)
-        {
-            StatusMessage = "La URL ingresada no es válida o no está soportada.";
-            return;
-        }
-
+        IsDirectFilePreview = false;
         IsAnalyzing = true;
+        LoggerService.Write($"ANALYZE START URL=\"{uri}\"");
         try
         {
             await Task.Delay(120);
-            if (selectedProvider is DirectHttpDownloadService)
+            var knownDirectLink = _directHttpProvider?.CanHandle(url) == true;
+            if (_directHttpProvider is not null)
             {
-                SelectedFormatOption = null;
-                IsAnalyzing = false;
-                await StartDownloadWithFormatAsync(null);
+                try
+                {
+                    var fileInfo = await _directHttpProvider.AnalyzeAsync(url);
+                    LoggerService.Write(
+                        $"ANALYZE HTTP RESULT URL=\"{fileInfo.FinalUri}\" FILE=\"{fileInfo.FileName}\" " +
+                        $"TYPE=\"{fileInfo.ContentType}\" KIND=\"{fileInfo.FileType}\" " +
+                        $"SIZE={fileInfo.ContentLength?.ToString() ?? "unknown"} DOWNLOADABLE={fileInfo.IsDownloadable}");
+
+                    if (fileInfo.IsDownloadable)
+                    {
+                        DirectFileUrl = url;
+                        DirectFileName = fileInfo.FileName;
+                        DirectFileType = fileInfo.FileType;
+                        DirectFileSize = fileInfo.FormattedSize;
+                        DirectFileContentType = fileInfo.ContentType;
+                        AnalyzedDirectFileUrl = url;
+                        AnalyzedDirectFileEngine = "HTTP Directo (Streaming)";
+                        IsDirectFilePreview = true;
+                        StatusMessage = $"Enlace verificado: {DirectFileName} · {DirectFileType}. Confirma para descargar.";
+                        return;
+                    }
+
+                    if (knownDirectLink)
+                    {
+                        StatusMessage = "El servidor devolvió una página web en lugar del archivo esperado.";
+                        LoggerService.Write($"ANALYZE REJECTED URL=\"{uri}\" REASON=\"Expected file but received HTML\"");
+                        return;
+                    }
+                }
+                catch (Exception ex) when (ex is HttpRequestException or IOException or TaskCanceledException)
+                {
+                    LoggerService.WriteException(ex, $"ANALYZE HTTP PROBE FAILED URL=\"{uri}\"");
+                    if (knownDirectLink)
+                    {
+                        StatusMessage = $"No se pudo verificar el enlace del archivo: {ex.Message}";
+                        return;
+                    }
+                }
+            }
+
+            if (GetProviderForUrl(url) is null)
+            {
+                StatusMessage = "El enlace no es válido o el tipo de contenido no está soportado.";
+                LoggerService.Write($"ANALYZE REJECTED URL=\"{uri}\" REASON=\"No compatible provider\"");
                 return;
             }
 
             await OpenFormatModalAsync();
         }
+        catch (Exception ex)
+        {
+            LoggerService.WriteException(ex, $"ANALYZE FAILED URL=\"{uri}\"");
+            StatusMessage = $"No se pudo analizar el enlace: {ex.Message}";
+        }
         finally
         {
             IsAnalyzing = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ConfirmDirectFileDownloadAsync()
+    {
+        if (!IsDirectFilePreview || string.IsNullOrWhiteSpace(DirectFileUrl))
+            return;
+
+        IsDirectFilePreview = false;
+        await StartDownloadWithFormatAsync(null, forceDirectHttp: true);
+    }
+
+    [RelayCommand]
+    private void CancelDirectFilePreview()
+    {
+        IsDirectFilePreview = false;
+        StatusMessage = "Descarga no iniciada.";
+    }
+
+    [RelayCommand]
+    private void ViewDirectFilePage()
+    {
+        if (!Uri.TryCreate(DirectFileUrl, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        {
+            StatusMessage = "No hay una página válida para abrir.";
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = uri.AbsoluteUri, UseShellExecute = true });
+            LoggerService.Write($"OPEN SOURCE PAGE URL=\"{uri}\"");
+        }
+        catch (Exception ex)
+        {
+            LoggerService.WriteException(ex, $"OPEN SOURCE PAGE FAILED URL=\"{uri}\"");
+            StatusMessage = $"No se pudo abrir la página del enlace: {ex.Message}";
         }
     }
 
@@ -916,7 +1133,7 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task StartDownloadWithFormatAsync(MediaFormatOption? format)
+    private async Task StartDownloadWithFormatAsync(MediaFormatOption? format, bool forceDirectHttp = false)
     {
         if (string.IsNullOrWhiteSpace(DownloadUrl))
         {
@@ -924,7 +1141,10 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        if (GetProviderForUrl(DownloadUrl) is null)
+        var selectedProvider = forceDirectHttp
+            ? _directHttpProvider
+            : GetProviderForUrl(DownloadUrl);
+        if (selectedProvider is null)
         {
             StatusMessage = "La URL ingresada no es válida o no está soportada.";
             return;
@@ -948,7 +1168,7 @@ public partial class MainViewModel : ViewModelBase
             : "mp4";
 
         var request = new DownloadRequest(
-            Url: DownloadUrl.Trim(),
+            Url: forceDirectHttp ? DirectFileUrl.Trim() : DownloadUrl.Trim(),
             OutputPath: OutputPath,
             MediaType: mediaType,
             Format: ext,
@@ -957,7 +1177,6 @@ public partial class MainViewModel : ViewModelBase
             MaxSpeedBytesPerSecond: DownloadSpeedLimitKbps * 1024L
         );
 
-        var selectedProvider = GetProviderForUrl(request.Url)!;
         var historyItem = new DownloadHistoryItem
         {
             SourceUrl = request.Url,
@@ -965,6 +1184,9 @@ public partial class MainViewModel : ViewModelBase
             Status = "Iniciando",
             Output = OutputPath
         };
+        LoggerService.Write(
+            $"DOWNLOAD REQUEST URL=\"{request.Url}\" PROVIDER=\"{selectedProvider.Name}\" " +
+            $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\" OUTPUT=\"{request.OutputPath}\"");
         var resumeSignal = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         resumeSignal.TrySetResult();
         historyItem.PauseDownload = pause =>
@@ -1054,13 +1276,17 @@ public partial class MainViewModel : ViewModelBase
                 var fileName = Path.GetFileName(LastDownloadedFile);
                 var displayName = string.IsNullOrWhiteSpace(fileName) ? "Archivo descargado" : fileName;
 
-                StatusMessage = $"¡Completado!: {displayName}";
+                StatusMessage = result.WasAlreadyPresent
+                    ? $"El archivo ya existía; no se sobrescribió: {displayName}"
+                    : $"¡Completado!: {displayName}";
                 DownloadProgress = 100;
-                historyItem.Status = "Completada";
+                historyItem.Status = result.WasAlreadyPresent ? "Ya existía" : "Completada";
                 historyItem.Progress = 100;
                 historyItem.Output = LastDownloadedFile;
                 ConfirmationTitle = displayName;
-                ConfirmationDetails = $"Descarga completada con {historyItem.Engine}.";
+                ConfirmationDetails = result.WasAlreadyPresent
+                    ? $"Este archivo ya estaba en destino. Se conservó sin sobrescribirlo ({historyItem.Engine})."
+                    : $"Descarga completada con {historyItem.Engine}.";
                 ConfirmationOutput = LastDownloadedFile;
                 IsDownloadConfirmation = true;
                 SelectedSection = "Descargar";
@@ -1073,6 +1299,9 @@ public partial class MainViewModel : ViewModelBase
                 var errorMessage = result.ErrorMessage ?? "Fallo desconocido en la descarga.";
                 StatusMessage = $"Error: {errorMessage}";
                 historyItem.Status = $"Error: {errorMessage}";
+                LoggerService.Write(
+                    $"DOWNLOAD FAILED URL=\"{request.Url}\" PROVIDER=\"{selectedProvider.Name}\" " +
+                    $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\" ERROR=\"{errorMessage}\"");
             }
         }
         catch (OperationCanceledException)
@@ -1082,6 +1311,10 @@ public partial class MainViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LoggerService.WriteException(
+                ex,
+                $"DOWNLOAD UNEXPECTED FAILURE URL=\"{request.Url}\" PROVIDER=\"{selectedProvider.Name}\" " +
+                $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\"");
             StatusMessage = $"Error inesperado: {ex.Message}";
             historyItem.Status = $"Error: {ex.Message}";
         }

@@ -41,6 +41,7 @@ public class MediaMetadataService
         CancellationToken cancellationToken = default)
     {
         var ytDlpPath = YtDlpDownloadService.ResolveToolPath("yt-dlp", "yt-dlp.exe");
+        LoggerService.Write($"MEDIA ANALYZE START URL=\"{url}\" TOOL=\"{ytDlpPath}\"");
 
         var startInfo = new ProcessStartInfo
         {
@@ -53,21 +54,41 @@ public class MediaMetadataService
         };
 
         using var process = new Process { StartInfo = startInfo };
-        process.Start();
+        try
+        {
+            process.Start();
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            LoggerService.WriteException(ex, $"MEDIA ANALYZE COULD NOT START URL=\"{url}\" TOOL=\"{ytDlpPath}\"");
+            throw new InvalidOperationException(
+                "No se pudo iniciar yt-dlp. Verifica que la herramienta esté instalada junto a la aplicación.",
+                ex);
+        }
 
+        var stderrTask = process.StandardError.ReadToEndAsync(cancellationToken);
         var jsonOutput = await process.StandardOutput.ReadToEndAsync(cancellationToken);
         await process.WaitForExitAsync(cancellationToken);
+        var errorOutput = await stderrTask;
 
         if (process.ExitCode != 0 || string.IsNullOrWhiteSpace(jsonOutput))
         {
-            var err = await process.StandardError.ReadToEndAsync(cancellationToken);
+            var err = errorOutput.Trim();
+            LoggerService.Write(
+                $"MEDIA ANALYZE FAILED URL=\"{url}\" EXIT_CODE={process.ExitCode} " +
+                $"ERROR=\"{(string.IsNullOrWhiteSpace(err) ? "metadata unavailable" : err)}\"");
             throw new InvalidOperationException(
                 string.IsNullOrWhiteSpace(err)
                     ? "No se pudieron obtener los metadatos del contenido."
-                    : err.Trim());
+                    : err);
         }
 
-        return ParseFormats(jsonOutput);
+        var formats = ParseFormats(jsonOutput);
+        LoggerService.Write(
+            $"MEDIA ANALYZE COMPLETED URL=\"{url}\" FORMATS={formats.Count} " +
+            $"AUDIO={formats.Count(format => format.MediaType == DownloadMediaType.Audio)} " +
+            $"VIDEO={formats.Count(format => format.MediaType == DownloadMediaType.Video)}");
+        return formats;
     }
 
     private static List<MediaFormatOption> ParseFormats(string json)

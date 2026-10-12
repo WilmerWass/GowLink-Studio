@@ -13,6 +13,7 @@ public sealed class CompositeDownloadProvider(
     YtDlpDownloadService ytDlpProvider) : IDownloadProvider
 {
     public string Name => "Composite";
+    public DirectHttpDownloadService DirectHttpProvider => directHttpProvider;
 
     public bool CanHandle(string url) =>
         directHttpProvider.CanHandle(url) || ytDlpProvider.CanHandle(url);

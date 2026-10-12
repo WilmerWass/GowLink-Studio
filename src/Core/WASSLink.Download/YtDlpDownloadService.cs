@@ -201,7 +201,7 @@ public class YtDlpDownloadService : IDownloadProvider
         var speedLimitArg = request.MaxSpeedBytesPerSecond > 0
             ? $"--limit-rate {request.MaxSpeedBytesPerSecond}"
             : "";
-        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} {speedLimitArg} --windows-filenames --encoding UTF-8 -o \"{outputTemplate}\" --newline --no-playlist";
+        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} {speedLimitArg} --no-overwrites --windows-filenames --encoding UTF-8 -o \"{outputTemplate}\" --newline --no-playlist";
 
         LoggerService.Write($"URL={request.Url}");
         LoggerService.Write($"COMMAND={ytDlpPath} {arguments}");
@@ -249,6 +249,7 @@ public class YtDlpDownloadService : IDownloadProvider
         });
 
         string? downloadedFilePath = null;
+        var wasAlreadyPresent = false;
         var stderrTask = process.StandardError.ReadToEndAsync(cancellationToken);
 
         string? line;
@@ -257,6 +258,9 @@ public class YtDlpDownloadService : IDownloadProvider
             if (string.IsNullOrWhiteSpace(line)) continue;
 
             LoggerService.Write($"STDOUT {line}");
+
+            if (AlreadyDownloadedRegex.IsMatch(line))
+                wasAlreadyPresent = true;
 
             var phase = GetProgressState(line);
             if (phase == "Procesando con FFmpeg...")
@@ -311,8 +315,10 @@ public class YtDlpDownloadService : IDownloadProvider
         }
 
         var finalOutputPath = downloadedFilePath ?? request.OutputPath;
-        LoggerService.Write($"DOWNLOAD COMPLETED OutputPath=\"{finalOutputPath}\"");
-        return new DownloadResult(true, finalOutputPath, null);
+        LoggerService.Write(wasAlreadyPresent
+            ? $"DOWNLOAD SKIPPED ALREADY PRESENT OutputPath=\"{finalOutputPath}\""
+            : $"DOWNLOAD COMPLETED OutputPath=\"{finalOutputPath}\"");
+        return new DownloadResult(true, finalOutputPath, null, wasAlreadyPresent);
     }
 
     private static bool TryParseOutputPath(string line, out string? outputPath)

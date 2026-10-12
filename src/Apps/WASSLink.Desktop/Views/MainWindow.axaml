@@ -21,6 +21,18 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
+    <Window.Styles>
+        <Style Selector="Button.navigation-item">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#1F2130" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.navigation-item.active">
+            <Setter Property="Background" Value="#25283D" />
+            <Setter Property="BorderBrush" Value="#6366F1" />
+        </Style>
+    </Window.Styles>
+
     <!-- Root Grid: Sidebar + Content + Modal Overlay todo en col 1 del root -->
     <Grid ColumnDefinitions="250,*">
 
@@ -69,6 +81,7 @@
                             HorizontalAlignment="Left">
                         <TextBlock Text="Beta 1.4 — Universal Download Engine"
                                    FontSize="11"
+                                   TextWrapping="Wrap"
                                    Foreground="#9CA3AF" />
                     </Border>
                 </StackPanel>
@@ -83,11 +96,10 @@
                                Margin="8,0,0,6" />
 
                     <!-- Descargar (Activo) -->
-                    <Button HorizontalAlignment="Stretch"
+                    <Button Classes="navigation-item"
+                            Classes.active="{Binding IsDownloaderSelected}"
+                            HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Background="#25283D"
-                            BorderBrush="#6366F1"
-                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
                             Command="{Binding SelectSectionCommand}"
@@ -102,11 +114,10 @@
                         </Grid>
                     </Button>
 
-                    <Button HorizontalAlignment="Stretch"
+                    <Button Classes="navigation-item"
+                            Classes.active="{Binding IsLibrarySelected}"
+                            HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Background="Transparent"
-                            BorderBrush="#1F2130"
-                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
                             Command="{Binding OpenLibraryCommand}">
@@ -120,11 +131,10 @@
                         </Grid>
                     </Button>
 
-                    <Button HorizontalAlignment="Stretch"
+                    <Button Classes="navigation-item"
+                            Classes.active="{Binding IsSearchSelected}"
+                            HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Background="Transparent"
-                            BorderBrush="#1F2130"
-                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
                             Command="{Binding SelectSectionCommand}"
@@ -139,11 +149,10 @@
                         </Grid>
                     </Button>
 
-                    <Button HorizontalAlignment="Stretch"
+                    <Button Classes="navigation-item"
+                            Classes.active="{Binding IsDownloadsSelected}"
+                            HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Background="Transparent"
-                            BorderBrush="#1F2130"
-                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
                             Command="{Binding SelectSectionCommand}"
@@ -158,11 +167,10 @@
                         </Grid>
                     </Button>
 
-                    <Button HorizontalAlignment="Stretch"
+                    <Button Classes="navigation-item"
+                            Classes.active="{Binding IsSettingsSelected}"
+                            HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Background="Transparent"
-                            BorderBrush="#1F2130"
-                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="12,10"
                             Command="{Binding SelectSectionCommand}"
@@ -518,7 +526,7 @@
                                    FontSize="26"
                                    FontWeight="Bold"
                                    Foreground="#F9FAFB" />
-                        <TextBlock Text="Busca archivos guardados por nombre y consulta enlaces multimedia."
+                        <TextBlock Text="Busca primero en tu carpeta local y, si hace falta, continúa en Bing."
                                    FontSize="14"
                                    Foreground="#9CA3AF" />
                     </StackPanel>
@@ -529,12 +537,12 @@
                             CornerRadius="14"
                             Padding="28">
                         <StackPanel Spacing="16">
-                            <TextBlock Text="Buscar en biblioteca o consultar URL"
+                            <TextBlock Text="Buscar archivos"
                                        FontSize="18"
                                        FontWeight="SemiBold"
                                        Foreground="#F3F4F6" />
                             <TextBox Text="{Binding SearchQuery}"
-                                     PlaceholderText="Nombre de archivo o URL"
+                                     PlaceholderText="Nombre, tema o URL"
                                      MinHeight="44"
                                      FontSize="14"
                                      CornerRadius="8"
@@ -545,7 +553,7 @@
                                 <CheckBox Content="Imágenes" IsChecked="{Binding SearchImages}" Margin="0,0,14,8" />
                                 <CheckBox Content="Audio" IsChecked="{Binding SearchAudio}" Margin="0,0,14,8" />
                                 <CheckBox Content="Vídeo" IsChecked="{Binding SearchVideo}" Margin="0,0,14,8" />
-                                <CheckBox Content="Archivos/Compressed" IsChecked="{Binding SearchCompressed}" Margin="0,0,14,8" />
+                                <CheckBox Content="Archivos comprimidos" IsChecked="{Binding SearchCompressed}" Margin="0,0,14,8" />
                                 <CheckBox Content="ISO" IsChecked="{Binding SearchIso}" Margin="0,0,14,8" />
                             </WrapPanel>
                             <StackPanel Orientation="Horizontal" Spacing="10">
@@ -582,13 +590,33 @@
                                                Foreground="#E5E7EB"
                                                FontSize="13"
                                                TextWrapping="Wrap" />
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="8"
+                                                IsVisible="{Binding CanSearchOnline}">
+                                        <Button Content="Buscar en Bing"
+                                                Command="{Binding SearchOnlineCommand}"
+                                                Background="{Binding AccentColor}"
+                                                Foreground="White"
+                                                FontWeight="SemiBold"
+                                                Padding="14,8"
+                                                CornerRadius="7" />
+                                        <Button Content="Ahora no"
+                                                Command="{Binding DismissOnlineSearchCommand}"
+                                                Background="#25283D"
+                                                BorderBrush="#374151"
+                                                BorderThickness="1"
+                                                Foreground="#D1D5DB"
+                                                Padding="14,8"
+                                                CornerRadius="7" />
+                                    </StackPanel>
                                     <TextBlock Text="{Binding ActiveEngineLabel}"
                                                Foreground="#818CF8"
                                                FontSize="12"
-                                               FontWeight="SemiBold" />
-                                    <Button Content="Abrir en Downloader"
+                                               FontWeight="SemiBold"
+                                               IsVisible="{Binding CanDownloadSearchQuery}" />
+                                    <Button Content="Abrir en Descargar"
                                             Command="{Binding DownloadSearchedLinkCommand}"
-                                            IsVisible="{Binding !HasSearchResults}"
+                                            IsVisible="{Binding CanDownloadSearchQuery}"
                                             HorizontalAlignment="Left"
                                             Background="#25283D"
                                             BorderBrush="#4F46E5"
@@ -907,7 +935,7 @@
                                        Foreground="#9CA3AF"
                                        FontSize="12" />
                             <ComboBox ItemsSource="{Binding AccentColorOptions}"
-                                      SelectedItem="{Binding AccentColor}"
+                                      SelectedItem="{Binding AccentColorName}"
                                       HorizontalAlignment="Left"
                                       MinWidth="200">
                             </ComboBox>
@@ -922,6 +950,87 @@
                                        Foreground="#A5B4FC"
                                        FontSize="12"
                                        TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer IsVisible="{Binding IsDirectFilePreview}">
+                <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Archivo listo para descargar"
+                               FontSize="26"
+                               FontWeight="Bold"
+                               Foreground="#F9FAFB" />
+                    <Border Background="#161823"
+                            BorderBrush="#25283A"
+                            BorderThickness="1"
+                            CornerRadius="16"
+                            Padding="32">
+                        <StackPanel Spacing="18">
+                            <Border Width="84"
+                                    Height="84"
+                                    CornerRadius="16"
+                                    Background="#1E2035"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="⇩"
+                                           FontSize="42"
+                                           FontWeight="Bold"
+                                           Foreground="{Binding AccentColor}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="{Binding DirectFileName}"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#F9FAFB"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding DirectFileType}"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="#A5B4FC"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding DirectFileContentType, StringFormat='Tipo MIME: {0}'}"
+                                       FontSize="12"
+                                       Foreground="#9CA3AF"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding DirectFileSize, StringFormat='Tamaño: {0}'}"
+                                       FontSize="13"
+                                       Foreground="#D1D5DB"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding OutputPath, StringFormat='Carpeta de destino: {0}'}"
+                                       FontSize="12"
+                                       Foreground="#818CF8"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap" />
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        Spacing="10"
+                                        Margin="0,8,0,0">
+                                <Button Content="Ver página del enlace"
+                                        Command="{Binding ViewDirectFilePageCommand}"
+                                        Background="#25283D"
+                                        BorderBrush="#4F46E5"
+                                        BorderThickness="1"
+                                        Foreground="#E0E7FF"
+                                        Padding="14,10"
+                                        CornerRadius="8" />
+                                <Button Content="Cancelar"
+                                        Command="{Binding CancelDirectFilePreviewCommand}"
+                                        Background="#25283D"
+                                        BorderBrush="#374151"
+                                        BorderThickness="1"
+                                        Foreground="#E0E7FF"
+                                        Padding="14,10"
+                                        CornerRadius="8" />
+                                <Button Content="Confirmar descarga"
+                                        Command="{Binding ConfirmDirectFileDownloadCommand}"
+                                        Background="{Binding AccentColor}"
+                                        Foreground="White"
+                                        FontWeight="SemiBold"
+                                        Padding="18,10"
+                                        CornerRadius="8" />
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </StackPanel>
