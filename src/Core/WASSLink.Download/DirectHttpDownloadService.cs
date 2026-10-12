@@ -1,5 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using WASSLink.Abstractions;
 
 namespace WASSLink.Download;

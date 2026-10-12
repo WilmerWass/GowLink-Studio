@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using WASSLink.Abstractions;
 
 namespace WASSLink.Download;

@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Http;
 using WASSLink.Abstractions;
 
 namespace WASSLink.Download.DependencyInjection;
@@ -14,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IDownloadProvider>(provider =>
             provider.GetRequiredService<CompositeDownloadProvider>());
 
+        services.AddSingleton<HttpClient>();
         return services;
     }
 }

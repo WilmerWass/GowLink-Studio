@@ -135,7 +135,7 @@ public class DownloadProviderTests
 
             viewModel.SelectSectionCommand.Execute("Biblioteca");
             Assert.True(viewModel.IsLibrarySelected);
-            viewModel.SelectSectionCommand.Execute("Descargas");
+            viewModel.SelectSectionCommand.Execute("Historial");
             Assert.True(viewModel.IsDownloadsSelected);
             viewModel.SelectSectionCommand.Execute("Configuración");
             Assert.True(viewModel.IsSettingsSelected);
