@@ -8,9 +8,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WASSLink.Abstractions;
+using WASSLink.Configuration;
 using WASSLink.Desktop.Models;
 using WASSLink.Desktop.Services;
 using WASSLink.Download;
@@ -24,14 +26,19 @@ public partial class MainViewModel : ViewModelBase
     private readonly IClipboardService _clipboardService;
     private readonly IFolderPickerService? _folderPickerService;
     private readonly MediaMetadataService _metadataService;
-    private CancellationTokenSource? _cts;
+    private readonly DownloadQueueService _downloadQueue;
+    private readonly IUserDataStore? _userDataStore;
+    private readonly Dictionary<Guid, DownloadHistoryItem> _historyItemsByJob = [];
+    private readonly Dictionary<Guid, DownloadJob> _jobsById = [];
     private CancellationTokenSource? _metadataCts;
     private CancellationTokenSource? _toastCts;
 
     public MainViewModel(
         IDownloadProvider downloadProvider,
         IClipboardService clipboardService,
-        IFolderPickerService? folderPickerService = null)
+        IFolderPickerService? folderPickerService = null,
+        DownloadQueueService? downloadQueue = null,
+        IUserDataStore? userDataStore = null)
     {
         _downloadProvider = downloadProvider ?? throw new ArgumentNullException(nameof(downloadProvider));
         _directHttpProvider = downloadProvider switch
@@ -43,8 +50,13 @@ public partial class MainViewModel : ViewModelBase
         _clipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         _folderPickerService = folderPickerService;
         _metadataService = new MediaMetadataService();
+        _downloadQueue = downloadQueue ?? new DownloadQueueService();
+        _userDataStore = userDataStore;
+        _downloadQueue.MaximumConcurrency = MaximumConcurrency;
+        _downloadQueue.QueueChanged += OnDownloadQueueChanged;
 
         OutputPath = ResolveDefaultOutputPath();
+        LoadUserData();
     }
 
     /// <summary>
@@ -77,6 +89,14 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnSelectedSectionChanged(string value)
     {
+        if (value != "Descargar")
+        {
+            IsDownloadConfirmation = false;
+            IsDirectFilePreview = false;
+            IsDuplicatePromptOpen = false;
+            IsFormatModalOpen = false;
+            _metadataCts?.Cancel();
+        }
         OnPropertyChanged(nameof(IsDownloaderSelected));
         OnPropertyChanged(nameof(IsSearchSelected));
         OnPropertyChanged(nameof(IsLibrarySelected));
@@ -131,6 +151,9 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private int downloadSpeedLimitKbps;
+
+    [ObservableProperty]
+    private int maximumConcurrency = 2;
 
     [ObservableProperty]
     private string accentColor = "#4F46E5";
@@ -196,6 +219,12 @@ public partial class MainViewModel : ViewModelBase
     private string confirmationOutput = string.Empty;
 
     [ObservableProperty]
+    private bool isDuplicatePromptOpen;
+
+    [ObservableProperty]
+    private string duplicateFilePath = string.Empty;
+
+    [ObservableProperty]
     private string settingsMessage = string.Empty;
 
     public bool HasDownloadHistory => DownloadHistory.Count > 0;
@@ -212,6 +241,7 @@ public partial class MainViewModel : ViewModelBase
     public IReadOnlyList<string> DownloadTypeFilters { get; } = ["Todos", "Multimedia", "Archivos"];
     public IReadOnlyList<string> DownloadDateFilters { get; } = ["Todas", "Hoy", "Últimos 7 días"];
     public IReadOnlyList<string> AccentColorOptions { get; } = ["Violeta", "Cian", "Esmeralda", "Ámbar"];
+    public IReadOnlyList<int> ConcurrencyOptions { get; } = [1, 2, 3];
     public string BingSearchUrl => BuildBingSearchUrl();
 
     partial void OnDownloadTypeFilterChanged(string value) => RefreshFilteredDownloads();
@@ -247,6 +277,14 @@ public partial class MainViewModel : ViewModelBase
             DownloadSpeedLimitKbps = 0;
         else if (value > 1_000_000)
             DownloadSpeedLimitKbps = 1_000_000;
+    }
+    partial void OnMaximumConcurrencyChanged(int value)
+    {
+        var normalized = Math.Clamp(value, 1, 3);
+        if (normalized != value)
+            MaximumConcurrency = normalized;
+        _downloadQueue.MaximumConcurrency = normalized;
+        OnPropertyChanged(nameof(QueueSummary));
     }
 
     // ─── Descarga principal ───────────────────────────────────────────────────────
@@ -320,6 +358,65 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    private void OnDownloadQueueChanged(object? sender, EventArgs args)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            IsDownloading = _downloadQueue.ActiveCount > 0;
+            OnPropertyChanged(nameof(QueuedDownloadCount));
+            OnPropertyChanged(nameof(QueueSummary));
+        });
+    }
+
+    public int QueuedDownloadCount => DownloadHistory.Count(item =>
+        item.Status.Equals("En cola", StringComparison.OrdinalIgnoreCase));
+    public string QueueSummary =>
+        $"Activas: {_downloadQueue.ActiveCount} · en cola: {QueuedDownloadCount} · límite: {MaximumConcurrency}";
+
+    private void OnDownloadJobChanged(object? sender, EventArgs args)
+    {
+        if (sender is not DownloadJob job)
+            return;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (!_historyItemsByJob.TryGetValue(job.Id, out var item))
+                return;
+
+            item.Status = job.State switch
+            {
+                DownloadJobState.Pending => "En cola",
+                DownloadJobState.Downloading when item.IsPaused => "Pausada",
+                DownloadJobState.Downloading => job.LastProgress?.StatusMessage ?? "Descargando",
+                DownloadJobState.Paused => "Pausada",
+                DownloadJobState.Retrying => $"Reintentando ({job.Attempt}/3)",
+                DownloadJobState.Completed => "Completada",
+                DownloadJobState.Skipped => "Omitida: el archivo ya existía",
+                DownloadJobState.Cancelled => "Cancelada",
+                _ => item.Status
+            };
+
+            if (job.LastProgress is { } progress)
+            {
+                if (progress.Percentage >= 0)
+                    item.Progress = progress.Percentage;
+
+                var details = new List<string>();
+                if (!string.IsNullOrWhiteSpace(progress.Speed))
+                    details.Add(progress.Speed);
+                if (!string.IsNullOrWhiteSpace(progress.Eta))
+                    details.Add($"ETA {progress.Eta}");
+                if (!string.IsNullOrWhiteSpace(progress.TotalSize))
+                    details.Add(progress.TotalSize);
+                item.ProgressDetails = string.Join(" · ", details);
+            }
+
+            OnPropertyChanged(nameof(QueuedDownloadCount));
+            OnPropertyChanged(nameof(QueueSummary));
+            RefreshFilteredDownloads();
+        });
+    }
+
     private IDownloadProvider? GetProviderForUrl(string url)
     {
         return _downloadProvider is CompositeDownloadProvider composite
@@ -337,40 +434,12 @@ public partial class MainViewModel : ViewModelBase
     private string statusMessage = "Listo para descargar.";
 
     [ObservableProperty]
-    private double downloadProgress;
-
-    [ObservableProperty]
     private bool isDownloading;
-
-    [ObservableProperty]
-    private string currentSpeed = string.Empty;
-
-    [ObservableProperty]
-    private string currentEta = string.Empty;
-
-    [ObservableProperty]
-    private string currentTitle = string.Empty;
-
-    [ObservableProperty]
-    private string currentSize = string.Empty;
 
     [ObservableProperty]
     private string lastDownloadedFile = string.Empty;
 
     // ─── Fases de progreso (para animaciones) ────────────────────────────────────
-
-    /// <summary>
-    /// True durante la descarga pura (yt-dlp descargando segmentos).
-    /// </summary>
-    [ObservableProperty]
-    private bool isPhaseDownloading;
-
-    /// <summary>
-    /// True durante el procesamiento FFmpeg (muxing / conversión de audio).
-    /// La barra pasa a modo indeterminado en la UI.
-    /// </summary>
-    [ObservableProperty]
-    private bool isPhaseProcessing;
 
     // ─── Toast de completado ──────────────────────────────────────────────────────
 
@@ -656,20 +725,25 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void DeleteSelectedDownloads()
     {
-        foreach (var item in DownloadHistory.Where(item => item.IsSelected &&
-                     !item.Status.Equals("Iniciando", StringComparison.OrdinalIgnoreCase) &&
-                     !item.Status.StartsWith("Descargando", StringComparison.OrdinalIgnoreCase) &&
-                     item.Status != "Procesando con FFmpeg...").ToList())
+        var selectedItems = DownloadHistory.Where(item => item.IsSelected).ToList();
+        var activeItems = selectedItems.Where(item =>
+            item.JobId is { } jobId && _jobsById.ContainsKey(jobId)).ToList();
+
+        foreach (var item in selectedItems.Except(activeItems))
         {
             item.PropertyChanged -= OnDownloadHistoryItemPropertyChanged;
             DownloadHistory.Remove(item);
         }
+
+        if (activeItems.Count > 0)
+            StatusMessage = "Las descargas activas o pendientes no se quitaron del historial.";
 
         RefreshFilteredDownloads();
         OnPropertyChanged(nameof(HasDownloadHistory));
         OnPropertyChanged(nameof(ShowNoFilteredDownloads));
         OnPropertyChanged(nameof(SelectedDownloadCount));
         OnPropertyChanged(nameof(HasSelectedDownloads));
+        PersistHistory();
     }
 
     [RelayCommand]
@@ -758,9 +832,116 @@ public partial class MainViewModel : ViewModelBase
         else if (!Path.IsPathFullyQualified(OutputPath))
             SettingsMessage = "La carpeta de destino debe ser una ruta absoluta.";
         else
-            SettingsMessage = DownloadSpeedLimitKbps <= 0
-                ? "Preferencias aplicadas. Límite de velocidad: sin límite."
-                : $"Preferencias aplicadas. Límite: {DownloadSpeedLimitKbps} KB/s.";
+        {
+            try
+            {
+                _userDataStore?.SaveSettings(new GowLinkSettings(
+                    OutputPath,
+                    DownloadSpeedLimitKbps,
+                    AccentColorName,
+                    MaximumConcurrency));
+                SettingsMessage = DownloadSpeedLimitKbps <= 0
+                    ? $"Preferencias guardadas. Sin límite de velocidad; máximo {MaximumConcurrency} descargas simultáneas."
+                    : $"Preferencias guardadas. Límite: {DownloadSpeedLimitKbps} KB/s; máximo {MaximumConcurrency} descargas simultáneas.";
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+            {
+                SettingsMessage = $"No se pudieron guardar las preferencias: {ex.Message}";
+            }
+        }
+    }
+
+    private void LoadUserData()
+    {
+        if (_userDataStore is null)
+            return;
+
+        try
+        {
+            if (_userDataStore.LoadSettings() is { } settings)
+            {
+                if (Path.IsPathFullyQualified(settings.OutputPath))
+                    OutputPath = settings.OutputPath;
+                DownloadSpeedLimitKbps = Math.Max(0, settings.DownloadSpeedLimitKbps);
+                AccentColorName = AccentColorOptions.Contains(settings.AccentColorName)
+                    ? settings.AccentColorName
+                    : "Violeta";
+                MaximumConcurrency = Math.Clamp(settings.MaximumConcurrency, 1, 3);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+        {
+            SettingsMessage = $"No se pudieron leer las preferencias; se usarán valores predeterminados: {ex.Message}";
+        }
+
+        try
+        {
+            foreach (var record in _userDataStore.LoadHistory())
+            {
+                DownloadHistory.Add(new DownloadHistoryItem
+                {
+                    SourceUrl = record.SourceUrl,
+                    Engine = record.Engine,
+                    Status = record.Status,
+                    Progress = record.Progress,
+                    Output = record.Output,
+                    CreatedAt = record.CreatedAt
+                });
+            }
+
+            RefreshFilteredDownloads();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+        {
+            SettingsMessage = $"No se pudo leer el historial guardado: {ex.Message}";
+        }
+    }
+
+    private void PersistHistory()
+    {
+        if (_userDataStore is null)
+            return;
+
+        var terminalStatuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Completada",
+            "Omitida: el archivo ya existía",
+            "Ya existía",
+            "Cancelada"
+        };
+        var records = DownloadHistory
+            .Where(item => terminalStatuses.Contains(item.Status) ||
+                           item.Status.StartsWith("Error:", StringComparison.OrdinalIgnoreCase))
+            .Select(item => new DownloadHistoryRecord(
+                SanitizeHistoryUrl(item.SourceUrl),
+                item.Engine,
+                item.Status,
+                item.Progress,
+                item.Output,
+                item.CreatedAt))
+            .ToList();
+
+        try
+        {
+            _userDataStore.SaveHistory(records);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+        {
+            SettingsMessage = $"No se pudo guardar el historial: {ex.Message}";
+        }
+    }
+
+    private static string SanitizeHistoryUrl(string value)
+    {
+        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri))
+            return value;
+
+        var sanitized = new UriBuilder(uri)
+        {
+            Query = string.Empty,
+            Fragment = string.Empty
+        };
+        return sanitized.Uri.AbsoluteUri.TrimEnd('/');
     }
 
     [RelayCommand]
@@ -981,7 +1162,7 @@ public partial class MainViewModel : ViewModelBase
                 {
                     var fileInfo = await _directHttpProvider.AnalyzeAsync(url);
                     LoggerService.Write(
-                        $"ANALYZE HTTP RESULT URL=\"{fileInfo.FinalUri}\" FILE=\"{fileInfo.FileName}\" " +
+                        $"ANALYZE HTTP RESULT URL=\"{uri}\" FILE=\"{fileInfo.FileName}\" " +
                         $"TYPE=\"{fileInfo.ContentType}\" KIND=\"{fileInfo.FileType}\" " +
                         $"SIZE={fileInfo.ContentLength?.ToString() ?? "unknown"} DOWNLOADABLE={fileInfo.IsDownloadable}");
 
@@ -1043,38 +1224,73 @@ public partial class MainViewModel : ViewModelBase
         if (!IsDirectFilePreview || string.IsNullOrWhiteSpace(DirectFileUrl))
             return;
 
+        var existingPath = Path.Combine(OutputPath, DirectFileName);
+        if (File.Exists(existingPath))
+        {
+            DuplicateFilePath = existingPath;
+            IsDuplicatePromptOpen = true;
+            return;
+        }
+
         IsDirectFilePreview = false;
-        await StartDownloadWithFormatAsync(null, forceDirectHttp: true);
+        await StartDownloadWithFormatAsync(null, forceDirectHttp: true, FileConflictAction.CreateCopy);
+    }
+
+    [RelayCommand]
+    private async Task SaveDuplicateAsCopyAsync() =>
+        await ResolveDirectDuplicateAsync(FileConflictAction.CreateCopy);
+
+    [RelayCommand]
+    private async Task OverwriteDuplicateAsync() =>
+        await ResolveDirectDuplicateAsync(FileConflictAction.Overwrite);
+
+    [RelayCommand]
+    private async Task SkipDuplicateAsync() =>
+        await ResolveDirectDuplicateAsync(FileConflictAction.Skip);
+
+    [RelayCommand]
+    private void CloseDuplicatePrompt() => IsDuplicatePromptOpen = false;
+
+    private async Task ResolveDirectDuplicateAsync(FileConflictAction action)
+    {
+        if (!IsDuplicatePromptOpen || string.IsNullOrWhiteSpace(DirectFileUrl))
+            return;
+
+        IsDuplicatePromptOpen = false;
+        IsDirectFilePreview = false;
+        if (action == FileConflictAction.Skip)
+        {
+            var historyItem = new DownloadHistoryItem
+            {
+                SourceUrl = SanitizeHistoryUrl(DirectFileUrl),
+                Engine = "HTTP Directo (Streaming)",
+                Status = "Omitida: el archivo ya existía",
+                Output = DuplicateFilePath
+            };
+            DownloadHistory.Insert(0, historyItem);
+            StatusMessage = $"Descarga omitida; se conservó {Path.GetFileName(DuplicateFilePath)}.";
+            ConfirmationTitle = Path.GetFileName(DuplicateFilePath);
+            ConfirmationDetails = "No se descargó el archivo y el elemento existente se conservó.";
+            ConfirmationOutput = DuplicateFilePath;
+            IsDownloadConfirmation = SelectedSection == "Descargar";
+            PersistHistory();
+            RefreshFilteredDownloads();
+            return;
+        }
+
+        await StartDownloadWithFormatAsync(null, forceDirectHttp: true, action);
     }
 
     [RelayCommand]
     private void CancelDirectFilePreview()
     {
+        IsDuplicatePromptOpen = false;
         IsDirectFilePreview = false;
         StatusMessage = "Descarga no iniciada.";
     }
 
     [RelayCommand]
-    private void ViewDirectFilePage()
-    {
-        if (!Uri.TryCreate(DirectFileUrl, UriKind.Absolute, out var uri) ||
-            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-        {
-            StatusMessage = "No hay una página válida para abrir.";
-            return;
-        }
-
-        try
-        {
-            Process.Start(new ProcessStartInfo { FileName = uri.AbsoluteUri, UseShellExecute = true });
-            LoggerService.Write($"OPEN SOURCE PAGE URL=\"{uri}\"");
-        }
-        catch (Exception ex)
-        {
-            LoggerService.WriteException(ex, $"OPEN SOURCE PAGE FAILED URL=\"{uri}\"");
-            StatusMessage = $"No se pudo abrir la página del enlace: {ex.Message}";
-        }
-    }
+    private void CloseDownloadConfirmation() => IsDownloadConfirmation = false;
 
     /// <summary>
     /// Selecciona visualmente una tarjeta de formato y actualiza la opción activa.
@@ -1133,7 +1349,10 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task StartDownloadWithFormatAsync(MediaFormatOption? format, bool forceDirectHttp = false)
+    private async Task StartDownloadWithFormatAsync(
+        MediaFormatOption? format,
+        bool forceDirectHttp = false,
+        FileConflictAction conflictAction = FileConflictAction.CreateCopy)
     {
         if (string.IsNullOrWhiteSpace(DownloadUrl))
         {
@@ -1150,17 +1369,8 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        IsDownloading = true;
-        IsPhaseDownloading = false;
-        IsPhaseProcessing = false;
         IsToastVisible = false;
-        DownloadProgress = 0;
-        CurrentSpeed = string.Empty;
-        CurrentEta = string.Empty;
-        CurrentTitle = string.Empty;
-        CurrentSize = string.Empty;
         StatusMessage = "Iniciando descarga...";
-        _cts = new CancellationTokenSource();
 
         var mediaType = format?.MediaType ?? DownloadMediaType.Video;
         var ext = format?.MediaType == DownloadMediaType.Audio
@@ -1174,101 +1384,36 @@ public partial class MainViewModel : ViewModelBase
             Format: ext,
             FormatId: format?.FormatId,
             VideoFormatHasAudio: format?.HasAudio ?? false,
-            MaxSpeedBytesPerSecond: DownloadSpeedLimitKbps * 1024L
+            MaxSpeedBytesPerSecond: DownloadSpeedLimitKbps * 1024L,
+            ConflictAction: conflictAction
         );
 
         var historyItem = new DownloadHistoryItem
         {
-            SourceUrl = request.Url,
+            SourceUrl = SanitizeHistoryUrl(request.Url),
             Engine = selectedProvider.Name == "yt-dlp" ? "yt-dlp & FFmpeg" : selectedProvider.Name,
-            Status = "Iniciando",
+            Status = "En cola",
             Output = OutputPath
         };
+        var job = new DownloadJob(selectedProvider, request);
+        historyItem.JobId = job.Id;
+        _historyItemsByJob[job.Id] = historyItem;
+        _jobsById[job.Id] = job;
+        job.Changed += OnDownloadJobChanged;
+        historyItem.PauseDownload = job.SetPaused;
         LoggerService.Write(
             $"DOWNLOAD REQUEST URL=\"{request.Url}\" PROVIDER=\"{selectedProvider.Name}\" " +
             $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\" OUTPUT=\"{request.OutputPath}\"");
-        var resumeSignal = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        resumeSignal.TrySetResult();
-        historyItem.PauseDownload = pause =>
-        {
-            if (pause)
-            {
-                Interlocked.Exchange(
-                    ref resumeSignal,
-                    new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously));
-                historyItem.Status = "Pausada";
-            }
-            else
-            {
-                Volatile.Read(ref resumeSignal).TrySetResult();
-                historyItem.Status = "Descargando por HTTP Directo...";
-            }
-        };
-        request = request with
-        {
-            WaitIfPausedAsync = token => Volatile.Read(ref resumeSignal).Task.WaitAsync(token)
-        };
         historyItem.PropertyChanged += OnDownloadHistoryItemPropertyChanged;
         DownloadHistory.Insert(0, historyItem);
         RefreshFilteredDownloads();
         OnPropertyChanged(nameof(HasDownloadHistory));
         OnPropertyChanged(nameof(ShowNoFilteredDownloads));
 
-        IProgress<DownloadProgress> progress = new Progress<DownloadProgress>(p =>
-        {
-            if (!historyItem.IsPaused)
-                historyItem.Status = p.StatusMessage ?? "Descargando";
-            if (p.Percentage >= 0)
-                historyItem.Progress = p.Percentage;
-
-            var isProcessingPhase = p.StatusMessage != null &&
-                p.StatusMessage.Contains("FFmpeg", StringComparison.OrdinalIgnoreCase);
-
-            if (isProcessingPhase)
-            {
-                historyItem.Status = p.StatusMessage!;
-                IsPhaseDownloading = false;
-                IsPhaseProcessing = true;
-                DownloadProgress = 0;
-                CurrentSpeed = string.Empty;
-                CurrentEta = string.Empty;
-                StatusMessage = p.StatusMessage!;
-                return;
-            }
-
-            if (p.Percentage >= 0)
-            {
-                IsPhaseDownloading = true;
-                IsPhaseProcessing = false;
-                DownloadProgress = p.Percentage;
-                if (!string.IsNullOrEmpty(p.Speed)) CurrentSpeed = p.Speed;
-                if (!string.IsNullOrEmpty(p.Eta)) CurrentEta = p.Eta;
-                if (!string.IsNullOrEmpty(p.Title)) CurrentTitle = p.Title;
-                if (!string.IsNullOrEmpty(p.TotalSize)) CurrentSize = p.TotalSize;
-
-                var speedInfo = !string.IsNullOrEmpty(CurrentSpeed) ? $" • {CurrentSpeed}" : "";
-                var etaInfo = !string.IsNullOrEmpty(CurrentEta) ? $" • ETA: {CurrentEta}" : "";
-                StatusMessage = $"Descargando... {p.Percentage:F1}%{speedInfo}{etaInfo}";
-            }
-            else if (!string.IsNullOrWhiteSpace(p.StatusMessage))
-            {
-                IsPhaseDownloading = true;
-                IsPhaseProcessing = false;
-                StatusMessage = p.StatusMessage;
-            }
-        });
-
         try
         {
-            var result = selectedProvider is DirectHttpDownloadService
-                ? await selectedProvider.DownloadAsync(
-                    request,
-                    new Progress<DownloadProgress>(p =>
-                    {
-                        progress.Report(p);
-                    }),
-                    _cts.Token)
-                : await selectedProvider.DownloadAsync(request, progress, _cts.Token);
+            _downloadQueue.Enqueue(job);
+            var result = await job.Completion;
 
             if (result.Success)
             {
@@ -1277,19 +1422,26 @@ public partial class MainViewModel : ViewModelBase
                 var displayName = string.IsNullOrWhiteSpace(fileName) ? "Archivo descargado" : fileName;
 
                 StatusMessage = result.WasAlreadyPresent
-                    ? $"El archivo ya existía; no se sobrescribió: {displayName}"
+                    ? $"Descarga omitida; se conservó el archivo existente: {displayName}"
                     : $"¡Completado!: {displayName}";
-                DownloadProgress = 100;
-                historyItem.Status = result.WasAlreadyPresent ? "Ya existía" : "Completada";
-                historyItem.Progress = 100;
+                historyItem.Status = result.WasAlreadyPresent
+                    ? "Omitida: el archivo ya existía"
+                    : "Completada";
+                if (!result.WasAlreadyPresent)
+                    historyItem.Progress = 100;
                 historyItem.Output = LastDownloadedFile;
                 ConfirmationTitle = displayName;
                 ConfirmationDetails = result.WasAlreadyPresent
-                    ? $"Este archivo ya estaba en destino. Se conservó sin sobrescribirlo ({historyItem.Engine})."
+                    ? $"El archivo ya estaba en destino y no se descargó de nuevo ({historyItem.Engine})."
                     : $"Descarga completada con {historyItem.Engine}.";
                 ConfirmationOutput = LastDownloadedFile;
-                IsDownloadConfirmation = true;
-                SelectedSection = "Descargar";
+                var showConfirmation = _downloadQueue.ActiveCount == 0 &&
+                                       QueuedDownloadCount == 0 &&
+                                       IsDownloaderSelected;
+                IsDownloadConfirmation = showConfirmation;
+                if (showConfirmation)
+                    _ = ShowToastAsync(displayName, ConfirmationDetails);
+                PersistHistory();
                 RefreshFilteredDownloads();
                 OnPropertyChanged(nameof(HasDownloadHistory));
                 OnPropertyChanged(nameof(ShowNoFilteredDownloads));
@@ -1297,17 +1449,24 @@ public partial class MainViewModel : ViewModelBase
             else
             {
                 var errorMessage = result.ErrorMessage ?? "Fallo desconocido en la descarga.";
-                StatusMessage = $"Error: {errorMessage}";
-                historyItem.Status = $"Error: {errorMessage}";
-                LoggerService.Write(
-                    $"DOWNLOAD FAILED URL=\"{request.Url}\" PROVIDER=\"{selectedProvider.Name}\" " +
-                    $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\" ERROR=\"{errorMessage}\"");
+                if (job.State == DownloadJobState.Cancelled)
+                {
+                    StatusMessage = "Descarga cancelada.";
+                    historyItem.Status = "Cancelada";
+                    LoggerService.Write(
+                        $"DOWNLOAD CANCELLED URL=\"{request.Url}\" PROVIDER=\"{selectedProvider.Name}\" " +
+                        $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\"");
+                }
+                else
+                {
+                    StatusMessage = $"Error: {errorMessage}";
+                    historyItem.Status = $"Error: {errorMessage}";
+                    LoggerService.Write(
+                        $"DOWNLOAD FAILED URL=\"{request.Url}\" PROVIDER=\"{selectedProvider.Name}\" " +
+                        $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\" ERROR=\"{errorMessage}\"");
+                }
+                PersistHistory();
             }
-        }
-        catch (OperationCanceledException)
-        {
-            StatusMessage = "Descarga cancelada por el usuario.";
-            historyItem.Status = "Cancelada";
         }
         catch (Exception ex)
         {
@@ -1317,14 +1476,14 @@ public partial class MainViewModel : ViewModelBase
                 $"MEDIA=\"{request.MediaType}\" FORMAT=\"{request.FormatId ?? request.Format}\"");
             StatusMessage = $"Error inesperado: {ex.Message}";
             historyItem.Status = $"Error: {ex.Message}";
+            PersistHistory();
         }
         finally
         {
-            IsDownloading = false;
-            IsPhaseDownloading = false;
-            IsPhaseProcessing = false;
-            _cts?.Dispose();
-            _cts = null;
+            _historyItemsByJob.Remove(job.Id);
+            _jobsById.Remove(job.Id);
+            job.Changed -= OnDownloadJobChanged;
+            OnPropertyChanged(nameof(QueuedDownloadCount));
         }
     }
 
@@ -1385,10 +1544,15 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void CancelDownload()
     {
-        if (IsDownloading && _cts != null && !_cts.IsCancellationRequested)
+        var jobs = _jobsById.Values
+            .Where(job => job.State is DownloadJobState.Pending or DownloadJobState.Downloading or
+                DownloadJobState.Paused or DownloadJobState.Retrying)
+            .ToList();
+        if (jobs.Count > 0)
         {
-            StatusMessage = "Cancelando descarga...";
-            _cts.Cancel();
+            StatusMessage = "Cancelando las descargas activas y pendientes...";
+            foreach (var job in jobs)
+                _downloadQueue.Cancel(job);
         }
     }
 

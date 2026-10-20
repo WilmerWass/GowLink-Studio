@@ -37,13 +37,13 @@ Portable First no equivale a declarar compatibilidad universal ni a asumir que u
 
 El estado verificado del proyecto se describe mejor como:
 
-**GowLink Studio — Beta 1.4: Universal Download Engine**
+**GowLink Studio — Beta 1.4.1: Universal Download Engine (consolidation in progress)**
 
 Se consideran confirmadas las siguientes capacidades según el último estado de trabajo reportado:
 
 - branding actualizado a GowLink Studio
 - ruta predeterminada en `Downloads\GowLink`
-- navegación entre Downloader, Biblioteca, Buscador, Lista de Descargas y Configuración
+- navegación entre Descargar, Biblioteca, Buscador, Historial y Configuración
 - selección dinámica del motor según la URL: HTTP directo o yt-dlp
 - corrección de la pausa HTTP sin bloquear la interfaz
 - compilación correcta con `dotnet build -c Debug`
@@ -103,16 +103,16 @@ La lógica central debe implementarse en Core y consumirse desde Apps mediante i
 
 La versión activa a documentar para este punto es:
 
-**GowLink Studio — Beta 1.4**
+**GowLink Studio — Beta 1.4.1**
 
 La siguiente etapa oficial de consolidación es:
 
-**1.4.1 — Consolidation Release**
+**1.4.1 — Consolidation Release (not yet published)**
 
 Esto marca la diferencia entre:
 
 - la fase de producto ya desarrollada y verificada en ciertos aspectos
-- la fase de estabilización y mejora del producto que ya existe
+- la fase de estabilización y mejora del producto que ya existe; no se declara lista hasta superar sus criterios de aceptación
 - la fase funcional futura (búsqueda, biblioteca, reproductor, torrents, integración)
 
 ## 9. Limitaciones y riesgos conocidos

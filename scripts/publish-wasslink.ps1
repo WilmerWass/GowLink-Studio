@@ -9,9 +9,9 @@ $instructionsSource = Join-Path $root 'release\LEEME_README.txt'
 $noticesSource = Join-Path $root 'release\THIRD-PARTY-NOTICES.txt'
 $newsSource = Join-Path $root 'release\NOVEDADES_NEWS.txt'
 $betaRoot = Join-Path $root 'artifacts\beta'
-$packageName = 'GowLink-Desktop-win-B1.3'
+$packageName = 'GowLink-Desktop-win-B1.4.1'
 $packageDir = Join-Path $betaRoot $packageName
-$stagingDir = Join-Path $betaRoot "$packageName-staging"
+$stagingDir = Join-Path $betaRoot "$packageName-staging-$([Guid]::NewGuid().ToString('N'))"
 $archivePath = Join-Path $betaRoot "$packageName.zip"
 
 foreach ($requiredFile in @($desktopProject, $profile, $ytDlpSource, $ffmpegSource, $instructionsSource, $noticesSource, $newsSource)) {
@@ -21,8 +21,8 @@ foreach ($requiredFile in @($desktopProject, $profile, $ytDlpSource, $ffmpegSour
 }
 
 New-Item -ItemType Directory -Path $betaRoot -Force | Out-Null
-if (Test-Path $stagingDir) {
-	Remove-Item $stagingDir -Recurse -Force
+if ((Test-Path $packageDir) -or (Test-Path $archivePath)) {
+	throw "Release output already exists. Move it aside explicitly before publishing: $packageDir or $archivePath"
 }
 
 $publishOutput = $stagingDir + [IO.Path]::DirectorySeparatorChar
@@ -55,12 +55,12 @@ foreach ($requiredDocument in @('LEEME_README.txt', 'THIRD-PARTY-NOTICES.txt', '
 }
 
 if (Test-Path $packageDir) {
-	Remove-Item $packageDir -Recurse -Force
+	throw "Release folder appeared during publishing; staging files were preserved at: $stagingDir"
 }
 Move-Item $stagingDir $packageDir
 
 if (Test-Path $archivePath) {
-	Remove-Item $archivePath -Force
+	throw "Release archive appeared during publishing; package folder was preserved at: $packageDir"
 }
 Compress-Archive -Path $packageDir -DestinationPath $archivePath -CompressionLevel Optimal
 

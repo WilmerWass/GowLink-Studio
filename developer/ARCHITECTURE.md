@@ -131,7 +131,7 @@ Responsabilidad:
 
 Estado:
 
-- canal de configuración identificado en la beta 1.4, pero aún sujeto a consolidación y persistencia real
+- servicio JSON local implementado para preferencias e historial terminal; la publicación portable y el manejo de fallos siguen sujetos a validación
 
 ## 4. Arquitectura objetivo prevista
 
@@ -297,10 +297,10 @@ El cambio de marca en la UI y ciertos datos de ejecución ya está iniciado. La 
 
 # Estado
 
-Estado documental: Beta 1.3 — estabilización en curso.
+Estado documental: Beta 1.4.1 — consolidación en curso; no publicada.
 
-La suite de pruebas registra 20 pruebas aprobadas. Una validación runtime confirmó una descarga de audio M4A y vídeo MP4 1080p, incluyendo progreso, FFmpeg y ruta final Unicode registrada en `app.log`; la suite automatizada no sustituye esta prueba ni cubre todos los fallos de producción.
+La cola común, la persistencia local y las protecciones de temporales HTTP están implementadas. La validación automatizada y un build Release se ejecutaron durante esta consolidación; el paquete portable limpio y los proveedores externos todavía requieren validación y no se consideran confirmados por la arquitectura.
 
 El logger compartido, el logger interno de descargas y los informes de diagnóstico usan `%LOCALAPPDATA%\GowLink\Logs`. Los loggers crean el directorio si no existe. Los archivos históricos que permanezcan bajo `%LOCALAPPDATA%\WASSLink\Logs` se conservan; no se migran ni se eliminan automáticamente.
 
-Fase 1: completada. Beta 1: en estabilización.
+Fase 1: completada. Beta 1.4.1: en consolidación.

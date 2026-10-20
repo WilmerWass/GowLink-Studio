@@ -7,5 +7,6 @@ public record DownloadResult(
     bool Success,
     string? OutputPath = null,
     string? ErrorMessage = null,
-    bool WasAlreadyPresent = false
+    bool WasAlreadyPresent = false,
+    bool IsTransientFailure = false
 );

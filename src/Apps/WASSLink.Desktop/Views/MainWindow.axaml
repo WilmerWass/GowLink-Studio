@@ -21,6 +21,13 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
+    <Window.Resources>
+        <SolidColorBrush x:Key="AccentBrush" Color="#4F46E5" />
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#6366F1" />
+        <SolidColorBrush x:Key="AccentLightBrush" Color="#818CF8" />
+        <SolidColorBrush x:Key="AccentPaleBrush" Color="#A5B4FC" />
+    </Window.Resources>
+
     <Window.Styles>
         <Style Selector="Button.navigation-item">
             <Setter Property="Background" Value="Transparent" />
@@ -29,7 +36,7 @@
         </Style>
         <Style Selector="Button.navigation-item.active">
             <Setter Property="Background" Value="#25283D" />
-            <Setter Property="BorderBrush" Value="#6366F1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
         </Style>
     </Window.Styles>
 
@@ -47,7 +54,7 @@
                 <!-- Logo y Marca -->
                 <StackPanel Grid.Row="0" Spacing="8" Margin="4,0,4,28">
                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <Border Background="#6366F1"
+                        <Border Background="{DynamicResource AccentHoverBrush}"
                                 CornerRadius="8"
                                 Width="34"
                                 Height="34">
@@ -67,7 +74,7 @@
                                        FontSize="10"
                                        FontWeight="SemiBold"
                                        LetterSpacing="2"
-                                       Foreground="#818CF8" />
+                                       Foreground="{DynamicResource AccentLightBrush}" />
                         </StackPanel>
                     </StackPanel>
 
@@ -79,7 +86,7 @@
                             Padding="8,4"
                             Margin="0,6,0,0"
                             HorizontalAlignment="Left">
-                        <TextBlock Text="Beta 1.4 — Universal Download Engine"
+                        <TextBlock Text="Beta 1.4.1 — Universal Download Engine"
                                    FontSize="11"
                                    TextWrapping="Wrap"
                                    Foreground="#9CA3AF" />
@@ -107,7 +114,7 @@
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Grid.Column="0" Text="📥" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1" Text="Descargar" FontWeight="SemiBold" Foreground="#F9FAFB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                            <Border Grid.Column="2" Background="{DynamicResource AccentBrush}" CornerRadius="4" Padding="6,2"
                                     IsVisible="{Binding IsDownloaderSelected}">
                                 <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
@@ -124,7 +131,7 @@
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Grid.Column="0" Text="📚" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1" Text="Biblioteca" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                            <Border Grid.Column="2" Background="{DynamicResource AccentBrush}" CornerRadius="4" Padding="6,2"
                                     IsVisible="{Binding IsLibrarySelected}">
                                 <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
@@ -142,7 +149,7 @@
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Grid.Column="0" Text="🔍" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1" Text="Buscador" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                            <Border Grid.Column="2" Background="{DynamicResource AccentBrush}" CornerRadius="4" Padding="6,2"
                                     IsVisible="{Binding IsSearchSelected}">
                                 <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
@@ -160,7 +167,7 @@
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Grid.Column="0" Text="📋" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1" Text="Historial" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                            <Border Grid.Column="2" Background="{DynamicResource AccentBrush}" CornerRadius="4" Padding="6,2"
                                     IsVisible="{Binding IsDownloadsSelected}">
                                 <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
@@ -178,7 +185,7 @@
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <TextBlock Grid.Column="0" Text="⚙" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1" Text="Configuración" Foreground="#D1D5DB" VerticalAlignment="Center" />
-                            <Border Grid.Column="2" Background="#4F46E5" CornerRadius="4" Padding="6,2"
+                            <Border Grid.Column="2" Background="{DynamicResource AccentBrush}" CornerRadius="4" Padding="6,2"
                                     IsVisible="{Binding IsSettingsSelected}">
                                 <TextBlock Text="Activo" FontSize="10" FontWeight="Bold" Foreground="White" />
                             </Border>
@@ -289,7 +296,6 @@
                                                 Width="44"
                                                 Height="44"
                                                 Command="{Binding ClearDownloadUrlCommand}"
-                                                IsEnabled="{Binding !IsDownloading}"
                                                 Background="#25283D"
                                                 BorderBrush="#374151"
                                                 BorderThickness="1"
@@ -306,7 +312,7 @@
                                             <Button Grid.Column="2"
                                             Command="{Binding PasteFromClipboardCommand}"
                                             Background="#25283D"
-                                            BorderBrush="#4F46E5"
+                                            BorderBrush="{DynamicResource AccentBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8"
                                             Padding="14,10"
@@ -322,7 +328,6 @@
 
                             <Button Content="Analizar"
                                     Command="{Binding AnalyzeCommand}"
-                                    IsEnabled="{Binding !IsDownloading}"
                                     HorizontalAlignment="Center"
                                     MinWidth="240"
                                     Background="{Binding AccentColor}"
@@ -361,9 +366,8 @@
                                     <!-- Botón Examinar -->
                                     <Button Grid.Column="1"
                                             Command="{Binding BrowseFolderCommand}"
-                                            IsEnabled="{Binding !IsDownloading}"
                                             Background="#25283D"
-                                            BorderBrush="#4F46E5"
+                                            BorderBrush="{DynamicResource AccentBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8"
                                             Padding="14,9"
@@ -378,7 +382,6 @@
                                     <!-- Botón Abrir carpeta -->
                                     <Button Grid.Column="2"
                                             Command="{Binding OpenOutputFolderCommand}"
-                                            IsEnabled="{Binding !IsDownloading}"
                                             Background="#1B1D2B"
                                             BorderBrush="#374151"
                                             BorderThickness="1"
@@ -415,102 +418,23 @@
 
                             <!-- Estado y Progreso -->
                             <StackPanel Spacing="10">
+                                <TextBlock Text="{Binding QueueSummary}"
+                                           Foreground="#9CA3AF"
+                                           FontSize="11" />
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0"
                                                Text="{Binding StatusMessage}"
                                                FontSize="13"
                                                Foreground="#E5E7EB"
                                                TextWrapping="Wrap" />
-
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding DownloadProgress, StringFormat='{}{0:F0}%'}"
-                                               FontSize="13"
-                                               FontWeight="Bold"
-                                               Foreground="#818CF8"
-                                               Margin="8,0,0,0"
-                                               IsVisible="{Binding IsPhaseDownloading}" />
                                 </Grid>
 
-                                <!-- Barra normal (descargando %) -->
-                                <ProgressBar Minimum="0"
-                                             Maximum="100"
-                                             Value="{Binding DownloadProgress}"
-                                             Height="8"
-                                             CornerRadius="4"
-                                             Background="#23263B"
-                                             Foreground="#6366F1"
-                                             IsVisible="{Binding !IsPhaseProcessing}" />
-
-                                <!-- Barra indeterminada (fase FFmpeg / muxing) -->
                                 <ProgressBar IsIndeterminate="True"
                                              Height="8"
                                              CornerRadius="4"
                                              Background="#23263B"
-                                             Foreground="#F59E0B"
-                                             IsVisible="{Binding IsPhaseProcessing}" />
-
-                                <!-- Etiqueta animada de fase FFmpeg -->
-                                <Border Background="#1F1A0D"
-                                        BorderBrush="#78350F"
-                                        BorderThickness="1"
-                                        CornerRadius="6"
-                                        Padding="10,6"
-                                        IsVisible="{Binding IsPhaseProcessing}">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <TextBlock Text="⚙"
-                                                   FontSize="13"
-                                                   Foreground="#F59E0B"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Text="Procesando con FFmpeg — esto puede tardar unos segundos..."
-                                                   FontSize="12"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="#FDE68A"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Telemetría en vivo -->
-                                <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0"
-                                      IsVisible="{Binding IsPhaseDownloading}">
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                                        <Border Background="#1F2335"
-                                                BorderBrush="#2C324D"
-                                                BorderThickness="1"
-                                                CornerRadius="4"
-                                                Padding="6,2"
-                                                IsVisible="{Binding !!CurrentSpeed.Length}">
-                                            <TextBlock Text="{Binding CurrentSpeed, StringFormat='⚡ {0}'}"
-                                                       FontSize="11"
-                                                       Foreground="#38BDF8"
-                                                       FontWeight="SemiBold" />
-                                        </Border>
-
-                                        <Border Background="#1F2335"
-                                                BorderBrush="#2C324D"
-                                                BorderThickness="1"
-                                                CornerRadius="4"
-                                                Padding="6,2"
-                                                IsVisible="{Binding !!CurrentSize.Length}">
-                                            <TextBlock Text="{Binding CurrentSize, StringFormat='📦 {0}'}"
-                                                       FontSize="11"
-                                                       Foreground="#A78BFA"
-                                                       FontWeight="SemiBold" />
-                                        </Border>
-                                    </StackPanel>
-
-                                    <Border Grid.Column="1"
-                                            Background="#1F2335"
-                                            BorderBrush="#2C324D"
-                                            BorderThickness="1"
-                                            CornerRadius="4"
-                                            Padding="6,2"
-                                            IsVisible="{Binding !!CurrentEta.Length}">
-                                        <TextBlock Text="{Binding CurrentEta, StringFormat='⏱ {0}'}"
-                                                   FontSize="11"
-                                                   Foreground="#FBBF24"
-                                                   FontWeight="SemiBold" />
-                                    </Border>
-                                </Grid>
+                                             Foreground="{DynamicResource AccentHoverBrush}"
+                                             IsVisible="{Binding IsDownloading}" />
                             </StackPanel>
 
                         </StackPanel>
@@ -568,7 +492,7 @@
                                     Command="{Binding SearchCommand}"
                                     IsEnabled="{Binding !IsSearching}"
                                     Background="#25283D"
-                                    BorderBrush="#4F46E5"
+                                    BorderBrush="{DynamicResource AccentBrush}"
                                     BorderThickness="1"
                                     Foreground="White"
                                     FontWeight="SemiBold"
@@ -578,7 +502,7 @@
                             <ProgressBar IsIndeterminate="True"
                                          IsVisible="{Binding IsSearching}"
                                          Height="5"
-                                         Foreground="#6366F1"
+                                         Foreground="{DynamicResource AccentHoverBrush}"
                                          Background="#23263B" />
                             <Border Background="#1B1D2B"
                                     BorderBrush="#2B2F44"
@@ -610,7 +534,7 @@
                                                 CornerRadius="7" />
                                     </StackPanel>
                                     <TextBlock Text="{Binding ActiveEngineLabel}"
-                                               Foreground="#818CF8"
+                                               Foreground="{DynamicResource AccentLightBrush}"
                                                FontSize="12"
                                                FontWeight="SemiBold"
                                                IsVisible="{Binding CanDownloadSearchQuery}" />
@@ -619,7 +543,7 @@
                                             IsVisible="{Binding CanDownloadSearchQuery}"
                                             HorizontalAlignment="Left"
                                             Background="#25283D"
-                                            BorderBrush="#4F46E5"
+                                            BorderBrush="{DynamicResource AccentBrush}"
                                             BorderThickness="1"
                                             Foreground="#E0E7FF"
                                             Padding="14,8"
@@ -642,7 +566,7 @@
                                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="14">
                                                 <TextBlock Text="{Binding Name}" Foreground="#E5E7EB" />
                                                 <TextBlock Grid.Column="1" Text="{Binding Category}" Foreground="#9CA3AF" />
-                                                <TextBlock Grid.Column="2" Text="{Binding Size}" Foreground="#818CF8" />
+                                                <TextBlock Grid.Column="2" Text="{Binding Size}" Foreground="{DynamicResource AccentLightBrush}" />
                                             </Grid>
                                         </Button>
                                     </DataTemplate>
@@ -675,7 +599,7 @@
                                 CornerRadius="8" />
                     </Grid>
                     <TextBlock Text="{Binding OutputPath}"
-                               Foreground="#818CF8"
+                               Foreground="{DynamicResource AccentLightBrush}"
                                FontSize="12"
                                TextTrimming="CharacterEllipsis" />
                     <ItemsControl ItemsSource="{Binding LibraryFiles}"
@@ -694,7 +618,7 @@
                                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="14">
                                         <TextBlock Text="{Binding Name}" Foreground="#E5E7EB" />
                                         <TextBlock Grid.Column="1" Text="{Binding Category}" Foreground="#9CA3AF" />
-                                        <TextBlock Grid.Column="2" Text="{Binding Size}" Foreground="#818CF8" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Size}" Foreground="{DynamicResource AccentLightBrush}" />
                                         <TextBlock Grid.Column="3" Text="{Binding Modified, StringFormat='{}{0:g}'}" Foreground="#6B7280" />
                                     </Grid>
                                 </Button>
@@ -716,7 +640,7 @@
                 <StackPanel Margin="36,28" Spacing="24" MaxWidth="850" HorizontalAlignment="Stretch">
                     <Grid ColumnDefinitions="*,Auto">
                         <StackPanel Spacing="6">
-                            <TextBlock Text="Lista de Descargas"
+                            <TextBlock Text="Historial de descargas"
                                        FontSize="26"
                                        FontWeight="Bold"
                                        Foreground="#F9FAFB" />
@@ -799,28 +723,37 @@
                                                       Margin="0,0,12,0" />
                                             <StackPanel Grid.Column="1" Spacing="8">
                                                 <Grid ColumnDefinitions="*,Auto">
-                                                    <TextBlock Text="{Binding SourceUrl}"
+                                                    <TextBlock Text="{Binding DisplayName}"
                                                                Foreground="#E5E7EB"
-                                                               FontSize="13"
+                                                               FontSize="14"
+                                                               FontWeight="SemiBold"
                                                                TextTrimming="CharacterEllipsis" />
                                                     <TextBlock Grid.Column="1"
                                                                Text="{Binding Progress, StringFormat='{}{0:F0}%'}"
-                                                               Foreground="#818CF8"
+                                                               Foreground="{DynamicResource AccentLightBrush}"
                                                                FontWeight="Bold" />
                                                 </Grid>
                                                 <ProgressBar Minimum="0"
                                                              Maximum="100"
                                                              Value="{Binding Progress}"
                                                              Height="6"
-                                                             Foreground="#6366F1"
+                                                             Foreground="{DynamicResource AccentHoverBrush}"
                                                              Background="#23263B" />
+                                                <TextBlock Text="{Binding ProgressDetails}"
+                                                           IsVisible="{Binding HasProgressDetails}"
+                                                           Foreground="#9CA3AF"
+                                                           FontSize="10" />
+                                                <TextBlock Text="{Binding SourceUrl}"
+                                                           Foreground="#9CA3AF"
+                                                           FontSize="11"
+                                                           TextTrimming="CharacterEllipsis" />
                                                 <Grid ColumnDefinitions="*,Auto">
                                                     <TextBlock Text="{Binding Engine}"
                                                                Foreground="#9CA3AF"
                                                                FontSize="11" />
                                                     <TextBlock Grid.Column="1"
                                                                Text="{Binding Status}"
-                                                               Foreground="#A5B4FC"
+                                                               Foreground="{DynamicResource AccentPaleBrush}"
                                                                FontSize="11" />
                                                 </Grid>
                                                 <Grid ColumnDefinitions="*,Auto">
@@ -848,14 +781,14 @@
                             CornerRadius="12"
                             Padding="28">
                         <StackPanel Spacing="8" HorizontalAlignment="Center">
-                            <TextBlock Text="Todavía no hay descargas en esta sesión."
+                            <TextBlock Text="Todavía no hay elementos en el historial."
                                        Foreground="#D1D5DB"
                                        FontSize="14" />
                             <Button Content="Iniciar una descarga"
                                     Command="{Binding SelectSectionCommand}"
                                     CommandParameter="Descargar"
                                     HorizontalAlignment="Center"
-                                    Background="#4F46E5"
+                                    Background="{DynamicResource AccentBrush}"
                                     Foreground="White"
                                     Padding="16,9"
                                     CornerRadius="8" />
@@ -910,7 +843,7 @@
                                         Content="Examinar"
                                         Command="{Binding BrowseFolderCommand}"
                                         Background="#25283D"
-                                        BorderBrush="#4F46E5"
+                                        BorderBrush="{DynamicResource AccentBrush}"
                                         BorderThickness="1"
                                         Foreground="#E0E7FF"
                                         Padding="16,9"
@@ -920,7 +853,7 @@
                                        Foreground="#9CA3AF"
                                        FontSize="12" />
                             <TextBlock Text="{Binding ActiveEngineLabel}"
-                                       Foreground="#818CF8"
+                                       Foreground="{DynamicResource AccentLightBrush}"
                                        FontSize="13"
                                        FontWeight="SemiBold" />
                             <TextBlock Text="Límite de velocidad (KB/s; 0 = sin límite)"
@@ -931,6 +864,13 @@
                                      Background="#1D2030"
                                      Foreground="#F9FAFB"
                                      BorderBrush="#31354C" />
+                            <TextBlock Text="Descargas simultáneas (1–3)"
+                                       Foreground="#9CA3AF"
+                                       FontSize="12" />
+                            <ComboBox ItemsSource="{Binding ConcurrencyOptions}"
+                                      SelectedItem="{Binding MaximumConcurrency}"
+                                      HorizontalAlignment="Left"
+                                      MinWidth="200" />
                             <TextBlock Text="Color de acento"
                                        Foreground="#9CA3AF"
                                        FontSize="12" />
@@ -947,7 +887,7 @@
                                     CornerRadius="8"
                                     HorizontalAlignment="Left" />
                             <TextBlock Text="{Binding SettingsMessage}"
-                                       Foreground="#A5B4FC"
+                                       Foreground="{DynamicResource AccentPaleBrush}"
                                        FontSize="12"
                                        TextWrapping="Wrap" />
                         </StackPanel>
@@ -988,7 +928,7 @@
                             <TextBlock Text="{Binding DirectFileType}"
                                        FontSize="15"
                                        FontWeight="SemiBold"
-                                       Foreground="#A5B4FC"
+                                       Foreground="{DynamicResource AccentPaleBrush}"
                                        HorizontalAlignment="Center" />
                             <TextBlock Text="{Binding DirectFileContentType, StringFormat='Tipo MIME: {0}'}"
                                        FontSize="12"
@@ -1000,21 +940,13 @@
                                        HorizontalAlignment="Center" />
                             <TextBlock Text="{Binding OutputPath, StringFormat='Carpeta de destino: {0}'}"
                                        FontSize="12"
-                                       Foreground="#818CF8"
+                                       Foreground="{DynamicResource AccentLightBrush}"
                                        HorizontalAlignment="Center"
                                        TextWrapping="Wrap" />
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Center"
                                         Spacing="10"
                                         Margin="0,8,0,0">
-                                <Button Content="Ver página del enlace"
-                                        Command="{Binding ViewDirectFilePageCommand}"
-                                        Background="#25283D"
-                                        BorderBrush="#4F46E5"
-                                        BorderThickness="1"
-                                        Foreground="#E0E7FF"
-                                        Padding="14,10"
-                                        CornerRadius="8" />
                                 <Button Content="Cancelar"
                                         Command="{Binding CancelDirectFilePreviewCommand}"
                                         Background="#25283D"
@@ -1070,23 +1002,32 @@
                                        Foreground="#9CA3AF"
                                        HorizontalAlignment="Center" />
                             <TextBlock Text="{Binding ConfirmationOutput}"
-                                       Foreground="#818CF8"
+                                       Foreground="{DynamicResource AccentLightBrush}"
                                        FontSize="12"
                                        HorizontalAlignment="Center"
                                        TextWrapping="Wrap" />
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Center"
                                         Spacing="10">
+                                <Button Content="✕"
+                                        Command="{Binding CloseDownloadConfirmationCommand}"
+                                        ToolTip.Tip="Cerrar"
+                                        Background="#25283D"
+                                        BorderBrush="#374151"
+                                        BorderThickness="1"
+                                        Foreground="#E0E7FF"
+                                        Padding="14,10"
+                                        CornerRadius="8" />
                                 <Button Content="Ir a la Biblioteca"
                                         Command="{Binding OpenLibraryCommand}"
                                         Background="{Binding AccentColor}"
                                         Foreground="White"
                                         Padding="14,10"
                                         CornerRadius="8" />
-                                <Button Content="Ir a Lista de Descargas"
+                                <Button Content="Ir al Historial"
                                         Command="{Binding OpenDownloadsCommand}"
                                         Background="#25283D"
-                                        BorderBrush="#4F46E5"
+                                        BorderBrush="{DynamicResource AccentBrush}"
                                         BorderThickness="1"
                                         Foreground="#E0E7FF"
                                         Padding="14,10"
@@ -1166,7 +1107,7 @@
                                                  Width="280"
                                                  Height="4"
                                                  CornerRadius="2"
-                                                 Foreground="#6366F1"
+                                                 Foreground="{DynamicResource AccentHoverBrush}"
                                                  Background="#23263B" />
                                 </StackPanel>
 
@@ -1193,14 +1134,14 @@
                                         <TextBlock Text="Música / Audio solo"
                                                    FontSize="14"
                                                    FontWeight="SemiBold"
-                                                   Foreground="#818CF8"
+                                                   Foreground="{DynamicResource AccentLightBrush}"
                                                    VerticalAlignment="Center" />
                                         <Border Background="#1E2035"
                                                 CornerRadius="4"
                                                 Padding="6,2">
                                             <TextBlock Text="{Binding AudioOptions.Count, StringFormat='{}{0} opciones'}"
                                                        FontSize="11"
-                                                       Foreground="#6366F1" />
+                                                       Foreground="{DynamicResource AccentHoverBrush}" />
                                         </Border>
                                     </StackPanel>
 
@@ -1232,7 +1173,7 @@
                                                                 <Setter Property="BorderThickness" Value="1.5" />
                                                             </Style>
                                                             <Style Selector="Border.recommended">
-                                                                <Setter Property="BorderBrush" Value="#6366F1" />
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
                                                                 <Setter Property="BorderThickness" Value="2" />
                                                             </Style>
                                                             <Style Selector="Border.selected">
@@ -1244,7 +1185,7 @@
 
                                                             <!-- Badge recomendado -->
                                                             <Border Grid.Row="0"
-                                                                    Background="#4F46E5"
+                                                                    Background="{DynamicResource AccentBrush}"
                                                                     CornerRadius="4"
                                                                     Padding="7,2"
                                                                     HorizontalAlignment="Left"
@@ -1267,7 +1208,7 @@
                                                                     <TextBlock Text="{Binding Extension}"
                                                                                FontSize="12"
                                                                                FontWeight="SemiBold"
-                                                                               Foreground="#818CF8" />
+                                                                               Foreground="{DynamicResource AccentLightBrush}" />
                                                                     <TextBlock Text="·"
                                                                                FontSize="12"
                                                                                Foreground="#4B5563" />
@@ -1434,7 +1375,7 @@
                                     Content="Confirmar y Descargar →"
                                     Command="{Binding ConfirmSelectionCommand}"
                                     IsEnabled="{Binding SelectedFormatOption, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                    Background="#4F46E5"
+                                    Background="{DynamicResource AccentBrush}"
                                     Foreground="White"
                                     FontWeight="SemiBold"
                                     FontSize="14"
@@ -1531,6 +1472,61 @@
                                      Height="6"
                                      Foreground="{Binding AccentColor}"
                                      Background="#23263B" />
+                    </StackPanel>
+                </Border>
+            </Border>
+
+            <Border IsVisible="{Binding IsDuplicatePromptOpen}"
+                    Background="#B20F1015"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+                <Border Background="#161823"
+                        BorderBrush="#3C3F5A"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="28"
+                        MaxWidth="520"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="El archivo ya existe"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Foreground="#F9FAFB" />
+                        <TextBlock Text="{Binding DuplicateFilePath}"
+                                   Foreground="#D1D5DB"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="Elige cómo continuar. Sobrescribir reemplazará el archivo existente."
+                                   Foreground="#9CA3AF"
+                                   TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Spacing="8">
+                            <Button Content="Cancelar"
+                                    Command="{Binding CloseDuplicatePromptCommand}"
+                                    Background="#25283D"
+                                    Foreground="#E0E7FF"
+                                    Padding="12,9"
+                                    CornerRadius="8" />
+                            <Button Content="Omitir"
+                                    Command="{Binding SkipDuplicateCommand}"
+                                    Background="#25283D"
+                                    Foreground="#E0E7FF"
+                                    Padding="12,9"
+                                    CornerRadius="8" />
+                            <Button Content="Guardar copia"
+                                    Command="{Binding SaveDuplicateAsCopyCommand}"
+                                    Background="#25283D"
+                                    Foreground="#E0E7FF"
+                                    Padding="12,9"
+                                    CornerRadius="8" />
+                            <Button Content="Sobrescribir"
+                                    Command="{Binding OverwriteDuplicateCommand}"
+                                    Background="{Binding AccentColor}"
+                                    Foreground="White"
+                                    Padding="12,9"
+                                    CornerRadius="8" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </Border>

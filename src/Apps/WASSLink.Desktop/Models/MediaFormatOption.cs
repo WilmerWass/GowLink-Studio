@@ -18,11 +18,11 @@ public partial class MediaFormatOption : ObservableObject
     public bool IsRecommended { get; init; }
     public string ResolutionOrBitrate { get; init; } = string.Empty;
 
-    public string FormattedSize => EstimatedSizeBytes.HasValue && EstimatedSizeBytes.Value > 0
+    public string FormattedSize => EstimatedSizeBytes is > 0
         ? EstimatedSizeBytes.Value >= 1024 * 1024 * 1024
-            ? $"{EstimatedSizeBytes.Value / (1024.0 * 1024.0 * 1024.0):F2} GB"
-            : $"{EstimatedSizeBytes.Value / (1024.0 * 1024.0):F1} MB"
-        : "Tamaño var.";
+            ? $"≈ {EstimatedSizeBytes.Value / (1024.0 * 1024.0 * 1024.0):F2} GB (estimado)"
+            : $"≈ {EstimatedSizeBytes.Value / (1024.0 * 1024.0):F1} MB (estimado)"
+        : "Tamaño desconocido";
 
     [ObservableProperty]
     private bool isSelected;

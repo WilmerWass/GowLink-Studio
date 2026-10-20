@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<DirectHttpDownloadService>();
         services.AddSingleton<YtDlpDownloadService>();
+        services.AddSingleton(_ => new DownloadQueueService());
         services.AddSingleton<CompositeDownloadProvider>();
         services.AddSingleton<IDownloadProvider>(provider =>
             provider.GetRequiredService<CompositeDownloadProvider>());

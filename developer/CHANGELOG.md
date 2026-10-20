@@ -11,13 +11,13 @@ Este changelog registra hitos verificados y cambios relevantes de la arquitectur
 
 ## 2. Beta 1.4 — Universal Download Engine
 
-Estado: consolidación y mejora de la arquitectura actual.
+Estado: hito previo de la arquitectura dual.
 
 Cambios relevantes:
 
 - branding actualizado a GowLink Studio
 - ruta predeterminada de descargas en `Downloads\GowLink`
-- navegación por módulos: Downloader, Biblioteca, Buscador, Descargas y Configuración
+- navegación por módulos: Descargar, Biblioteca, Buscador, Historial y Configuración
 - indicador dinámico del motor activo según la URL
 - soporte dual de motores: HTTP directo y yt-dlp
 - mejora de la pausa HTTP sin bloquear la interfaz
@@ -28,22 +28,22 @@ Observación:
 
 Esta etapa debe entenderse como consolidación del producto actual y preparación para 1.5, no como cierre de todas las capacidades del proyecto.
 
-## 3. 1.4.1 — Consolidation Release
+## 3. Beta 1.4.1 — Consolidation Release
 
-Estado: fase de estabilidad y refinamiento.
+Estado: en consolidación; no publicada.
 
 Objetivo:
 
 Consolidar la base actual del motor dual, la navegación principal y la experiencia visible antes de abrir la siguiente etapa funcional.
 
-Cambios esperados en esta fase:
+Cambios implementados y pendientes de validación de publicación:
 
-- estabilidad del motor HTTP directo
-- estabilidad del motor yt-dlp
-- configuración más coherente y persistente
-- manejo mejorado de errores, pausa y cancelación
-- regresiones y validación de UX
-- documentación interna y roadmap oficial coherentes
+- cola FIFO común con concurrencia de 1–3 y hasta tres intentos totales (esperas de 1 y 2 segundos)
+- temporales HTTP para evitar archivos finales parciales
+- persistencia de preferencias e historial terminal bajo `%LOCALAPPDATA%\GowLink`
+- saneamiento de query y fragmento en URLs de logs e historial
+- selector de conflictos HTTP, mejoras de navegación y recursos dinámicos de acento
+- pruebas de regresión y validación del paquete portable antes de publicar
 
 ## 4. 1.5 — Search & Providers
 

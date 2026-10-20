@@ -20,19 +20,20 @@ No se tratarán como equivalentes una mejora real de producto, una etapa de cons
 
 El proyecto está en la etapa denominada:
 
-**GowLink Studio — Beta 1.4: Universal Download Engine**
+**GowLink Studio — Beta 1.4.1: Universal Download Engine**
 
-Se consideran confirmadas las siguientes capacidades, como mínimo en el estado reportado por la sesión de trabajo reciente:
+La Beta 1.4.1 sigue en consolidación y no debe considerarse una release publicada. El código incluye:
 
 - branding actualizado a GowLink Studio
 - ruta predeterminada de descargas en `Downloads\GowLink`
-- navegación entre Downloader, Biblioteca, Buscador, Lista de Descargas y Configuración
+- navegación entre Descargar, Biblioteca, Buscador, Historial y Configuración
 - selección dinámica del motor activo para HTTP directo o yt-dlp
 - manejo de pausa HTTP sin bloquear la interfaz
-- compilación correcta con `dotnet build -c Debug`
-- pruebas unitarias correctas con `dotnet test tests\WASSLink.Tests\WASSLink.Tests.csproj -c Debug --no-restore`
+- cola FIFO con concurrencia configurable de una a tres tareas
+- persistencia local de preferencias e historial terminal
+- build Release y pruebas automatizadas validadas durante la consolidación
 
-Estas evidencias deben entenderse como estado verificado por la sesión actual, no como promesa de compatibilidad universal ni como cierre completo de todas las capacidades futuras.
+Estas evidencias no implican compatibilidad universal ni cierre completo de las capacidades de la versión. La publicación portable todavía requiere validación en un entorno limpio.
 
 ### Clasificación del trabajo
 
@@ -293,6 +294,11 @@ Estado: etapa actual de consolidación y mejora.
 
 Estado: planificado como implementación de nuevas capacidades, no como una simple continuación visual de 1.4.1.
 
+## Apéndice histórico: propuestas anteriores
+
+Las etiquetas Beta 7–10 que siguen pertenecen a una propuesta antigua y no
+reemplazan las fases 1.5–1.9 definidas en este roadmap.
+
 ## 6. Política de planificación
 
 - no se promociona una versión como “lista” sin criterios de aceptación definidos
@@ -431,4 +437,4 @@ Una sub-beta solamente se crea cuando una funcionalidad concreta está terminada
 
 NO implementar todas las funcionalidades simultáneamente.
 
-Prioridad actual: terminar y validar la estabilización de Beta 1.3. No comenzar Beta 2 antes de cumplir B1.1–B1.5 y B1 FINAL.
+Prioridad actual: completar y validar Beta 1.4.1 según los criterios de aceptación de este roadmap. No declarar la release lista ni iniciar 1.5 antes de superar esas condiciones.
