@@ -39,10 +39,21 @@ public sealed class CompositeDownloadProvider : IDownloadProvider
         if (request is null)
             throw new ArgumentNullException(nameof(request));
 
-        var provider = _providers.FirstOrDefault(p => p.CanHandle(request.Url));
+        var provider = SelectProvider(request.Url);
         if (provider is null)
             throw new InvalidOperationException($"No existe provider para la URL: {request.Url}");
 
         return provider.DownloadAsync(request, progress, cancellationToken);
     }
-}
+
+            private IDownloadProvider? SelectProvider(string url)
+            {
+                if (MediaFireDownloadResolver.IsMediaFirePage(url))
+                {
+                    return _providers.FirstOrDefault(p => p.Name.Equals("HTTP", StringComparison.OrdinalIgnoreCase))
+                        ?? _providers.FirstOrDefault(p => p.CanHandle(url));
+                }
+
+                return _providers.FirstOrDefault(p => p.CanHandle(url));
+            }
+        }

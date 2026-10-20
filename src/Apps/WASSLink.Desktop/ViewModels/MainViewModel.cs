@@ -385,10 +385,15 @@ public partial class MainViewModel : ViewModelBase
         StatusMessage = "Iniciando descarga...";
         _cts = new CancellationTokenSource();
 
-        var mediaType = format?.MediaType ?? DownloadMediaType.Video;
-        var ext = format?.MediaType == DownloadMediaType.Audio
-            ? format.Extension.ToLowerInvariant()
-            : "mp4";
+        var isDirectFile = MediaFireDownloadResolver.IsMediaFirePage(DownloadUrl);
+                var mediaType = isDirectFile
+                    ? DownloadMediaType.File
+                    : format?.MediaType ?? DownloadMediaType.Video;
+                var ext = isDirectFile
+                    ? "bin"
+                    : format?.MediaType == DownloadMediaType.Audio
+                    ? format.Extension.ToLowerInvariant()
+                    : "mp4";
 
         var request = new DownloadRequest(
             Url: DownloadUrl.Trim(),

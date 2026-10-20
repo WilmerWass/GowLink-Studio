@@ -76,11 +76,38 @@ public class DownloadProviderTests
 
         var downloadProvider = provider.GetService<IDownloadProvider>();
         Assert.NotNull(downloadProvider);
-        Assert.IsType<YtDlpDownloadService>(downloadProvider);
+        Assert.IsType<CompositeDownloadProvider>(downloadProvider);
     }
 
     [Fact]
-    public void ResolveToolPath_FindsYtDlpTool()
+        public async Task DirectHttpDownloadService_ResolvesMediaFireArchive()
+        {
+            const string url = "https://www.mediafire.com/file_premium/ktrhlr28rq6igdd/MiniOS11_Pro_v26.10_-_dprojects.rar/file";
+            using var httpClient = new System.Net.Http.HttpClient();
+            var service = new DirectHttpDownloadService(httpClient);
+            var destination = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "gowlink-mediafire-test");
+            System.IO.Directory.CreateDirectory(destination);
+
+            var resolved = await MediaFireDownloadResolver.ResolveAsync(httpClient, url, CancellationToken.None);
+            Assert.Equal("MiniOS11 Pro v26.10 - dprojects.rar", resolved.FileName);
+            Assert.EndsWith(".rar", resolved.DownloadUri.AbsolutePath, StringComparison.OrdinalIgnoreCase);
+
+            using var probe = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, resolved.DownloadUri);
+            probe.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(0, 15);
+            using var response = await httpClient.SendAsync(probe);
+            var signature = await response.Content.ReadAsByteArrayAsync();
+            Assert.Equal((byte)'R', signature[0]);
+            Assert.Equal((byte)'a', signature[1]);
+            Assert.Equal((byte)'r', signature[2]);
+            Assert.Equal((byte)'!', signature[3]);
+
+            var output = DirectHttpDownloadService.ResolveDestinationPath(destination, resolved.FileName);
+            Assert.EndsWith("MiniOS11 Pro v26.10 - dprojects.rar", output, StringComparison.OrdinalIgnoreCase);
+            Assert.True(service.CanHandle(url));
+        }
+
+        [Fact]
+        public void ResolveToolPath_FindsYtDlpTool()
     {
         var path = YtDlpDownloadService.ResolveToolPath("yt-dlp", "yt-dlp.exe");
         Assert.True(System.IO.File.Exists(path), $"yt-dlp.exe should be located at: {path}");

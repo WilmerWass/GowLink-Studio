@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,15 +50,26 @@ public sealed class DirectHttpDownloadService : IDownloadProvider
 
         try
         {
-            // Asegurar carpeta destino
-            var directory = Path.GetDirectoryName(request.OutputPath);
-            if (!string.IsNullOrWhiteSpace(directory))
-                Directory.CreateDirectory(directory);
+                    var sourceUrl = request.Url.Trim();
+                    string? resolvedFileName = null;
+                    if (MediaFireDownloadResolver.IsMediaFirePage(sourceUrl))
+                    {
+                        progress?.Report(new DownloadProgress(0, "Resolviendo enlace de MediaFire..."));
+                        var resolved = await MediaFireDownloadResolver.ResolveAsync(
+                            _httpClient, sourceUrl, cancellationToken);
+                        sourceUrl = resolved.DownloadUri.AbsoluteUri;
+                        resolvedFileName = resolved.FileName;
+                    }
 
-            using var response = await _httpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Get, request.Url),
-                HttpCompletionOption.ResponseHeadersRead,
-                cancellationToken);
+                    var destinationPath = ResolveDestinationPath(request.OutputPath, resolvedFileName);
+                    var directory = Path.GetDirectoryName(destinationPath);
+                    if (!string.IsNullOrWhiteSpace(directory))
+                        Directory.CreateDirectory(directory);
+
+                    using var response = await _httpClient.SendAsync(
+                        new HttpRequestMessage(HttpMethod.Get, sourceUrl),
+                        HttpCompletionOption.ResponseHeadersRead,
+                        cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -76,7 +88,7 @@ public sealed class DirectHttpDownloadService : IDownloadProvider
 
             await using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
             await using var fileStream = new FileStream(
-                request.OutputPath,
+                            destinationPath,
                 FileMode.Create,
                 FileAccess.Write,
                 FileShare.None,
@@ -117,7 +129,7 @@ public sealed class DirectHttpDownloadService : IDownloadProvider
                 StatusMessage: "Descarga finalizada.",
                 TotalSize: totalBytes?.ToString()));
 
-            return new DownloadResult(true, request.OutputPath, null);
+            return new DownloadResult(true, destinationPath, null);
         }
         catch (OperationCanceledException)
         {
@@ -128,4 +140,32 @@ public sealed class DirectHttpDownloadService : IDownloadProvider
             return new DownloadResult(false, null, ex.Message);
         }
     }
-}
+
+            internal static string ResolveDestinationPath(string outputPath, string? preferredFileName)
+            {
+                var safeName = SanitizeFileName(preferredFileName);
+                if (string.IsNullOrWhiteSpace(safeName))
+                    return outputPath;
+
+                var candidateDirectory = Directory.Exists(outputPath) ||
+                    string.IsNullOrWhiteSpace(Path.GetExtension(outputPath))
+                    ? outputPath
+                    : Path.GetDirectoryName(outputPath);
+
+                return Path.Combine(
+                    string.IsNullOrWhiteSpace(candidateDirectory) ? "." : candidateDirectory,
+                    safeName);
+            }
+
+            private static string? SanitizeFileName(string? fileName)
+            {
+                if (string.IsNullOrWhiteSpace(fileName))
+                    return null;
+
+                var decoded = WebUtility.HtmlDecode(fileName).Trim();
+                foreach (var invalid in Path.GetInvalidFileNameChars())
+                    decoded = decoded.Replace(invalid, '_');
+
+                return string.IsNullOrWhiteSpace(decoded) ? null : decoded;
+            }
+        }
