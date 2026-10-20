@@ -350,7 +350,8 @@ public sealed class DirectHttpDownloadService : IDownloadProvider
 
     private static bool IsMediaFirePage(Uri uri) =>
         IsMediaFireHost(uri) &&
-        uri.AbsolutePath.StartsWith("/file/", StringComparison.OrdinalIgnoreCase);
+        (uri.AbsolutePath.StartsWith("/file/", StringComparison.OrdinalIgnoreCase) ||
+         uri.AbsolutePath.StartsWith("/file_premium/", StringComparison.OrdinalIgnoreCase));
 
     private static bool IsMediaFireHost(Uri uri) =>
         uri.Host.Equals("mediafire.com", StringComparison.OrdinalIgnoreCase) ||

@@ -6,7 +6,8 @@ namespace WASSLink.Abstractions;
 public enum DownloadMediaType
 {
     Audio,
-    Video
+    Video,
+    File
 }
 
 public enum FileConflictAction

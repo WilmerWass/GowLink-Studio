@@ -1372,10 +1372,15 @@ public partial class MainViewModel : ViewModelBase
         IsToastVisible = false;
         StatusMessage = "Iniciando descarga...";
 
-        var mediaType = format?.MediaType ?? DownloadMediaType.Video;
-        var ext = format?.MediaType == DownloadMediaType.Audio
-            ? format.Extension.ToLowerInvariant()
-            : "mp4";
+        var isDirectFile = selectedProvider == _directHttpProvider;
+        var mediaType = isDirectFile
+            ? DownloadMediaType.File
+            : format?.MediaType ?? DownloadMediaType.Video;
+        var ext = isDirectFile
+            ? "bin"
+            : format?.MediaType == DownloadMediaType.Audio
+                ? format.Extension.ToLowerInvariant()
+                : "mp4";
 
         var request = new DownloadRequest(
             Url: forceDirectHttp ? DirectFileUrl.Trim() : DownloadUrl.Trim(),

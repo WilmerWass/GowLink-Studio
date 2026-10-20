@@ -286,7 +286,7 @@ public class DownloadProviderTests
     [Fact]
     public async Task DirectHttpProvider_AnalyzesAndDownloadsMediaFirePage()
     {
-        const string pageUrl = "https://www.mediafire.com/file/key/archive.rar/file";
+        const string pageUrl = "https://www.mediafire.com/file_premium/key/archive.rar/file";
         const string fileUrl = "https://download.example.mediafire.com/signed/archive.rar";
         const string page = """
             <html><body><a class="input" id="downloadButton" href="https://download.example.mediafire.com/signed/archive.rar">Download</a></body></html>
