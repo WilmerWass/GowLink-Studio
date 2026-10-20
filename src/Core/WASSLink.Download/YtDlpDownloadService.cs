@@ -31,6 +31,9 @@ public class YtDlpDownloadService : IDownloadProvider
     private static readonly Regex MergedDestinationRegex = new(
         @"\[Merger\]\s+Merging formats into\s+""(?<dest>.+)""",
         RegexOptions.Compiled);
+    private static readonly Regex TransientFailureRegex = new(
+        @"\b(?:HTTP Error (?:408|425|429|5\d\d)|timed?\s*out|temporarily unavailable|connection (?:reset|aborted)|temporary failure)\b",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public static string GetLogsDirectory() => LoggerService.LogsDirectory;
 
@@ -198,7 +201,13 @@ public class YtDlpDownloadService : IDownloadProvider
         // --windows-filenames evita caracteres inválidos en Windows
         // --no-part para evitar archivos temporales residuales en fallos
         var outputTemplate = Path.Combine(request.OutputPath, "%(title)s.%(ext)s");
-        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} --windows-filenames --encoding UTF-8 -o \"{outputTemplate}\" --newline --no-playlist";
+        var speedLimitArg = request.MaxSpeedBytesPerSecond > 0
+            ? $"--limit-rate {request.MaxSpeedBytesPerSecond}"
+            : "";
+        var conflictArg = request.ConflictAction == FileConflictAction.Overwrite
+            ? "--force-overwrites"
+            : "--no-overwrites";
+        var arguments = $"\"{request.Url.Trim()}\" {mediaArgs} {ffmpegArg} {speedLimitArg} {conflictArg} --windows-filenames --encoding UTF-8 -o \"{outputTemplate}\" --newline --no-playlist";
 
         LoggerService.Write($"URL={request.Url}");
         LoggerService.Write($"COMMAND={ytDlpPath} {arguments}");
@@ -246,6 +255,7 @@ public class YtDlpDownloadService : IDownloadProvider
         });
 
         string? downloadedFilePath = null;
+        var wasAlreadyPresent = false;
         var stderrTask = process.StandardError.ReadToEndAsync(cancellationToken);
 
         string? line;
@@ -254,6 +264,9 @@ public class YtDlpDownloadService : IDownloadProvider
             if (string.IsNullOrWhiteSpace(line)) continue;
 
             LoggerService.Write($"STDOUT {line}");
+
+            if (AlreadyDownloadedRegex.IsMatch(line))
+                wasAlreadyPresent = true;
 
             var phase = GetProgressState(line);
             if (phase == "Procesando con FFmpeg...")
@@ -304,12 +317,21 @@ public class YtDlpDownloadService : IDownloadProvider
                 ? $"yt-dlp finalizó con código de error {process.ExitCode}"
                 : stderr.Trim();
             LoggerService.Write($"ERROR {errorMsg}");
-            return new DownloadResult(false, null, errorMsg);
+            return new DownloadResult(
+                false,
+                null,
+                errorMsg,
+                IsTransientFailure: TransientFailureRegex.IsMatch(errorMsg));
         }
 
+        if (!wasAlreadyPresent && downloadedFilePath is null)
+            return new DownloadResult(false, null, "yt-dlp finalizó sin informar la ruta del archivo generado.");
+
         var finalOutputPath = downloadedFilePath ?? request.OutputPath;
-        LoggerService.Write($"DOWNLOAD COMPLETED OutputPath=\"{finalOutputPath}\"");
-        return new DownloadResult(true, finalOutputPath, null);
+        LoggerService.Write(wasAlreadyPresent
+            ? $"DOWNLOAD SKIPPED ALREADY PRESENT OutputPath=\"{finalOutputPath}\""
+            : $"DOWNLOAD COMPLETED OutputPath=\"{finalOutputPath}\"");
+        return new DownloadResult(true, finalOutputPath, null, wasAlreadyPresent);
     }
 
     private static bool TryParseOutputPath(string line, out string? outputPath)

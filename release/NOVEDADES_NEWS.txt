@@ -1,82 +1,61 @@
-GOWLINK STUDIO — BETA 1.3: ESTABILIZACIÓN
+GOWLINK STUDIO — BETA 1.4.1: UNIVERSAL DOWNLOAD ENGINE
 ESPAÑOL
 
-Beta 1.3 continúa la estabilización de GowLink Downloader. No inicia Beta 2
-ni implica que la migración de namespaces y proyectos técnicos WASSLink.* esté
-terminada.
+Beta 1.4.1 consolida el motor dual de descargas directas HTTP y multimedia
+mediante yt-dlp, junto con la cola común, preferencias e historial persistentes.
 
 NOVEDADES
-- Quality Grid: inspección de metadatos y selección entre formatos de audio y
-  vídeo disponibles mediante yt-dlp.
-- Motor integrado: yt-dlp realiza la descarga y FFmpeg procesa o combina los
-  medios cuando el formato seleccionado lo requiere.
-- Progreso visual: porcentaje, velocidad y ETA durante la descarga; estado
-  diferenciado durante el procesamiento con FFmpeg.
-- Destino: selección de carpeta desde la interfaz y acceso a la carpeta elegida.
-- Logs centralizados en %LOCALAPPDATA%\GowLink\Logs. Los archivos históricos
-  WASSLink se conservan y no se migran ni eliminan automáticamente.
-- Codificación UTF-8 para la salida de yt-dlp, conservando correctamente
-  nombres de archivo Unicode en rutas y registros.
-- Identidad visual GowLink Studio / GowLink Downloader y mejoras en la
-  composición de la interfaz de descarga.
+- Cola FIFO en memoria y concurrencia configurable de una a tres descargas.
+- Reintentos limitados para fallos transitorios y cancelación por trabajo.
+- Archivos HTTP publicados desde temporales solo después de una descarga exitosa.
+- Resolución de duplicados HTTP con omitir, copia numerada o sobrescritura elegida.
+- Preferencias e historial terminal guardados en %LOCALAPPDATA%\GowLink.
+- Logs e historial sin query ni fragmentos de URL.
+- Color de acento aplicado de forma coherente y mejoras en el cierre de paneles.
 
 ESTADO
-El flujo de audio M4A y vídeo MP4 1080p recomendados se validó en runtime. La
-estabilización de errores y la migración técnica de nombres WASSLink.* siguen
-pendientes. Consulte LEEME_README.txt y THIRD-PARTY-NOTICES.txt.
+Los proveedores externos siguen limitados a los extractores instalados y no
+se garantiza compatibilidad con toda URL. La Beta 1.4.1 todavía no está
+publicada. Consulte LEEME_README.txt y THIRD-PARTY-NOTICES.txt.
 
 ---------------------------------------------------------------------------
-GOWLINK STUDIO — BETA 1.3: STABILIZATION
+GOWLINK STUDIO — BETA 1.4.1: UNIVERSAL DOWNLOAD ENGINE
 ENGLISH
 
-Beta 1.3 continues the stabilization of GowLink Downloader. It does not start
-Beta 2 or indicate that the technical WASSLink.* namespace and project
-migration is complete.
+Beta 1.4.1 consolidates direct HTTP and yt-dlp media downloads with a shared
+queue, persistent preferences, and terminal download history.
 
 WHAT'S NEW
-- Quality Grid: inspect metadata and choose from available audio and video
-  formats using yt-dlp.
-- Integrated engine: yt-dlp downloads media and FFmpeg processes or merges it
-  when required by the selected format.
-- Visual progress: percentage, speed, and ETA during downloads, with a distinct
-  status during FFmpeg processing.
-- Destination: choose a folder in the UI and open the selected folder.
-- Centralized logs under %LOCALAPPDATA%\GowLink\Logs. Historical WASSLink log
-  files are preserved and are not automatically migrated or deleted.
-- UTF-8 encoding for yt-dlp output, preserving Unicode filenames in paths and
-  log records.
-- GowLink Studio / GowLink Downloader branding and visual refinements to the
-  download interface.
+- In-memory FIFO queue with configurable concurrency from one to three jobs.
+- Bounded retries for transient failures and per-job cancellation.
+- HTTP files are moved from temporary storage only after successful completion.
+- Explicit HTTP duplicate actions: skip, numbered copy, or overwrite.
+- Preferences and terminal history are stored under %LOCALAPPDATA%\GowLink.
+- Query strings and fragments are removed from logged and persisted URLs.
+- Consistent accent color and improved panel dismissal.
 
 STATUS
-The recommended M4A audio and 1080p MP4 video flows were validated at runtime.
-Error stabilization and the technical WASSLink.* naming migration remain
-pending. See LEEME_README.txt and THIRD-PARTY-NOTICES.txt.
+External-provider support depends on the installed extractors; arbitrary URLs
+are not guaranteed to work. Beta 1.4.1 has not yet been published. See
+LEEME_README.txt and THIRD-PARTY-NOTICES.txt.
 
 ---------------------------------------------------------------------------
-GOWLINK STUDIO — ベータ 1.3：安定化
+GOWLINK STUDIO — ベータ 1.4.1：ユニバーサルダウンロードエンジン
 日本語
 
-ベータ 1.3 では GowLink Downloader の安定化を継続します。ベータ 2 を
-開始するものではなく、技術的な WASSLink.* 名前空間およびプロジェクトの
-移行が完了したことを示すものでもありません。
+ベータ 1.4.1 では、HTTP 直接ダウンロードと yt-dlp メディア取得を統合し、
+共通キュー、設定、および完了済み履歴を整備します。
 
 新機能・改善点
-- Quality Grid：yt-dlp を使用してメタデータを確認し、利用可能な音声・
-  動画形式を選択できます。
-- 統合ダウンロードエンジン：yt-dlp がメディアをダウンロードし、選択形式に
-  応じて FFmpeg が処理または結合します。
-- 進捗表示：ダウンロード中はパーセンテージ、速度、残り時間を表示し、
-  FFmpeg 処理中は異なる状態を表示します。
-- 保存先：UI からフォルダーを選択し、選択したフォルダーを開けます。
-- ログを %LOCALAPPDATA%\GowLink\Logs に集約しました。既存の WASSLink
-  ログは保持され、自動的な移行や削除は行われません。
-- yt-dlp の出力に UTF-8 を指定し、Unicode ファイル名をパスとログで
-  正しく保持します。
-- GowLink Studio / GowLink Downloader のブランド表示とダウンロード画面の
-  ビジュアルを改善しました。
+- 1～3 件の同時実行数を設定できる、メモリ内 FIFO キュー。
+- 一時的な障害に対する回数制限付き再試行と、ジョブ単位のキャンセル。
+- HTTP ファイルは完了後に一時ファイルから移動されます。
+- HTTP の重複時にスキップ、連番コピー、上書きを選択できます。
+- 設定と完了済み履歴を %LOCALAPPDATA%\GowLink に保存します。
+- URL のクエリとフラグメントはログと保存履歴から除去されます。
+- アクセントカラーの統一とパネル操作を改善しました。
 
 状態
-推奨設定の M4A 音声および 1080p MP4 動画のフローを実行時に検証しました。
-エラー処理の安定化と技術的な WASSLink.* 名称の移行は引き続き保留です。
+外部プロバイダーの対応状況はインストールされた抽出ツールに依存し、
+すべての URL が動作する保証はありません。ベータ 1.4.1 は未公開です。
 LEEME_README.txt および THIRD-PARTY-NOTICES.txt もご確認ください。

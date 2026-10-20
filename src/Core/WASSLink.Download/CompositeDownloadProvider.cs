@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WASSLink.Abstractions;
@@ -8,27 +6,24 @@ using WASSLink.Abstractions;
 namespace WASSLink.Download;
 
 /// <summary>
-/// Proveedor compuesto que enruta la descarga al primer provider compatible.
+/// Enruta URLs de archivos directos a HTTP y el resto de enlaces compatibles a yt-dlp.
 /// </summary>
-public sealed class CompositeDownloadProvider : IDownloadProvider
+public sealed class CompositeDownloadProvider(
+    DirectHttpDownloadService directHttpProvider,
+    YtDlpDownloadService ytDlpProvider) : IDownloadProvider
 {
-    private readonly IReadOnlyList<IDownloadProvider> _providers;
-
-    public CompositeDownloadProvider(IEnumerable<IDownloadProvider> providers)
-    {
-        if (providers is null)
-            throw new ArgumentNullException(nameof(providers));
-
-        _providers = providers.ToList();
-        if (_providers.Count == 0)
-            throw new InvalidOperationException("CompositeDownloadProvider requiere al menos un provider.");
-    }
-
     public string Name => "Composite";
+    public DirectHttpDownloadService DirectHttpProvider => directHttpProvider;
 
-    public bool CanHandle(string url)
+    public bool CanHandle(string url) =>
+        directHttpProvider.CanHandle(url) || ytDlpProvider.CanHandle(url);
+
+    public IDownloadProvider? GetProviderForUrl(string url)
     {
-        return _providers.Any(p => p.CanHandle(url));
+        if (directHttpProvider.CanHandle(url))
+            return directHttpProvider;
+
+        return ytDlpProvider.CanHandle(url) ? ytDlpProvider : null;
     }
 
     public Task<DownloadResult> DownloadAsync(
@@ -36,13 +31,11 @@ public sealed class CompositeDownloadProvider : IDownloadProvider
         IProgress<DownloadProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        if (request is null)
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
-        var provider = _providers.FirstOrDefault(p => p.CanHandle(request.Url));
-        if (provider is null)
-            throw new InvalidOperationException($"No existe provider para la URL: {request.Url}");
-
-        return provider.DownloadAsync(request, progress, cancellationToken);
+        var provider = GetProviderForUrl(request.Url);
+        return provider is null
+            ? Task.FromResult(new DownloadResult(false, null, "La URL ingresada no es compatible."))
+            : provider.DownloadAsync(request, progress, cancellationToken);
     }
 }

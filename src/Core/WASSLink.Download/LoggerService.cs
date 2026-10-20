@@ -1,10 +1,15 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace WASSLink.Download;
 
 public static class LoggerService
 {
+    private static readonly Regex UrlRegex = new(
+        "https?://[^\\s\\\"'<>]+",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
     public static string LogsDirectory { get; } = ResolveLogsDirectory();
 
     public static string LogFilePath => Path.Combine(LogsDirectory, "app.log");
@@ -22,7 +27,7 @@ public static class LoggerService
             Directory.CreateDirectory(LogsDirectory);
             File.AppendAllText(
                 LogFilePath,
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}{Environment.NewLine}");
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {SanitizeUrls(message)}{Environment.NewLine}");
         }
         catch
         {
@@ -35,4 +40,18 @@ public static class LoggerService
         var message = context is null ? ex.ToString() : $"{context}: {ex}";
         Write(message);
     }
+
+    public static string SanitizeUrls(string value) =>
+        UrlRegex.Replace(value, match =>
+        {
+            if (!Uri.TryCreate(match.Value, UriKind.Absolute, out var uri))
+                return "[URL]";
+
+            var sanitized = new UriBuilder(uri)
+            {
+                Query = string.Empty,
+                Fragment = string.Empty
+            };
+            return sanitized.Uri.AbsoluteUri.TrimEnd('/');
+        });
 }

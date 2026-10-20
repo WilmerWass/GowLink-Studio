@@ -9,6 +9,13 @@ public enum DownloadMediaType
     Video
 }
 
+public enum FileConflictAction
+{
+    CreateCopy,
+    Skip,
+    Overwrite
+}
+
 /// <summary>
 /// Parámetros de una solicitud de descarga.
 /// </summary>
@@ -18,5 +25,8 @@ public record DownloadRequest(
     DownloadMediaType MediaType = DownloadMediaType.Audio,
     string Format = "mp3",
     string? FormatId = null,
-    bool VideoFormatHasAudio = false
+    bool VideoFormatHasAudio = false,
+    long MaxSpeedBytesPerSecond = 0,
+    Func<CancellationToken, Task>? WaitIfPausedAsync = null,
+    FileConflictAction ConflictAction = FileConflictAction.CreateCopy
 );

@@ -6,5 +6,7 @@ namespace WASSLink.Abstractions;
 public record DownloadResult(
     bool Success,
     string? OutputPath = null,
-    string? ErrorMessage = null
+    string? ErrorMessage = null,
+    bool WasAlreadyPresent = false,
+    bool IsTransientFailure = false
 );
